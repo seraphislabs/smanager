@@ -6,7 +6,7 @@
 <body>
 <?php
 require("/nginx/protectedfiles/config.php");
-echo("boobs2");
+echo("boobs");
 ?>
 </body>
 
