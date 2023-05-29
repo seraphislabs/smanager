@@ -1,0 +1,21 @@
+name: "Publish To Live"
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  name: "SCP"
+  runs-on: ubuntu-latest
+  strategy:
+    fail-fast: false
+  steps:
+    - name: scp pipelines
+      uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        user: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        scp: |
+          './*' => /nginx/https/ip/
