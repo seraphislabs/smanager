@@ -6,16 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  name: "SCP"
-  runs-on: ubuntu-latest
-  strategy:
-    fail-fast: false
-  steps:
-    - name: scp pipelines
-      uses: cross-the-world/ssh-scp-ssh-pipelines@latest
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        user: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
-        scp: |
-          './*' => /nginx/https/ip/
+  publish:
+    name: Send to VPS
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: scp pipelines
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          scp: |
+            './*' => /nginx/https/ip/
