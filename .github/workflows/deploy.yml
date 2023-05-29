@@ -27,5 +27,5 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: ${{ steps.changed-files.outputs.all_changed_files }}
+        source: ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
         target: /nginx/https/ip
