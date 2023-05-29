@@ -7,7 +7,6 @@
 <?php
 require("/nginx/protectedfiles/config.php");
 echo("boobs");
-$password="mypassword123";
 ?>
 </body>
 
