@@ -18,5 +18,11 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           user: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          connect_timeout: 30s
+          first_ssh: |
+            rm -rf /nginx/https/ip-new
+            mkdir -m770 /nginx/https/ip-new
           scp: |
-            './*' => /nginx/https/ip/
+            './*' => /nginx/https/ip-new/
+          last_ssh: |
+            mv /nginx/https/ip /nginx/https/ip-old && mv /nginx/https/ip-new /nginx/https/ip
