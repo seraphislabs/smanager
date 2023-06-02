@@ -3,7 +3,7 @@ name: Create Documentation
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   collect_files:
