@@ -20,7 +20,7 @@ jobs:
     
     - name: Collect PHP files
       run: |
-        php_folder: "./path/to/your/folder"
+        php_folder: "./engine"
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
         echo "::set-output name=php_files::$php_files"
     
