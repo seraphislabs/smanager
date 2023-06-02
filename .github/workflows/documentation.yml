@@ -21,16 +21,41 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.0'
+        php-version: '7.4'
     
     - name: Collect PHP files
       id: collect_php_files
       run: |
         php_folder="${{ github.workspace }}/engine" # Relative path within the repository
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
-        echo "PHP_FILES=$php_files" >> $GITHUB_ENV
+        php_contents=""
+        for file in $php_files; do
+          content=$(cat "$file")
+          php_contents+="$content "
+        done
+        echo "PHP_CONTENTS=$php_contents" >> $GITHUB_ENV
     
-    - name: Display PHP files
+    - name: Ask question to ChatGPT
+      id: ask_question
       run: |
-        echo "PHP files found:"
-        echo "${{ env.PHP_FILES }}"
+        question="Turn the following PHP into a brief outline of the clases and their methods. Also briefly explain the function of each method and class. $PHP_CONTENTS"
+        # Make a request to the ChatGPT API with the question
+        # Replace 'YOUR_CHATGPT_API_KEY' with your actual ChatGPT API key
+        # Replace the API endpoint and other parameters as per your ChatGPT API integration
+        response=$(curl -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer sk-...mbtk" \
+          -d '{
+            "question": "'"$question"'",
+            "max_tokens": 500
+          }' \
+          https://api.openai.com/v1/engines/davinci-codex/completions)
+        
+        # Extract the answer from the API response
+        answer=$(echo "$response" | jq -r '.choices[0].text')
+        echo "ANSWER=$answer" >> $GITHUB_ENV
+    
+    - name: Display Answer
+      run: |
+        echo "Answer:"
+        echo "${{ env.ANSWER }}"
