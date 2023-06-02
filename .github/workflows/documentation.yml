@@ -34,23 +34,22 @@ jobs:
           php_contents+="$content "
         done
         echo "PHP_CONTENTS=$php_contents" >> $GITHUB_ENV
+        echo "QUESTION=$php_contents" >> $GITHUB_ENV
     
     - name: Ask question to ChatGPT
       id: ask_question
       run: |
-        question="$PHP_CONTENTS"
-        echo "::set-env name=QUESTION::$question"
         response=$(curl -X POST \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer sk-...mbtk" \
           -d '{
-            "question": "'"$question"'",
+            "question": "'"$PHP_CONTENTS"'",
             "max_tokens": 500
           }' \
           https://api.openai.com/v1/engines/davinci-codex/completions)
         
         answer=$(echo "$response" | jq -r '.choices[0].text')
-        echo "::set-env name=ANSWER::$answer"
+        echo "ANSWER=$answer" >> $GITHUB_ENV
     
     - name: Display Answer
       run: |
