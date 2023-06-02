@@ -1,4 +1,4 @@
-name: Create PHP Documentation
+name: Create Documentation
 
 on:
   push:
@@ -21,14 +21,13 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '8.0'
     
     - name: Collect PHP files
       id: collect_php_files
       run: |
-        php_folder="${{ github.workspace }}/engine"
+        php_folder="${{ github.workspace }}/engine
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
-        echo "::set-output name=php_files::$php_files"
         echo "PHP_FILES=$php_files" >> $GITHUB_ENV
     
     - name: Display PHP files
