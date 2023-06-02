@@ -26,7 +26,7 @@ jobs:
     - name: Collect PHP files
       id: collect_php_files
       run: |
-        php_folder="${{ github.workspace }}/path/to/your/folder" # Relative path within the repository
+        php_folder="${{ github.workspace }}/engine" # Relative path within the repository
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
         echo "PHP_FILES=$php_files" >> $GITHUB_ENV
     
