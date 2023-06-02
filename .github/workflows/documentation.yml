@@ -1,4 +1,4 @@
-name: Create Documentation
+name: Create PHP Documentation
 
 on:
   push:
@@ -11,7 +11,12 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
     
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
@@ -19,12 +24,14 @@ jobs:
         php-version: '7.4'
     
     - name: Collect PHP files
+      id: collect_php_files
       run: |
         php_folder="${{ github.workspace }}/engine"
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
         echo "::set-output name=php_files::$php_files"
+        echo "PHP_FILES=$php_files" >> $GITHUB_ENV
     
     - name: Display PHP files
       run: |
         echo "PHP files found:"
-        echo "${{ steps.collect_php_files.outputs.php_files }}"
+        echo "${{ env.PHP_FILES }}"
