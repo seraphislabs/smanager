@@ -26,7 +26,7 @@ jobs:
     - name: Collect PHP files
       id: collect_php_files
       run: |
-        php_folder="${{ github.workspace }}/engine" # Relative path within the repository
+        php_folder="${{ github.workspace }}/engine"
         php_files=$(find "$php_folder" -type f -name "*.php" -print0 | xargs -0 echo)
         php_contents=""
         for file in $php_files; do
@@ -38,10 +38,8 @@ jobs:
     - name: Ask question to ChatGPT
       id: ask_question
       run: |
-        question="Turn the following PHP into a brief outline of the clases and their methods. Also briefly explain the function of each method and class. $PHP_CONTENTS"
-        # Make a request to the ChatGPT API with the question
-        # Replace 'YOUR_CHATGPT_API_KEY' with your actual ChatGPT API key
-        # Replace the API endpoint and other parameters as per your ChatGPT API integration
+        question="$PHP_CONTENTS"
+        echo "::set-env name=QUESTION::$question"
         response=$(curl -X POST \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer sk-...mbtk" \
@@ -53,7 +51,7 @@ jobs:
         
         # Extract the answer from the API response
         answer=$(echo "$response" | jq -r '.choices[0].text')
-        echo "ANSWER=$answer" >> $GITHUB_ENV
+        echo "::set-env name=ANSWER::$answer"
     
     - name: Display Answer
       run: |
