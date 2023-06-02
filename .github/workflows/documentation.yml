@@ -49,7 +49,6 @@ jobs:
           }' \
           https://api.openai.com/v1/engines/davinci-codex/completions)
         
-        # Extract the answer from the API response
         answer=$(echo "$response" | jq -r '.choices[0].text')
         echo "::set-env name=ANSWER::$answer"
     
