@@ -1,0 +1,30 @@
+name: Create PHP Documentation
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  collect_files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      width:
+        php-version: '7.4'
+    
+    - name: Collect PHP files
+      run: |
+        php_folder="./engine"
+        php_files=$(find "GITHUB_WORKSPACE/@php_folder" -type f -name "*.php" -print0 | xargs -O echo);
+        echo "::set-output name=php_files::$php_files"
+
+    - name: Display PHP files
+      run: |
+        echo "PHP files found:"
+        echo "${{ steps.collect_php_files.outputs.php_files }}"
