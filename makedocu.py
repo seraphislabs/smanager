@@ -2,7 +2,6 @@
 
 import os
 import requests
-import github
 
 folder_path = "engine"  # Update this path with your specific directory
 api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions"  # API endpoint
