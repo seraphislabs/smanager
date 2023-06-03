@@ -17,7 +17,7 @@ def concatenate_files():
     return files_content
 
 # Send a request to the ChatGPT API
-def ask_chatgpt(question):
+def ask_chatgpt(_question):
     headers = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + api_key
@@ -25,7 +25,7 @@ def ask_chatgpt(question):
     data = {
         "model": "gpt-3.5-turbo",
         "messages": [
-            {"role": "user", "content": question}
+            {"role": "user", "content": _question}
         ],
         "temperature":0.7
     }
