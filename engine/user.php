@@ -28,6 +28,9 @@ class SM_UserManager {
 
         return $nUser;
     }
+    public static function DeleteUser() {
+        // TODO
+    }
 }
 
 ?>
