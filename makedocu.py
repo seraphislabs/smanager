@@ -32,6 +32,7 @@ def ask_chatgpt(question):
     if response.status_code == 200:
         return response.json()["choices"][0]["message"]["content"]
     else:
+        print(f"Full response: {response.json()}")  # print the full response
         raise Exception(f"Request to ChatGPT API failed with status code: {response.status_code}")
 
 def main():
