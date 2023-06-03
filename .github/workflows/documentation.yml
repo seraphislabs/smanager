@@ -33,13 +33,13 @@ jobs:
           import os
 
           question = os.environ['QUESTION']
-          """openai.api_key = os.environ['CHATGPT_API_KEY']
+          openai.api_key = os.environ['CHATGPT_API_KEY']
+
           response = openai.Completion.create(
             engine='text-davinci-003',
             prompt='Write me each class and its methods into an outline from this php script' + question,
             max_tokens=100
           )
 
-          print(response.choices[0].text.strip())"""
-          print(question)
+          print(response.choices[0].text.strip())
           EOF
