@@ -36,7 +36,7 @@ jobs:
           question = os.environ['QUESTION']
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='Create a brief outline of all classes and their methods in plain english in the following php script: ' + question,
+            prompt='What is 4+4',
             max_tokens=100
           )
 
