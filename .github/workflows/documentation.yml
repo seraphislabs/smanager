@@ -36,7 +36,7 @@ jobs:
 
           response = openai.Completion.create(
             engine='text-davinci-002',
-            prompt='Explain these code changes in a changelog style: ' + qtext,
+            prompt='Explain these code changes in a changelog style and in plain text: ' + qtext,
             max_tokens=100
           )
 
