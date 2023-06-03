@@ -3,7 +3,7 @@ import requests
 
 folder_path = "engine"  # Update this path with your specific directory
 api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions"  # Correct API endpoint
-api_key = os.getenv("CHATGPT_API_KEY")  # Read API Key from the environment variable
+api_key = os.getenv("API_KEY")  # Read API Key from the environment variable
 
 # Concatenate all PHP files in the given directory
 def concatenate_files():
