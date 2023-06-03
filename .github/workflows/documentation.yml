@@ -35,7 +35,7 @@ jobs:
           openai.api_key = os.environ['CHATGPT_API_KEY']
 
           response = openai.ChatCompletion.create(
-            engine='gpt-3.5-turbo',
+            engine='text-davinci-002',
             prompt='Explain these code changes in plain text: ' + qtext,
             max_tokens=4096
           )
