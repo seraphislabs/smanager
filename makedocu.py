@@ -2,7 +2,7 @@ import os
 import requests
 
 folder_path = "engine"  # Update this path with your specific directory
-api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions"  # Correct API endpoint
+api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/chat/completions"  # Correct API endpoint for chat models
 api_key = os.getenv("API_KEY")  # Read API Key from the environment variable
 
 # Concatenate all PHP files in the given directory
@@ -23,12 +23,14 @@ def ask_chatgpt(question):
         "Authorization": f"Bearer {api_key}"
     }
     data = {
-        "prompt": question,
-        "max_tokens": 151
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": question}
+        ]
     }
     response = requests.post(api_endpoint, headers=headers, json=data)
     if response.status_code == 200:
-        return response.json()["choices"][0]["text"]
+        return response.json()["choices"][0]["message"]["content"]
     else:
         raise Exception(f"Request to ChatGPT API failed with status code: {response.status_code}")
 
