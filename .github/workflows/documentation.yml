@@ -15,7 +15,7 @@ jobs:
 
       - name: Concatenate PHP Files
         run: |
-          content=$(cat concatenated.php)
+          content=$(cat engine/*.php)
           echo "$content" > docudump.txt
 
       - name: Install dependencies
