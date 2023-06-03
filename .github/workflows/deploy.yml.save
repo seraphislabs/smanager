@@ -1,0 +1,32 @@
+sk-...mbtksk-...mbtkname: "Deploy to VPS 🚀"
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  changes:
+    name: test changed-files
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v35
+      with:
+        since_last_remote_commit: true
+        separator: ","
+
+    - name: copy file(s) to server
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        source: ${{ steps.changed-files.outputs.all_changed_and_modified_files }}
+        target: /nginx/https/ip
+        

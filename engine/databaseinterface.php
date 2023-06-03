@@ -1,23 +1,6 @@
 <?php
 
-interface DatabaseInterface
-{
-    public function connect($host, $username, $password, $database);
-
-    public function query($sql, $params = []);
-
-    public function fetch($sql, $params = []);
-
-    public function fetchAll($sql, $params = []);
-
-    public function insert($table, $data);
-
-    public function update($table, $data, $condition);
-
-    public function delete($table, $condition);
-}
-
-class PDODatabase implements DatabaseInterface
+class PDODatabase
 {
     private $connection;
 
@@ -32,55 +15,6 @@ class PDODatabase implements DatabaseInterface
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
-    }
-
-    public function query($sql, $params = [])
-    {
-        $statement = $this->connection->prepare($sql);
-        $statement->execute($params);
-        return $statement;
-    }
-
-    public function fetch($sql, $params = [])
-    {
-        $statement = $this->query($sql, $params);
-        return $statement->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function fetchAll($sql, $params = [])
-    {
-        $statement = $this->query($sql, $params);
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function insert($table, $data)
-    {
-        $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_fill(0, count($data), '?'));
-
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-        $params = array_values($data);
-
-        $statement = $this->query($sql, $params);
-        return $this->connection->lastInsertId();
-    }
-
-    public function update($table, $data, $condition)
-    {
-        $setClause = implode(', ', array_map(function ($column) {
-            return "$column=?";
-        }, array_keys($data)));
-
-        $sql = "UPDATE $table SET $setClause WHERE $condition";
-        $params = array_values($data);
-
-        return $this->query($sql, $params)->rowCount();
-    }
-
-    public function delete($table, $condition)
-    {
-        $sql = "DELETE FROM $table WHERE $condition";
-        return $this->query($sql)->rowCount();
     }
 }
 

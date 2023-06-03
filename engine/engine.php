@@ -1,8 +1,9 @@
 <?php
-	require_once('databaseinterface.php');
-	require_once('user.php');
-	require_once('utils.php');
 	session_start();
+	require("/nginx/protectedfiles/config.php");
+	require_once('databaseinterface.php');
+	require('user.php');
+	require('utils.php');
 
 	function Action_CheckSession() {
 		$isLogged = true;
@@ -25,6 +26,19 @@
 		echo("</div>");
 	}
 
+	function Action_InitLogin() {
+		echo("<center>
+		<h1>Login</h1>
+		<input type='text' class='input_login_email'/>
+		<input type='text' class='input_login_password'/>
+		<input type='button' class='input_login_button'/>
+		</center>
+		");
+	}
+
+	function Action_CheckLogin($_email, $_password) {
+	}
+
 	if (isset($_POST['action'])) {
 		$action = $_POST['action'];
 		
@@ -34,6 +48,15 @@
 				break;
 			case "InitPortal":
 				Action_InitPortal();
+				break;
+			case "InitLogin":
+				Action_InitLogin();
+				break;
+			case "CheckLogin":
+				$_SESSION['email'] = $_POST['email'];
+				$_SESSION['password'] = $_POST['password']; 
+				$_SESSION['companyid'] = "1";
+				Action_CheckLogin($pEmail, $pPassword);
 				break;
 		}
 	}
