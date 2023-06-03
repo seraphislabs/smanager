@@ -36,7 +36,7 @@ jobs:
 
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='Create a plain text documentation outlining the class and methods in hirearchy from this php script. Please include the paramters in the methods: ' + qtext,
+            prompt='Create a plain text documentation outlining the class and methods in hirearchy from this php script. ' + qtext,
             max_tokens=2000
           )
 
