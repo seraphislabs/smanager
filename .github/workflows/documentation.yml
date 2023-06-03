@@ -16,7 +16,7 @@ jobs:
       - name: Concatenate PHP Files
         run: |
           cat engine/*.php >> concatenated.php
-          echo "MY_QUESTION=$(cat concatenated.php)"
+          $(cat concatenated.php) > docudump.txt
 
       - name: Install dependencies
         run: |
@@ -25,19 +25,18 @@ jobs:
 
       - name: Ask question to CatGPT
         env:
-          QUESTION: ${{ env.MY_QUESTION }} 
           CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
         run: |
           python - <<EOF
           import openai
           import os
 
-          question = os.environ['QUESTION']
+          qtext = cat docudump.txt
           openai.api_key = os.environ['CHATGPT_API_KEY']
 
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='Create a legend for all methods in this php script: ' + question,
+            prompt='Create a legend for all methods in this php script: ' + qtext,
             max_tokens=4000
           )
 
