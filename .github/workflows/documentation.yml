@@ -15,8 +15,8 @@ jobs:
 
       - name: Concatenate PHP Files
         run: |
-          cd engine/
-          echo "MY_QUESTION=$(cat *.php)"
+          cat engine/*.php >> concatenated.php
+          echo "MY_QUESTION=$(cat concatenated.php)"
 
       - name: Install dependencies
         run: |
@@ -36,7 +36,7 @@ jobs:
           question = os.environ['QUESTION']
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='What is 4+4',
+            prompt='Write me each class and its methods into an outline from this php script' + question,
             max_tokens=100
           )
 
