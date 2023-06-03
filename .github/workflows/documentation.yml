@@ -36,7 +36,7 @@ jobs:
 
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='Create a legend for all methods in this php script: ' + qtext,
+            prompt='Create a plain text documentation outlining the class and methods in hirearchy from this php scrip: ' + qtext,
             max_tokens=100
           )
 
