@@ -37,7 +37,7 @@ jobs:
           response = openai.Completion.create(
             engine='text-davinci-003',
             prompt='Create a legend for all methods in this php script: ' + qtext,
-            max_tokens=4000
+            max_tokens=10000
           )
 
           print(response.choices[0].text.strip())
