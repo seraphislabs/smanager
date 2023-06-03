@@ -75,3 +75,8 @@ body {
     color:#14A76C;
     display:inline-block;
 }
+
+.img_icon {
+    width: 30px;
+    height:30px;
+}
