@@ -24,7 +24,7 @@ def ask_chatgpt(question):
     }
     data = {
         "prompt": question,
-        "max_tokens": 150
+        "max_tokens": 151
     }
     response = requests.post(api_endpoint, headers=headers, json=data)
     if response.status_code == 200:
