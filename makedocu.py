@@ -20,13 +20,14 @@ def concatenate_files():
 def ask_chatgpt(question):
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": "Bearer " + api_key
     }
     data = {
+        "model": "gpt-3.5-turbo",
         "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": question}
-        ]
+        ],
+        "temperature":0.7
     }
     response = requests.post(api_endpoint, headers=headers, json=data)
     if response.status_code == 200:
