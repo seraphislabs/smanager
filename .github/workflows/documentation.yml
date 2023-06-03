@@ -37,7 +37,7 @@ jobs:
 
           response = openai.Completion.create(
             engine='text-davinci-003',
-            prompt='Write me each class and its methods into an outline from this php script ' + question,
+            prompt='Create an outline in plain text listing the hirearchy of the classes and methods in this php script: ' + question,
             max_tokens=4000
           )
 
