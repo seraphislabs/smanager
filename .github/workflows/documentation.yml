@@ -35,9 +35,9 @@ jobs:
           openai.api_key = os.environ['CHATGPT_API_KEY']
 
           response = openai.Completion.create(
-            engine='code-davinci-002',
+            engine='gpt-3.5-turbo',
             prompt='Creat an api documentation style document for the following php script: ' + qtext,
-            max_tokens=2000
+            max_tokens=4096
           )
 
           print(response.choices[0].text.strip())
