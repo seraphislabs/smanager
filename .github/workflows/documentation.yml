@@ -15,8 +15,8 @@ jobs:
 
       - name: Concatenate PHP Files
         run: |
-          content=$(cat engine/*.php)
-          echo "$content" > docudump.txt
+          commit_changes=$(git show --stat --patch --no-color HEAD)
+          echo "$commit_changes" > docudump.txt
 
       - name: Install dependencies
         run: |
@@ -36,7 +36,7 @@ jobs:
 
           response = openai.ChatCompletion.create(
             engine='gpt-3.5-turbo',
-            prompt='Creat an api documentation style document for the following php script: ' + qtext,
+            prompt='Explain these code changes in plain text: ' + qtext,
             max_tokens=4096
           )
 
