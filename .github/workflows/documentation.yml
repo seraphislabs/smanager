@@ -15,8 +15,8 @@ jobs:
 
       - name: Concatenate PHP Files
         run: |
-          cat engine/*.php >> concatenated.php
-          $(cat concatenated.php) > docudump.txt
+          content=$(cat concatenated.php)
+          echo "$content" > docudump.txt
 
       - name: Install dependencies
         run: |
@@ -31,7 +31,7 @@ jobs:
           import openai
           import os
 
-          qtext = cat docudump.txt
+          qtext = open('docudump.txt').read()
           openai.api_key = os.environ['CHATGPT_API_KEY']
 
           response = openai.Completion.create(
