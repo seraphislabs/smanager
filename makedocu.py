@@ -1,11 +1,9 @@
-# script.py
-
 import os
 import requests
 
 folder_path = "engine"  # Update this path with your specific directory
-api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions"  # API endpoint
-api_key = os.getenv("API_KEY")  # Read API Key from the environment variable
+api_endpoint = "https://api.openai.com/v1/engines/davinci-codex/completions"  # Correct API endpoint
+api_key = os.getenv("CHATGPT_API_KEY")  # Read API Key from the environment variable
 
 # Concatenate all PHP files in the given directory
 def concatenate_files():
@@ -36,7 +34,7 @@ def ask_chatgpt(question):
 
 def main():
     question = concatenate_files()
-    answer = ask_chatgpt("Create a an outline of all classes and their methods with a brief description of their purpose. Keep it minial and use the folling php code. " + question)
+    answer = ask_chatgpt("Create an outline of all classes and their methods with a brief description of their purpose. Keep it minial and use the folling php code. " + question)
     
     file = open("documentation.txt", 'w')
     file.write(answer)
