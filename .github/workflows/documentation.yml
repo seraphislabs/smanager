@@ -1,28 +1,42 @@
-name: Create Documentation
+name: Create documentation
 
 on:
   push:
     branches:
-      - develop  # Or replace with your desired branch
+      - develop
 
 jobs:
-  build:
+  concatenate:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+      - name: Concatenate PHP Files
+        run: |
+          cd engine/
+          echo "MY_QUESTION=$(cat *.php)"
 
-      - name: Install dependencies
+      -  name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
-
-      - name: Run the script
-        run: python makedocu.py
+          pip install openai
+      - name: Ask question to CatGPT
         env:
-          API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+          QUESTION: ${{MY_QUESTION}} 
+          CHATGPT_API_KEY: ${{secrets.CHATGPT_API_KEY}}
+      run: |
+        python - <<EOF
+        import openai
+        import os
+
+        question = os.environ['QUESTION']
+        response = openai.Completeion.create(
+          engine='text-davinci-003',
+          prompt='Create a brief outline of all classes and their methods in the following php script: ' + question,
+          max_tokens=100
+        )
+
+        print(response.choices[0].text.strip())
+        EOF
