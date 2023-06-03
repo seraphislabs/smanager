@@ -32,7 +32,7 @@ jobs:
           import openai
           import os
 
-          openai.api_key = os.environ['CHATGPT_API_KEY']
+          """openai.api_key = os.environ['CHATGPT_API_KEY']
           question = os.environ['QUESTION']
           response = openai.Completion.create(
             engine='text-davinci-003',
@@ -40,5 +40,6 @@ jobs:
             max_tokens=100
           )
 
-          print(response.choices[0].text.strip())
+          print(response.choices[0].text.strip())"""
+          print(question);
           EOF
