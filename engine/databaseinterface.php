@@ -1,37 +1,36 @@
 <?php
 
-class PDODatabase
-{
-    private $host;
-    private $username;
-    private $password;
-    private $dbname;
-    private $pdo;
-
-    public function __construct($host, $username, $password, $dbname)
-    {
-        $this->host = $host;
-        $this->username = $username;
-        $this->password = $password;
-        $this->dbname = $dbname;
-        $this->connect();
-    }
-
-    private function connect()
-    {
-        $dsn = "mysql:host={$this->host};dbname={$this->dbname}";
+class DatabaseManager {
+    public static function connect($_dbInfo, $_dbname) {
+        $dsn = "mysql:host=localhost;dbname={$_dbname}";
 
         try {
-            $this->pdo = new PDO($dsn, $this->username, $this->password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = new PDO($dsn, $_dbInfo['dusername'], $_dbInfo['dpassword']);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $pdo;
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
+
+        return null;
     }
 
-    public function ValidateLogin($_email, $_password) {
+    public static function ManuallyValidateLogin($_dbInfo, $_email, $_password) {
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+        $retVal = self::GetLoginPasswordHash($pdo, $_email);
+			if (!empty($retVal)) {
+				if (PasswordEncrypt::Check($_password, $retVal)) {
+                    $pdo = null;
+					return true;
+				}
+			}
+
+            return false;
+    }
+
+    private static function ValidateLogin($_pdo, $_email, $_password) {
         // Retreive password hash from database
-			$retVal = $this->GetLoginPasswordHash($_email);
+			$retVal = self::GetLoginPasswordHash($_pdo, $_email);
 			if (!empty($retVal)) {
 				if (PasswordEncrypt::Check($_password, $retVal)) {
 					return true;
@@ -41,8 +40,8 @@ class PDODatabase
             return false;
     }
 
-    function GetLoginPasswordHash($_email) {
-        $stmt = $this->pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+    private static function GetLoginPasswordHash($_pdo, $_email) {
+        $stmt = $_pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
         $stmt->bindParam(":email", $_email);
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
@@ -54,57 +53,48 @@ class PDODatabase
         }
     }
 
-    public function GetLoginCompanyID($_email, $_password) {
-        if ($this->ValidateLogin($_email, $_password)) {
-            $stmt = $this->pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+    public function GetLoginInformation($_dbInfo, $_email, $_password) {
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+
+        if (self::ValidateLogin($pdo, $_email, $_password)) {
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
             $stmt->bindParam(":email", $_email);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                $companyId = $results[0]['companyid'];
-
-                return $companyId;
-            }
-        }
-    }
-
-    public function GetLoginInformation($_email, $_password) {
-        if ($this->ValidateLogin($_email, $_password)) {
-            $stmt = $this->pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
-            $stmt->bindParam(":email", $_email);
-            $stmt->execute();
-            if ($stmt->rowCount() == 1) {
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+                $pdo = null;
                 return $results[0];
             }
         }
     }
+
+    public static function GetUserPermissions($_dbInfo, $_email, $_password) {
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+
+        if (self::ValidateLogin($pdo, $_email, $_password)) {
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+            $stmt->bindParam(":email", $_email);
+            $stmt->execute();
+            if ($stmt->rowCount() == 1) {
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $pdo = null;
+                $retArray = explode("|", $results[0]['permissions']);
+                return $retArray;
+            }
+        }
+    }
+
+    public static function CheckPermissions($_dbInfo, $_email, $_password, $_perms) {
+        $perms = self::GetUserPermissions($_dbInfo, $_email, $_password);
+
+        $diff = array_diff($_perms, $perms);
+
+        if (empty($diff)) {
+            return true;
+        }
+
+        return false;
+    }
 }
-
-/* Examples
-
-$database = new PDODatabase();
-$database->connect('localhost', 'username', 'password', 'database');
-
-$data = [
-    'name' => 'John Doe',
-    'email' => 'john@example.com',
-    'age' => 25
-];
-$insertedId = $database->insert('users', $data);
-echo "Inserted ID: $insertedId\n";
-
-$data = [
-    'name' => 'Jane Smith',
-    'age' => 30
-];
-$affectedRows = $database->update('users', $data, 'id = 1');
-echo "Affected rows: $affectedRows\n";
-
-$affectedRows = $database->delete('users', 'id = 1');
-echo "Affected rows: $affectedRows\n";
-*/
 
 ?>

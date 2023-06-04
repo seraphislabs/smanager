@@ -57,7 +57,7 @@ $(document).ready(function() {
     }
   });
 
-  $('body').on('click', '.input_login_button', function() {
+  $(document).on('click', '.input_login_button', function() {
     var loginEmail = $('.input_login_email').val();
     var loginPassword = $('.input_login_password').val();
     CheckLogin(loginEmail, loginPassword);
