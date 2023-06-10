@@ -95,6 +95,44 @@ class DatabaseManager {
 
         return false;
     }
+
+    public static function GetAccounts($_dbInfo, $_email, $_password, $_companyid, $_currentPage) {
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        if ($_currentPage == 0) {
+            $_currentPage = 1;
+        }
+
+        $rOffset = (30 * ($_currentPage-1));
+        $rLimit = 30;
+
+        if (self::ValidateLogin($pdo1, $_email, $_password)) {
+            $sql = "SELECT * FROM `accounts`";
+            $stmt = $pdo->prepare($sql);
+            $resultsx = $stmt->execute();
+            $rowCountResult = $stmt->rowCount();
+            $stmt = null; 
+
+            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` LIMIT $rOffset , $rLimit");
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $pdo1 = null;
+                $pdo = null;
+
+                $retArray = ["count" => $rowCountResult, "result" => $results];
+                return $retArray;
+            }
+            else {
+                $retArray = ["count" => 0, "result" => null];
+                return $retArray;
+            }
+        }
+        $pdo1 = null;
+        $pdo = null;
+    }
 }
 
 ?>

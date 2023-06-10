@@ -5,13 +5,34 @@ class LeftPaneMenuItem {
         $returnedCode = "";
         switch ($buttonType) {
             case "Accounts":
-                $returnedCode = "<div class='leftpanebutton'><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>";
+                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>Accounts</div><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>";
                 break;
             case "Dashboard":
-                $returnedCode = "<div class='leftpanebutton'><img src='img/menu_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Dashboard</span></div>";
+                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>Dashboard</div><img src='img/menu_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Dashboard</span></div>";
                 break;
         }
 
+        return $returnedCode;
+    }
+}
+
+class ViewAccountList {
+    public static function GenerateListItems($_retArray, $_currentPage) {
+        $count = 0;
+        $returnedCode = "";
+        $_accounts = $_retArray['result'];
+        foreach($_accounts as $account) {
+            $count++;
+            $color = "#E0DFE5";
+
+            if ($count%2 == 0) {
+                $color = "#FAFAFA";
+            }
+
+            $accountName = $account['name'];
+            $accountType = $account['type'];
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
+        }
         return $returnedCode;
     }
 }
