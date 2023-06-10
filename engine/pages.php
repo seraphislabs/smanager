@@ -96,7 +96,8 @@
                         <span class='checkbox_switch_label'>Account Contact is Location Contact</span>
                     </div>
                 </div>
-                <div class ='toggleable_contact_info' style='display:none;'>
+                <div class ='toggleable_contact_info' style='display:none;padding-top:4px;'>
+                <div class='formsection_subheader_title'>Location Contact Information</div>
                     <div class='formsection_line'>
                         <input type='text' class='formsection_input' placeholder='Title'/>
                     </div>
@@ -130,8 +131,8 @@
                     $('.billing_address_toggle_section').slideDown(200);
                 }
             });
-            $('#account_name_checkbox').change(function() { 
-                if (this.checked) {
+            $('#formsection_cid_1_combo').change(function() { 
+                if (this.value != 'Residential') {
                     $('#formsection_cid_1').slideDown(200);
                 }
                 else {
@@ -188,25 +189,16 @@
                 <div class='formsection_header'>Account Details</div>
                 <div class='formsection_content'>
                     <div class='formsection_line'>
-                    <div class='checkbox_switch'>
-                        <label class='switch'>
-                            <input type='checkbox' id='account_name_checkbox'>
-                            <span class='slider round'></span>
-                        </label>
-                        <span class='checkbox_switch_label'>Add a Custom Account Name</span>
-                    </div>
+                        <select name='' class='formsection_input' id='formsection_cid_1_combo'>
+                            <option class='formsection_input_option' value='' disabled selected>Select Account Type</option>
+                            <option value='Residential'>Residential</option>
+                            <option value='Industrial'>Industrial</option>
+                            <option value='Commercial'>Commercial</option>
+                            <option value='Government'>Government</option>
+                        </select>
                     </div>
                     <div class='formsection_line' id='formsection_cid_1' style='display:none;'>
                     <input type='text' class='formsection_input' placeholder='Account Name'/>
-                    </div>
-                    <div class='formsection_line'>
-                    <select name='' class='formsection_input'>
-                        <option class='formsection_input_option' value='' disabled selected>Select Account Type</option>
-                        <option value='Residential'>Residential</option>
-                        <option value='Industrial'>Industrial</option>
-                        <option value='Commercial'>Commercial</option>
-                        <option value='Government'>Government</option>
-                    </select>
                     </div>
                     <div class='formsection_line'>
                     <input type='text' class='formsection_input' placeholder='Contact First Name'/><input type='text' class='formsection_input' placeholder='Contact Last Name'/>
@@ -282,7 +274,7 @@
                 <div class='list_of_service_addresses' style='display:none'>
                     $serviceAddressTemplate
                     <div class='formsection_line_rightjustify'>
-                    <div class='button_type_3'>Add</div>
+                    <div class='button_type_3'>Add Another Location</div>
                 </div>
                 </div>
             </div>";
