@@ -21,17 +21,19 @@ class ViewAccountList {
         $count = 0;
         $returnedCode = "";
         $_accounts = $_retArray['result'];
-        foreach($_accounts as $account) {
-            $count++;
-            $color = "#E0DFE5";
+        if (is_array($_accounts)) {
+            foreach($_accounts as $account) {
+                $count++;
+                $color = "#E0DFE5";
 
-            if ($count%2 == 0) {
-                $color = "#FAFAFA";
+                if ($count%2 == 0) {
+                    $color = "#FAFAFA";
+                }
+
+                $accountName = $account['name'];
+                $accountType = $account['type'];
+                $returnedCode .= "<div class='accountviewlistitem' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
             }
-
-            $accountName = $account['name'];
-            $accountType = $account['type'];
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
         }
         return $returnedCode;
     }

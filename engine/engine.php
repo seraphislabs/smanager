@@ -36,7 +36,7 @@
 		$finalID = $userInfo['companyid'] + 1000;
 
 		echo("<div id='topbar_container'>");
-		echo("<div class='sitelogo'><img src='img/logo.png'/></div>");
+		echo("<div class='sitelogo'><img src='img/logo2.png'/></div>");
 		echo("<div class='topright_pane'>
 		<div class='topbarbuttons'>
 		<img src='img/user_green.png'/>

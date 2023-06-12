@@ -141,8 +141,11 @@
                 <script type="text/javascript">
                     $('#submit_new_account_form').click(function () {
 
+                        $('#submit_new_account_form').hide();
                         var formattedString = SerializeNewAccountForm();
                         var formInfo = JSON.stringify(formattedString['formInformation']);
+
+                        console.log(formInfo);
 
                         if (formattedString.success) {
                             var requestData = [
@@ -152,6 +155,9 @@
                             AjaxCall(requestData, function(status, response) {
                                 if (status) {
                                     $('.popup_scrollable').html(response);
+                                }
+                                else {
+                                    $('#submit_new_account_form').show();
                                 }
                             });
                         }

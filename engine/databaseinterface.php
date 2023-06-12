@@ -144,6 +144,10 @@ class DatabaseManager {
                 return false;
             }
 
+            if (!self::CheckPermissions($_dbInfo, $_email, $_password, ['ca'])) {
+                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+            }
+
             if (strlen($accountInformation['name']) <= 0) {
                 $accountInformation['name'] = $accountInformation['firstName'] . " " . $accountInformation['lastName'];
             }
@@ -165,19 +169,8 @@ class DatabaseManager {
                 die("Validation Error");
             }
 
-            // Create Location for Primary Contact
-            $stmt = $pdo->prepare("INSERT INTO `locations` (`street1`,`street2`,`city`,`state`,`zip`,`notes`) VALUES (:street1,:street2,:city,:state,:zip,'')");
-            $stmt->bindParam(":street1", $accountInformation['street1']);
-            $stmt->bindParam(":street2", $accountInformation['street2']);
-            $stmt->bindParam(":city", $accountInformation['city']);
-            $stmt->bindParam(":state", $accountInformation['state']);
-            $stmt->bindParam(":zip", $accountInformation['zipCode']);
-            $stmt->execute();
-            //Location ID
-            $lid = $pdo->lastInsertId();
-
             // Create Contact for Primary Contact
-            $stmt = $pdo->prepare("INSERT INTO `contacts` (`firstname`,`lastname`,`email`,`primaryphone`,`secondaryphone`,`locationid`) VALUES (:firstname,:lastname,:email,:primaryphone,:secondaryphone,0)");
+            $stmt = $pdo->prepare("INSERT INTO `contacts` (`firstname`,`lastname`,`email`,`primaryphone`,`secondaryphone`) VALUES (:firstname,:lastname,:email,:primaryphone,:secondaryphone)");
             $stmt->bindParam(":firstname", $accountInformation['firstName']);
             $stmt->bindParam(":lastname", $accountInformation['lastName']);
             $stmt->bindParam(":email", $accountInformation['email']);
@@ -188,14 +181,86 @@ class DatabaseManager {
             $cid = $pdo->lastInsertId();
 
             // Create Initial Account
-            $stmt = $pdo->prepare("INSERT INTO `accounts` (`name`,`type`,`primarylocationid`, `primarycontactid`,`locationsids`,`contactids`, `optionalbillingid`) VALUES (:name,:type,:primarylocationid,:primarycontactid,'','',0)");
+            $stmt = $pdo->prepare("INSERT INTO `accounts` (`name`, `type`, `primarycontactid`, `street1`, `street2`, `city`, `state`, `zipcode`) VALUES (:name,:type,:primarycontactid,:street1,:street2,:city,:state,:zipcode)");
             $stmt->bindParam(":name", $accountInformation['name']);
             $stmt->bindParam(":type", $accountInformation['type']);
-            $stmt->bindParam(":primarylocationid", $lid);
             $stmt->bindParam(":primarycontactid", $cid);
+            $stmt->bindParam(":street1", $accountInformation['street1']);
+            $stmt->bindParam(":street2", $accountInformation['street2']);
+            $stmt->bindParam(":city", $accountInformation['city']);
+            $stmt->bindParam(":state", $accountInformation['state']);
+            $stmt->bindParam(":zipcode", $accountInformation['zipCode']);
             $stmt->execute();
             //Account ID
             $aid = $pdo->lastInsertId();
+
+            // Create Primary Location for account
+            $stmt = $pdo->prepare("INSERT INTO `locations` (`accountid`, `street1`,`street2`,`city`,`state`,`zipcode`,`contacts`,`notes`) VALUES (:accountid,:street1,:street2,:city,:state,:zipcode,:contacts,'')");
+            $stmt->bindParam(":accountid", $aid);
+            $stmt->bindParam(":street1", $accountInformation['street1']);
+            $stmt->bindParam(":street2", $accountInformation['street2']);
+            $stmt->bindParam(":city", $accountInformation['city']);
+            $stmt->bindParam(":state", $accountInformation['state']);
+            $stmt->bindParam(":zipcode", $accountInformation['zipCode']);
+            $stmt->bindParam(":contacts", $cid);
+            $stmt->execute();
+            //Location ID
+            $lid = $pdo->lastInsertId();
+
+            $locations = $_formInformation['locations'];
+
+            if (is_array($locations)) {
+                if (count($locations) > 0) {
+                    foreach ($locations as $location) {
+                        $finalContactId = $cid;
+                        if (!self::ValidateField($location['street1'], 'name') ||
+                            !self::ValidateField($location['street2'], 'address_nonrequired') ||
+                            !self::ValidateField($location['city'], 'name') ||
+                            !self::ValidateField($location['state'], 'state') ||
+                            !self::ValidateField($location['zipCode'], 'zipCode')
+                            )
+                            {
+                                die("Validation Error");
+                            }
+                        
+                        if ($location['copyContact'] === false)
+                        {
+                            if (!self::ValidateField($location['contact_firstName'], 'name') ||
+                            !self::ValidateField($location['contact_lastName'], 'name') ||
+                            !self::ValidateField($location['contact_email'], 'email') ||
+                            !self::ValidateField($location['contact_primaryPhone'], 'phone') ||
+                            !self::ValidateField($location['contact_secondaryPhone'], 'phone_nonrequired')
+                            )
+                            {
+                                die("Validation Error");
+                            }
+
+                            $stmt = $pdo->prepare("INSERT INTO `contacts` (`firstname`,`lastname`,`email`,`primaryphone`,`secondaryphone`) VALUES (:firstname,:lastname,:email,:primaryphone,:secondaryphone)");
+                            $stmt->bindParam(":firstname", $location['contact_firstName']);
+                            $stmt->bindParam(":lastname", $location['contact_lastName']);
+                            $stmt->bindParam(":email", $location['contact_email']);
+                            $stmt->bindParam(":primaryphone", $location['contact_primaryPhone']);
+                            $stmt->bindParam(":secondaryphone", $location['contact_secondaryPhone']);
+                            $stmt->execute();
+                            //Contact ID
+                            $finalContactId = $pdo->lastInsertId();
+                        }
+
+                        // Create Location
+                        $stmt = $pdo->prepare("INSERT INTO `locations` (`accountid`,`street1`,`street2`,`city`,`state`,`zipcode`,`contacts`,`notes`) VALUES (:accountid,:street1,:street2,:city,:state,:zipcode,:contacts,'')");
+                        $stmt->bindParam(":accountid", $aid);
+                        $stmt->bindParam(":street1", $location['street1']);
+                        $stmt->bindParam(":street2", $location['street2']);
+                        $stmt->bindParam(":city", $location['city']);
+                        $stmt->bindParam(":state", $location['state']);
+                        $stmt->bindParam(":zipcode", $location['zipCode']);
+                        $stmt->bindParam(":contacts", $finalContactId);
+                        $stmt->execute();
+                        //Location ID
+                        $lidx = $pdo->lastInsertId();
+                    }
+                }
+            }
 
             return "done";
         }
