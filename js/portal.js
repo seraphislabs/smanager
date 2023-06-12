@@ -219,7 +219,7 @@ $(document).ready(function() {
   });
 
   $(document).on('click', '.btn_temp', function() {
-    $('.popup_darken').fadeOut(500);
-    $('.popup_wrapper').fadeOut(500);
+    $('.popup_darken').fadeOut(400);
+    $('.popup_wrapper').fadeOut(400);
   });
 });

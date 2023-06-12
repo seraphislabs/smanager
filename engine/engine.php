@@ -36,7 +36,7 @@
 		$finalID = $userInfo['companyid'] + 1000;
 
 		echo("<div id='topbar_container'>");
-		echo("<div class='sitelogo'>Service<div class='color1'>Manager</div> 360</div>");
+		echo("<div class='sitelogo'><img src='img/logo.png'/></div>");
 		echo("<div class='topright_pane'>
 		<div class='topbarbuttons'>
 		<img src='img/user_green.png'/>
@@ -80,6 +80,10 @@
 		}
 	}
 
+	function Action_ValidateNewAccountForm($_dbInfo, $_formInformation) {
+		return DatabaseManager::AddNewAccount($_dbInfo, $_SESSION['email'], $_SESSION['password'], $_SESSION['companyid'], $_formInformation);
+	}
+
 	if (isset($_POST['action'])) {
 		$action = $_POST['action'];
 		
@@ -117,6 +121,10 @@
 				break;
 			case "GenerateNewAccountPage":
 				echo (PageManager::GenerateNewAccountPage($dbInfo, $_SESSION['email'], $_SESSION['password']));
+				break;
+			case "SubmitNewAccountForm":
+				$formData = json_decode($_POST['formdata'], true);
+				echo(Action_ValidateNewAccountForm($dbInfo, $formData));
 				break;
 		}
 	}
