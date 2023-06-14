@@ -1,14 +1,44 @@
 var nextWindowID = 1;
+var xhrArray = [];
+
+$(window).on('popstate', function(event) {
+        $('.popup_darken').fadeOut(400);
+        $('.popup_wrapper').fadeOut(400);
+        SetLoadingIcon("#rightpane_container");
+        
+        
+        CheckSessionAjax(function(status, response) {
+          if (status)
+          {
+            if (response === "true") {
+              var searchParams = new URLSearchParams(window.location.search);
+              var get_Page = searchParams.get('page');
+      
+              if (!get_Page) {
+                get_Page = "Dashboard";
+              }
+      
+              InitPortal(get_Page);
+            }
+            else {
+              InitLogin();
+            }
+          }
+        });
+});
+
+// To cancel all AJAX calls
+function CancelAllAjaxCalls() {
+  for (var i = 0; i < xhrArray.length; i++) {
+    xhrArray[i].abort();
+  }
+  
+  // Clear the array
+  xhrArray = [];
+}
 
 function SetLoadingIcon(selectedClass) {
   $(selectedClass).html("<div class='loadingicon1'><img src='img/loader2.gif'/></div>");
-}
-
-function CreatePopup() {
-  activeWindows.push();
-  var div = $("<div>").addClass("popupframe-" + nextWindowID);
-  div.addClass$("<div>").addClass("popupwindowframe");
-  nextWindowID++;
 }
 
 function CloseRightPanel() {
@@ -49,7 +79,8 @@ function CheckSessionAjax(callback) {
     { name: 'action', value: 'CheckSession' }
   ];
 
-  AjaxCall(requestData, function(status, response) {
+    CancelAllAjaxCalls();
+    AjaxCall(xhrArray, requestData, function(status, response) {
     callback(status, response);
   });
 }
@@ -66,8 +97,15 @@ function InitPortal(get_Page) {
 
     requestData.push({name: 'currentPage', value: get_currentPage})
   }
+  else if (get_Page == "ViewAccount") {
+    var searchParams = new URLSearchParams(window.location.search);
+    var get_currentPage = searchParams.get('accountid');
 
-  AjaxCall(requestData, function(status, response) {
+    requestData.push({name: 'accountid', value: get_currentPage})
+  }
+
+  CancelAllAjaxCalls();
+  AjaxCall(xhrArray, requestData, function(status, response) {
     if (status) {
       $("#pagewrap").html(response);
       UpdateSelectedMenuItem(get_Page);
@@ -79,8 +117,8 @@ function InitLogin() {
   var requestData = [
     {name: 'action', value: 'InitLogin'}
   ];
-  
-  AjaxCall(requestData, function(status, response) {
+  CancelAllAjaxCalls();
+  AjaxCall(xhrArray, requestData, function(status, response) {
     if (status) {
       $("#pagewrap").html(response);
     }
@@ -93,7 +131,8 @@ function CheckLogin(_email, _password) {
     {name: 'email', value: _email},
     {name: 'password', value: _password}
   ];
-  AjaxCall(requestData, function(status, response) {
+  CancelAllAjaxCalls();
+  AjaxCall(xhrArray, requestData, function(status, response) {
     if (status) {
       //$("#pagewrap").html(response);
       location.reload();
@@ -101,7 +140,7 @@ function CheckLogin(_email, _password) {
   });
 }
 
-function ClickLeftPaneMenuItem(buttonid) {
+function ClickLeftPaneMenuItem(buttonid, pushHistory) {
   var requestData = [
     {name: 'action', value: 'LeftPaneButtonClick'},
     {name: 'buttonid', value: buttonid}
@@ -110,15 +149,32 @@ function ClickLeftPaneMenuItem(buttonid) {
   if (buttonid == "Accounts") {
     var searchParams = new URLSearchParams(window.location.search);
     var get_currentPage = searchParams.get('currentPage');
-    requestData.push({name: 'currentPage', value: get_currentPage})
+
+    if (pushHistory == true) {
+      requestData.push({name: 'currentPage', value: get_currentPage})
+    }
   }
 
   UpdateSelectedMenuItem(buttonid);
   $("#rightpane_container").html("<div class='loadingicon1'><img src='img/loader2.gif'/></div>");
 
-  AjaxCall(requestData, function(status, response) {
+  CancelAllAjaxCalls();
+  AjaxCall(xhrArray, requestData, function(status, response) {
     if (status) {
       $("#rightpane_container").html(response);
+    }
+  });
+}
+
+function Logout() {
+  var requestData = [
+    {name: 'action', value: 'Logout'}
+  ];
+  CancelAllAjaxCalls();
+  AjaxCall(xhrArray, requestData, function(status, response) {
+    if (status) {
+      $('#pagewrap_master').html(response);
+      location.reload();
     }
   });
 }
@@ -169,7 +225,7 @@ $(document).ready(function() {
 
   $(document).on('click', '.leftpanebutton', function() {
     var buttonid = $(this).find('.buttonid').html();
-    ClickLeftPaneMenuItem(buttonid);
+    ClickLeftPaneMenuItem(buttonid, true);
   });
 
   $(document).on('click', '.viewaccounts_pageright', function() {
@@ -188,7 +244,9 @@ $(document).ready(function() {
     $("#rightpane_viewport").html("<div class='loadingicon1'><img src='img/loader2.gif'/></div>");
     $("#rightpane_footer").html("");
 
-    AjaxCall(requestData, function(status, response) {
+    CancelAllAjaxCalls();
+
+    AjaxCall(xhrArray, requestData, function(status, response) {
       if (status) {
         $("#rightpane_container").html(response);
       }
@@ -211,7 +269,9 @@ $(document).ready(function() {
     $("#rightpane_viewport").html("<div class='loadingicon1'><img src='img/loader2.gif'/></div>");
     $("#rightpane_footer").html("");
 
-    AjaxCall(requestData, function(status, response) {
+    CancelAllAjaxCalls();
+
+    AjaxCall(xhrArray, requestData, function(status, response) {
       if (status) {
         $("#rightpane_container").html(response);
       }
@@ -221,5 +281,26 @@ $(document).ready(function() {
   $(document).on('click', '.btn_temp', function() {
     $('.popup_darken').fadeOut(400);
     $('.popup_wrapper').fadeOut(400);
+  });
+
+  $(document).on('click', '#logoutbutton', function( ) {
+    Logout();
+  });
+
+  $(document).on('keydown', '.input_login_password', function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      var loginEmail = $('.input_login_email').val();
+      var loginPassword = $('.input_login_password').val();
+      CheckLogin(loginEmail, loginPassword);
+    }
+  });
+  $(document).on('keydown', '.input_login_email', function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      var loginEmail = $('.input_login_email').val();
+      var loginPassword = $('.input_login_password').val();
+      CheckLogin(loginEmail, loginPassword);
+    }
   });
 });

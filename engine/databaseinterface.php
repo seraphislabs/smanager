@@ -134,10 +134,36 @@ class DatabaseManager {
         $pdo = null;
     }
 
+    public static function GetAccount($_dbInfo, $_email, $_password, $_companyid, $_accountid) {
+      $ccid = $_companyid + 1000;
+      $pdo1 = self::connect($_dbInfo, 'servicemanager');
+      $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+      if (self::ValidateLogin($pdo1, $_email, $_password)) {
+        $stmt = $pdo->prepare("SELECT * FROM `accounts` WHERE `id` = :id");
+        $stmt->bindParam(":id", $_accountid);
+        $stmt->execute();
+        $results = $stmt->fetch(PDO::FETCH_ASSOC);
+        $pdo1 = null;
+        $pdo = null;
+
+        return $results;
+      }
+      else {
+        return false;
+      }
+      return false;
+    }
+
     public static function AddNewAccount($_dbInfo, $_email, $_password, $_companyid, $_formInformation) {
         $ccid = $_companyid + 1000;
         $pdo1 = self::connect($_dbInfo, 'servicemanager');
         $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        $retVar = [];
+        $retVar['success'] = true;
+        $retVar['response'] = "Success";
+
         if (self::ValidateLogin($pdo1, $_email, $_password)) {
             $accountInformation = $_formInformation['accountInformation'];
             if (!is_array($accountInformation)) {
@@ -145,7 +171,9 @@ class DatabaseManager {
             }
 
             if (!self::CheckPermissions($_dbInfo, $_email, $_password, ['ca'])) {
-                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+                $retVar['success'] = false;
+                $retVar['response'] = "You do not have permission to view this page. Speak to your account manager to gain access.";
+                return $retVar;
             }
 
             if (strlen($accountInformation['name']) <= 0) {
@@ -166,7 +194,9 @@ class DatabaseManager {
             !self::ValidateField($accountInformation['name'], 'name')
             )
             {
-                die("Validation Error");
+                $retVar['success'] = false;
+                $retVar['response'] = "Validation Failed";
+                return $retVar;
             }
 
             // Create Contact for Primary Contact
@@ -190,7 +220,17 @@ class DatabaseManager {
             $stmt->bindParam(":city", $accountInformation['city']);
             $stmt->bindParam(":state", $accountInformation['state']);
             $stmt->bindParam(":zipcode", $accountInformation['zipCode']);
-            $stmt->execute();
+            
+            if (!$stmt->execute()) {
+                // Clear all other entires if this one fails
+                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                $stmt->bindParam(":id", $cid);
+                $stmt->execute();
+
+                $retVar['success'] = false;
+                $retVar['response'] = "Database Error";
+                return $retVar;
+            }
             //Account ID
             $aid = $pdo->lastInsertId();
 
@@ -220,7 +260,17 @@ class DatabaseManager {
                             !self::ValidateField($location['zipCode'], 'zipCode')
                             )
                             {
-                                die("Validation Error");
+                                // Clear all other entires if this one fails
+                                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $cid);
+                                $stmt->execute();
+                                $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $aid);
+                                $stmt->execute();
+
+                                $retVar['success'] = false;
+                                $retVar['response'] = "Validation Error";
+                                return $retVar;
                             }
                         
                         if ($location['copyContact'] === false)
@@ -232,7 +282,16 @@ class DatabaseManager {
                             !self::ValidateField($location['contact_secondaryPhone'], 'phone_nonrequired')
                             )
                             {
-                                die("Validation Error");
+                                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $cid);
+                                $stmt->execute();
+                                $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $aid);
+                                $stmt->execute();
+
+                                $retVar['success'] = false;
+                                $retVar['response'] = "Validation Error";
+                                return $retVar;
                             }
 
                             $stmt = $pdo->prepare("INSERT INTO `contacts` (`firstname`,`lastname`,`email`,`primaryphone`,`secondaryphone`) VALUES (:firstname,:lastname,:email,:primaryphone,:secondaryphone)");
@@ -241,7 +300,19 @@ class DatabaseManager {
                             $stmt->bindParam(":email", $location['contact_email']);
                             $stmt->bindParam(":primaryphone", $location['contact_primaryPhone']);
                             $stmt->bindParam(":secondaryphone", $location['contact_secondaryPhone']);
-                            $stmt->execute();
+
+                            if (!$stmt->execute()) {
+                                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $cid);
+                                $stmt->execute();
+                                $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $aid);
+                                $stmt->execute();
+
+                                $retVar['success'] = false;
+                                $retVar['response'] = "Database Error";
+                                return $retVar;
+                            }
                             //Contact ID
                             $finalContactId = $pdo->lastInsertId();
                         }
@@ -255,14 +326,31 @@ class DatabaseManager {
                         $stmt->bindParam(":state", $location['state']);
                         $stmt->bindParam(":zipcode", $location['zipCode']);
                         $stmt->bindParam(":contacts", $finalContactId);
-                        $stmt->execute();
+                        
+                        if (!$stmt->execute()) {
+                            $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                            $stmt->bindParam(":id", $cid);
+                            $stmt->execute();
+                            if ($cid != $finalContactId) {
+                                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                                $stmt->bindParam(":id", $finalContactId);
+                                $stmt->execute();
+                            }
+                            $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
+                            $stmt->bindParam(":id", $aid);
+                            $stmt->execute();
+
+                            $retVar['success'] = false;
+                            $retVar['response'] = "Database Error";
+                            return $retVar;
+                        }
                         //Location ID
                         $lidx = $pdo->lastInsertId();
                     }
                 }
             }
 
-            return "done";
+            return $retVar;
         }
     }
 

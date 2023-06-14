@@ -32,7 +32,8 @@ class ViewAccountList {
 
                 $accountName = $account['name'];
                 $accountType = $account['type'];
-                $returnedCode .= "<div class='accountviewlistitem' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
+                $aid = $account['id'];
+                $returnedCode .= "<div class='accountviewlistitem' data-accountid='$aid' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
             }
         }
         return $returnedCode;

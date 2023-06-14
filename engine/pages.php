@@ -25,7 +25,8 @@
                 $_currentPage = 1;
             }
 
-            $returnedCode .= "<script type='text/javascript'>           
+            $returnedCode .= <<<HTML
+            <script type='text/javascript'>           
             function OpenNewAccountPage() {
             $('.popup_darken').fadeIn(500);
             $('.popup_wrapper').fadeIn(500);
@@ -33,17 +34,34 @@
             var requestData = [
                 {name: 'action', value: 'GenerateNewAccountPage'}
               ];
-              AjaxCall(requestData, function(status, response) {
+              CancelAllAjaxCalls();
+              AjaxCall(xhrArray, requestData, function(status, response) {
                 if (status) {
-                  $('.popup_topbar').html('<span style=\'color:white;\'>New</span> Account');
-                  $('.popup_scrollable').html(response);
+                  $('.popup_content').html(response).show();
                 }
               });
             }
             $('.btn_newaccountdialogue').click(function() {
                 OpenNewAccountPage()
             });
-            </script>";
+
+            $('.accountviewlistitem').click(function () { 
+                $(this).hide();
+                var aid = $(this).data('accountid');
+                var requestData = [
+                {name: 'action', value: 'ViewAccount'},
+                {name: 'accountid', value: aid}
+                ];
+                CancelAllAjaxCalls();
+                SetLoadingIcon('#rightpane_container');
+                AjaxCall(xhrArray, requestData, function(status, response) {
+                    if (status) {
+                        $('#rightpane_container').html(response);
+                    }
+                });
+            });
+            </script>
+            HTML;
 
             $returnedCode .= "<div id='rightpane_header'>";
             $returnedCode .= "<div class='listheaderbuttoncontainer'>";
@@ -55,13 +73,46 @@
             <div class='accountviewlistheaderitem'>Type</div>
             </div>";
             $returnedCode .= "</div>";
-            $returnedCode .= "</div><div id='rightpane_viewport' style='top:125px'>";
+            $returnedCode .= "</div><div id='rightpane_viewport' style='top:110px'>";
 
             $returnedCode .= ViewAccountList::GenerateListItems($retArray, $_currentPage);
 
             $returnedCode .= "</div>";
 
             $returnedCode .= self::GenerateAccountsViewListFooter($retArray, $_currentPage);
+            return $returnedCode;
+        }
+
+        public static function GenerateViewAccountPage($_dbInfo, $_email, $_password, $_companyid, $_accountid) {
+            $returnedCode = "";
+            // Permission Check
+            if (!DatabaseManager::CheckPermissions($_dbInfo, $_email, $_password, ['va'])) {
+                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+            }
+
+            // TODO: LOAD ACCOUNT INFO
+            $accountInfo = DatabaseManager::GetAccount($_dbInfo, $_email, $_password, $_companyid, $_accountid);
+
+            if (!is_array($accountInfo)) {
+                die();
+            }
+
+            if (count($accountInfo) <= 0) {
+                die();
+            }
+            $retArray = "";
+
+            $returnedCode .= "<script type='text/javascript'>           
+
+            </script>";
+
+            $returnedCode .= "<div id='rightpane_header'>";
+            $returnedCode .= "<div class='rightpane_fullheader'>";
+            $returnedCode .= $accountInfo['name'];
+            $returnedCode .= "</div>";
+            $returnedCode .= "</div><div id='rightpane_viewport' style='top:110px'>";
+            $returnedCode .= "</div>";
+
             return $returnedCode;
         }
 
@@ -141,25 +192,44 @@
                 <script type="text/javascript">
                     $('#submit_new_account_form').click(function () {
 
-                        $('#submit_new_account_form').hide();
+                        if(!$(this).hasClass('disabled')) {
+                            $(this).addClass('disabled');
+                        }
+
                         var formattedString = SerializeNewAccountForm();
                         var formInfo = JSON.stringify(formattedString['formInformation']);
-
-                        console.log(formInfo);
 
                         if (formattedString.success) {
                             var requestData = [
                             {name: 'action', value: 'SubmitNewAccountForm'},
                             {name: 'formdata', value: formInfo}
                             ];
-                            AjaxCall(requestData, function(status, response) {
+                            CancelAllAjaxCalls();
+                            AjaxCall(xhrArray, requestData, function(status, response) {
                                 if (status) {
-                                    $('.popup_scrollable').html(response);
+                                    var resVar = response.split('|');
+                                    if (resVar[0] == 'true') {
+                                        $('.popup_wrapper').hide();
+                                        // TODO: Add Ajax call to load the account in account view screen
+                                        $('.popup_darken').fadeOut(400);
+                                        ClickLeftPaneMenuItem('Accounts', false);
+                                    }
+                                    else {
+                                        $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
+                                    }
+                                    if($('#submit_new_account_form').hasClass('disabled')) {
+                                      $('#submit_new_account_form').removeClass('disabled');
+                                    }
                                 }
                                 else {
-                                    $('#submit_new_account_form').show();
+                                    location.reload(true);
                                 }
                             });
+                        }
+                        else {
+                            if($('#submit_new_account_form').hasClass('disabled')) {
+                              $('#submit_new_account_form').removeClass('disabled');
+                            }
                         }
                     });
                     $('#copy_billing_address_checkbox').change(function() {
@@ -182,11 +252,42 @@
                     $('#additional_service_addresses_btn').change(function() {
                         var serviceAddressTemplate = `$serviceAddressTemplate`;
                         if (this.checked) {
-                            $('#formsection_locations_list').slideUp(200, function() {
-                                $('#formsection_locations_list').html("");  
+                            $('#formsection_locations_list').slideUp({
+                                duration: 200,
+                                step: function(now, fx) {
+                                    var scrollView = $('.popup_scrollable');
+                                    scrollView.scrollTop(scrollView[0].scrollHeight);
+                                    scrollView.css('overflow-y', 'scroll');
+                                    $('html, body').scrollTop(scrollView.offset().top);
+                                },
+                                complete: function() {
+                                    var scrollView = $('.popup_scrollable');
+                                    scrollView.css('overflow-y', 'scroll');
+                                    $('#formsection_locations_list').html(""); 
+                                }
                             });
+
+
+                            /*$('#formsection_locations_list').slideUp(200, function() {
+                                $('#formsection_locations_list').html("");  
+                            });*/
                         } else {
-                            $('#formsection_locations_list').html(serviceAddressTemplate).slideDown(200);
+                            $('#formsection_locations_list').html(serviceAddressTemplate).slideDown({
+                                duration: 200,
+                                step: function(now, fx) {
+                                    var scrollView = $('.popup_scrollable');
+                                    scrollView.scrollTop(scrollView[0].scrollHeight);
+                                    scrollView.css('overflow-y', 'scroll');
+                                    $('html, body').scrollTop(scrollView.offset().top);
+                                },
+                                complete: function() {
+                                    var scrollView = $('.popup_scrollable');
+                                    scrollView.css('overflow-y', 'scroll');
+                                }
+                            });
+
+
+                            /*$('#formsection_locations_list').html(serviceAddressTemplate).slideDown(200); */
                         }
                     });
                     $(document).on('change', '.checkbox_contact_isprimary', function() {
@@ -230,6 +331,7 @@
                 HTML;
 
             $returnedCode .= "
+            <div class='popup_topbar'><span style=\'color:white;\'>New</span> Account</div><div class='popup_scrollable'>
                 <div class='formsection_row'>
                     <div class='formsection' id='formsection_newaccount_details'>
                         <div class='formsection_header'>Account Details</div>
@@ -311,6 +413,11 @@
                     </div>
                 </div>
             ";
+
+            $returnedCode .= "</div>
+            <div class='popup_footer'>
+        <div id='submit_new_account_form' class='button_type_2'>Save</div><div class='button_type_1 btn_temp'>Discard</div>
+        ";
             
             return $returnedCode;
         }

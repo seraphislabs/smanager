@@ -94,8 +94,8 @@ function ValidateForm(form_input, validation_type) {
   return retVal;
 }
 
-function AjaxCall(data, callback) {
-    $.ajax({
+function AjaxCall(_xhrArray, data, callback) {
+    var xhr = $.ajax({
       url: 'engine/engine.php',
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded',
@@ -107,6 +107,8 @@ function AjaxCall(data, callback) {
         callback(false, error);
       }
     });
+
+    _xhrArray.push(xhr);
   }
 
   function SerializeNewAccountForm() {

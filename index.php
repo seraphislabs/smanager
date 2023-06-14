@@ -29,10 +29,6 @@ echo("<div id='pagewrap_master'>");
     </div>");
 echo("</div>");
 echo("<div class='popup_darken'></div><div class='popup_wrapper'><div class='popup_content'>
-<div class='popup_topbar'></div><div class='popup_scrollable'></div>
-<div class='popup_footer'>
-    <div id='submit_new_account_form' class='button_type_2'>Test</div><div class='button_type_2'>Test</div><div class='button_type_1 btn_temp'>Discard</div>
-</div>
 </div>
 </div>");
 

@@ -28,15 +28,16 @@
 		}
 	}
 
-	function Action_InitPortal($_dbInfo, $_page, $_currentPage) {
+	function Action_InitPortal($_dbInfo, $_page, $_currentPage, $_dataid) {
 		$userInfo = DatabaseManager::GetLoginInformation($_dbInfo, $_SESSION['email'], $_SESSION['password']);
 		$_SESSION['companyid'] = $userInfo['companyid'];
 		$_SESSION['userid'] = $userInfo['id'];
+		$_SESSION['firstname'] = $userInfo['firstname'];
 
 		$finalID = $userInfo['companyid'] + 1000;
 
 		echo("<div id='topbar_container'>");
-		echo("<div class='sitelogo'><img src='img/logo2.png'/></div>");
+		echo("<div class='sitelogo'><img src='img/logo1.png' width='400px'/></div>");
 		echo("<div class='topright_pane'>
 		<div class='topbarbuttons'>
 		<img src='img/user_green.png'/>
@@ -44,6 +45,7 @@
 		<img src='img/settings_green.png'/>
 		</div>
 		<div class='searchboxholder'><input type='text' placeholder='Search'/><img src='img/search_gray.png'/></div>
+		<div class='topbarloginnote'>Welcome back, " . $_SESSION['firstname']  . " <span class='text_button_type_1' id='logoutbutton'>LOGOUT</span></div>
 		</div>");
 		echo("</div>");
 
@@ -54,16 +56,41 @@
 		echo("</div>");
 
 		echo("<div id='rightpane_container'>");
-		echo Action_LoadPage($_dbInfo, $_page, $_currentPage);
+		if ($_page == "ViewAccount") {
+			echo Action_LoadViewAccount($_dbInfo, $_dataid);
+		}
+		else {
+			echo Action_LoadPage($_dbInfo, $_page, $_currentPage);
+		}
 		echo("</div>");
 	}
 
 	function Action_InitLogin() {
 		echo("<center>
 		<h1>Login</h1>
-		<input type='text' class='input_login_email'/>
-		<input type='text' class='input_login_password'/>
-		<input type='button' class='input_login_button'/>
+		<div class='login_wrapper_bg'>
+			<div class='login_page_backer'>
+				<img src='img/logo2.png' width='340px' style='margin-left:8px;'/>
+				<div class='login_page_content'>
+				<div class='formsection_line' style='margin-bottom:10px;'>
+					<input type='text' placeholder='Email' class='input_login_email formsection_input_2'/>
+				</div>
+				<div class='formsection_line' style='margin-bottom:10px;'>
+					<input type='password' placeholder='Password' class='input_login_password formsection_input_2'/>
+				</div>
+				<div class='formsection_line_centered' style='margin-bottom:20px;'>
+					<div class='input_login_button button_type_2' style='padding-top:7px;padding-bottom:7px;padding-left:45px;padding-right:45px'>Log In</div>
+				</div>
+				<div class='formsection_line_centered' style='margin-bottom:20px;'>
+					<div class='formsection_input_centered_text_button'>Trouble Logging In?</div>
+				</div>
+				<div class='formsection_line_centered'>
+					<div class='formsection_input_centered_text'>This page is for current account holders. To set up a new account, reach out to your account manager.</div>
+				</div>
+				<div class='formsection_
+				</div>
+			</div>
+		</div>	
 		</center>
 		");
 	}
@@ -80,24 +107,41 @@
 		}
 	}
 
-	function Action_ValidateNewAccountForm($_dbInfo, $_formInformation) {
-		return DatabaseManager::AddNewAccount($_dbInfo, $_SESSION['email'], $_SESSION['password'], $_SESSION['companyid'], $_formInformation);
+	function Action_LoadViewAccount($_dbInfo, $_accountid) {
+		echo("<script>history.pushState(null, null, '/index.php?page=ViewAccount&accountid=$_accountid');</script>");
+		return PageManager::GenerateViewAccountPage($_dbInfo, $_SESSION['email'], $_SESSION['password'], $_SESSION['companyid'], $_accountid);
+	}
+
+	function Action_ValidateNewAccountForm($_dbInfo, $_formInformation) { 
+		$retVar = DatabaseManager::AddNewAccount($_dbInfo, $_SESSION['email'], $_SESSION['password'], $_SESSION['companyid'], $_formInformation);
+		$boolString = $retVar['success'] ? "true" : "false";
+		$retString = $boolString . "|" . $retVar['response'];
+		return $retString;
 	}
 
 	if (isset($_POST['action'])) {
 		$action = $_POST['action'];
 		
 		switch ($action) {
+			case "Logout":
+				echo("<script>history.pushState(null, null, '/index.php');</script>");
+				session_destroy();
+				die();
+				break;
 			case "CheckSession":
 				Action_CheckSession($dbInfo);
 				break;
 			case "InitPortal":
 				$get_Page = $_POST['page'];
-				$get_currentPage = "";
+				$get_currentPage = 0;
+				$get_accountid = 0;
 				if ($get_Page == "Accounts") {
 					$get_currentPage = $_POST['currentPage'];
 				}
-				Action_InitPortal($dbInfo, $get_Page, $get_currentPage);
+				else if ($get_Page == "ViewAccount") {
+					$get_accountid = $_POST['accountid'];
+				}
+				Action_InitPortal($dbInfo, $get_Page, $get_currentPage, $get_accountid);
 				break;
 			case "InitLogin":
 				Action_InitLogin();
@@ -125,6 +169,10 @@
 			case "SubmitNewAccountForm":
 				$formData = json_decode($_POST['formdata'], true);
 				echo(Action_ValidateNewAccountForm($dbInfo, $formData));
+				break;
+			case "ViewAccount":
+				$accountid = $_POST['accountid'];
+				echo(Action_LoadViewAccount($dbInfo, $accountid));
 				break;
 		}
 	}
