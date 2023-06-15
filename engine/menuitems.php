@@ -17,10 +17,10 @@ class LeftPaneMenuItem {
 }
 
 class ViewAccountList {
-    public static function GenerateListItems($_retArray, $_currentPage) {
+    public static function GenerateListItems($_retArray) {
         $count = 0;
         $returnedCode = "";
-        $_accounts = $_retArray['result'];
+        $_accounts = $_retArray;
         if (is_array($_accounts)) {
             foreach($_accounts as $account) {
                 $count++;

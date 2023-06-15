@@ -1,7 +1,9 @@
 <?php
 
-class DatabaseManager {
-    public static function connect($_dbInfo, $_dbname) {
+class DatabaseManager
+{
+    public static function connect($_dbInfo, $_dbname)
+    {
         $dsn = "mysql:host=localhost;dbname={$_dbname}";
 
         try {
@@ -15,32 +17,40 @@ class DatabaseManager {
         return null;
     }
 
-    public static function ManuallyValidateLogin($_dbInfo, $_email, $_password) {
+    public static function ManuallyValidateLogin($_dbInfo)
+    {
+        $_password = $_SESSION['password'];
+
         $pdo = self::connect($_dbInfo, 'servicemanager');
-        $retVal = self::GetLoginPasswordHash($pdo, $_email);
-			if (!empty($retVal)) {
-				if (PasswordEncrypt::Check($_password, $retVal)) {
-                    $pdo = null;
-					return true;
-				}
-			}
+        $retVal = self::GetLoginPasswordHash($pdo);
+        if (!empty($retVal)) {
+            if (PasswordEncrypt::Check($_password, $retVal)) {
+                $pdo = null;
+                return true;
+            }
+        }
 
-            return false;
+        return false;
     }
 
-    private static function ValidateLogin($_pdo, $_email, $_password) {
+    private static function ValidateLogin($_pdo)
+    {
+        $_password = $_SESSION['password'];
+
         // Retreive password hash from database
-			$retVal = self::GetLoginPasswordHash($_pdo, $_email);
-			if (!empty($retVal)) {
-				if (PasswordEncrypt::Check($_password, $retVal)) {
-					return true;
-				}
-			}
+        $retVal = self::GetLoginPasswordHash($_pdo);
+        if (!empty($retVal)) {
+            if (PasswordEncrypt::Check($_password, $retVal)) {
+                return true;
+            }
+        }
 
-            return false;
+        return false;
     }
 
-    private static function GetLoginPasswordHash($_pdo, $_email) {
+    private static function GetLoginPasswordHash($_pdo)
+    {
+        $_email = $_SESSION['email'];
         $stmt = $_pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
         $stmt->bindParam(":email", $_email);
         $stmt->execute();
@@ -53,10 +63,12 @@ class DatabaseManager {
         }
     }
 
-    public function GetLoginInformation($_dbInfo, $_email, $_password) {
+    public static function GetLoginInformation($_dbInfo)
+    {
+        $_email = $_SESSION['email'];
         $pdo = self::connect($_dbInfo, 'servicemanager');
 
-        if (self::ValidateLogin($pdo, $_email, $_password)) {
+        if (self::ValidateLogin($pdo)) {
             $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
             $stmt->bindParam(":email", $_email);
             $stmt->execute();
@@ -68,10 +80,12 @@ class DatabaseManager {
         }
     }
 
-    public static function GetUserPermissions($_dbInfo, $_email, $_password) {
+    public static function GetUserPermissions($_dbInfo)
+    {
+        $_email = $_SESSION['email'];
         $pdo = self::connect($_dbInfo, 'servicemanager');
 
-        if (self::ValidateLogin($pdo, $_email, $_password)) {
+        if (self::ValidateLogin($pdo)) {
             $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
             $stmt->bindParam(":email", $_email);
             $stmt->execute();
@@ -84,8 +98,9 @@ class DatabaseManager {
         }
     }
 
-    public static function CheckPermissions($_dbInfo, $_email, $_password, $_perms) {
-        $perms = self::GetUserPermissions($_dbInfo, $_email, $_password);
+    public static function CheckPermissions($_dbInfo, $_perms)
+    {
+        $perms = self::GetUserPermissions($_dbInfo);
 
         $diff = array_diff($_perms, $perms);
 
@@ -96,66 +111,54 @@ class DatabaseManager {
         return false;
     }
 
-    public static function GetAccounts($_dbInfo, $_email, $_password, $_companyid, $_currentPage) {
+    public static function GetAccounts($_dbInfo)
+    {
+        $_companyid = $_SESSION['companyid'];
+
         $ccid = $_companyid + 1000;
         $pdo1 = self::connect($_dbInfo, 'servicemanager');
         $pdo = self::connect($_dbInfo, "company_" . $ccid);
 
-        if ($_currentPage == 0) {
-            $_currentPage = 1;
-        }
+        $retVal = null;
 
-        $rOffset = (30 * ($_currentPage-1));
-        $rLimit = 30;
-
-        if (self::ValidateLogin($pdo1, $_email, $_password)) {
-            $sql = "SELECT * FROM `accounts`";
-            $stmt = $pdo->prepare($sql);
-            $resultsx = $stmt->execute();
-            $rowCountResult = $stmt->rowCount();
-            $stmt = null; 
-
-            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` LIMIT $rOffset , $rLimit");
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` LIMIT 10");
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $pdo1 = null;
-                $pdo = null;
-
-                $retArray = ["count" => $rowCountResult, "result" => $results];
-                return $retArray;
-            }
-            else {
-                $retArray = ["count" => 0, "result" => null];
-                return $retArray;
+                $retVal = $results;
             }
         }
         $pdo1 = null;
         $pdo = null;
+        return $retVal;
     }
 
-    public static function GetAccount($_dbInfo, $_email, $_password, $_companyid, $_accountid) {
-      $ccid = $_companyid + 1000;
-      $pdo1 = self::connect($_dbInfo, 'servicemanager');
-      $pdo = self::connect($_dbInfo, "company_" . $ccid);
+    public static function GetAccount($_dbInfo, $_accountid)
+    {
+        $_companyid = $_SESSION['companyid'];
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
 
-      if (self::ValidateLogin($pdo1, $_email, $_password)) {
-        $stmt = $pdo->prepare("SELECT * FROM `accounts` WHERE `id` = :id");
-        $stmt->bindParam(":id", $_accountid);
-        $stmt->execute();
-        $results = $stmt->fetch(PDO::FETCH_ASSOC);
-        $pdo1 = null;
-        $pdo = null;
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `accounts` WHERE `id` = :id");
+            $stmt->bindParam(":id", $_accountid);
+            $stmt->execute();
+            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $pdo1 = null;
+            $pdo = null;
 
-        return $results;
-      }
-      else {
+            return $results;
+        } else {
+            return false;
+        }
         return false;
-      }
-      return false;
     }
 
-    public static function AddNewAccount($_dbInfo, $_email, $_password, $_companyid, $_formInformation) {
+    public static function AddNewAccount($_dbInfo, $_formInformation)
+    {
+        $_companyid = $_SESSION['companyid'];
         $ccid = $_companyid + 1000;
         $pdo1 = self::connect($_dbInfo, 'servicemanager');
         $pdo = self::connect($_dbInfo, "company_" . $ccid);
@@ -164,13 +167,13 @@ class DatabaseManager {
         $retVar['success'] = true;
         $retVar['response'] = "Success";
 
-        if (self::ValidateLogin($pdo1, $_email, $_password)) {
+        if (self::ValidateLogin($pdo1)) {
             $accountInformation = $_formInformation['accountInformation'];
             if (!is_array($accountInformation)) {
                 return false;
             }
 
-            if (!self::CheckPermissions($_dbInfo, $_email, $_password, ['ca'])) {
+            if (!self::CheckPermissions($_dbInfo, ['ca'])) {
                 $retVar['success'] = false;
                 $retVar['response'] = "You do not have permission to view this page. Speak to your account manager to gain access.";
                 return $retVar;
@@ -180,20 +183,20 @@ class DatabaseManager {
                 $accountInformation['name'] = $accountInformation['firstName'] . " " . $accountInformation['lastName'];
             }
 
-            if (!self::ValidateField($accountInformation['type'], 'contractType') ||
-            !self::ValidateField($accountInformation['firstName'], 'name') ||
-            !self::ValidateField($accountInformation['lastName'], 'name') ||
-            !self::ValidateField($accountInformation['street1'], 'name') ||
-            !self::ValidateField($accountInformation['street2'], 'address_nonrequired') ||
-            !self::ValidateField($accountInformation['city'], 'name') ||
-            !self::ValidateField($accountInformation['state'], 'state') ||
-            !self::ValidateField($accountInformation['zipCode'], 'zipCode') ||
-            !self::ValidateField($accountInformation['primaryPhone'], 'phone') ||
-            !self::ValidateField($accountInformation['secondaryPhone'], 'phone_nonrequired') ||
-            !self::ValidateField($accountInformation['email'], 'email') ||
-            !self::ValidateField($accountInformation['name'], 'name')
-            )
-            {
+            if (
+                !self::ValidateField($accountInformation['type'], 'contractType') ||
+                !self::ValidateField($accountInformation['firstName'], 'name') ||
+                !self::ValidateField($accountInformation['lastName'], 'name') ||
+                !self::ValidateField($accountInformation['street1'], 'name') ||
+                !self::ValidateField($accountInformation['street2'], 'address_nonrequired') ||
+                !self::ValidateField($accountInformation['city'], 'name') ||
+                !self::ValidateField($accountInformation['state'], 'state') ||
+                !self::ValidateField($accountInformation['zipCode'], 'zipCode') ||
+                !self::ValidateField($accountInformation['primaryPhone'], 'phone') ||
+                !self::ValidateField($accountInformation['secondaryPhone'], 'phone_nonrequired') ||
+                !self::ValidateField($accountInformation['email'], 'email') ||
+                !self::ValidateField($accountInformation['name'], 'name')
+            ) {
                 $retVar['success'] = false;
                 $retVar['response'] = "Validation Failed";
                 return $retVar;
@@ -220,7 +223,7 @@ class DatabaseManager {
             $stmt->bindParam(":city", $accountInformation['city']);
             $stmt->bindParam(":state", $accountInformation['state']);
             $stmt->bindParam(":zipcode", $accountInformation['zipCode']);
-            
+
             if (!$stmt->execute()) {
                 // Clear all other entires if this one fails
                 $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
@@ -253,35 +256,34 @@ class DatabaseManager {
                 if (count($locations) > 0) {
                     foreach ($locations as $location) {
                         $finalContactId = $cid;
-                        if (!self::ValidateField($location['street1'], 'name') ||
+                        if (
+                            !self::ValidateField($location['street1'], 'name') ||
                             !self::ValidateField($location['street2'], 'address_nonrequired') ||
                             !self::ValidateField($location['city'], 'name') ||
                             !self::ValidateField($location['state'], 'state') ||
                             !self::ValidateField($location['zipCode'], 'zipCode')
-                            )
-                            {
-                                // Clear all other entires if this one fails
-                                $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
-                                $stmt->bindParam(":id", $cid);
-                                $stmt->execute();
-                                $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
-                                $stmt->bindParam(":id", $aid);
-                                $stmt->execute();
+                        ) {
+                            // Clear all other entires if this one fails
+                            $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
+                            $stmt->bindParam(":id", $cid);
+                            $stmt->execute();
+                            $stmt = $pdo->prepare("DELETE FROM `accounts` WHERE `id` = :id");
+                            $stmt->bindParam(":id", $aid);
+                            $stmt->execute();
 
-                                $retVar['success'] = false;
-                                $retVar['response'] = "Validation Error";
-                                return $retVar;
-                            }
-                        
-                        if ($location['copyContact'] === false)
-                        {
-                            if (!self::ValidateField($location['contact_firstName'], 'name') ||
-                            !self::ValidateField($location['contact_lastName'], 'name') ||
-                            !self::ValidateField($location['contact_email'], 'email') ||
-                            !self::ValidateField($location['contact_primaryPhone'], 'phone') ||
-                            !self::ValidateField($location['contact_secondaryPhone'], 'phone_nonrequired')
-                            )
-                            {
+                            $retVar['success'] = false;
+                            $retVar['response'] = "Validation Error";
+                            return $retVar;
+                        }
+
+                        if ($location['copyContact'] === false) {
+                            if (
+                                !self::ValidateField($location['contact_firstName'], 'name') ||
+                                !self::ValidateField($location['contact_lastName'], 'name') ||
+                                !self::ValidateField($location['contact_email'], 'email') ||
+                                !self::ValidateField($location['contact_primaryPhone'], 'phone') ||
+                                !self::ValidateField($location['contact_secondaryPhone'], 'phone_nonrequired')
+                            ) {
                                 $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
                                 $stmt->bindParam(":id", $cid);
                                 $stmt->execute();
@@ -326,7 +328,7 @@ class DatabaseManager {
                         $stmt->bindParam(":state", $location['state']);
                         $stmt->bindParam(":zipcode", $location['zipCode']);
                         $stmt->bindParam(":contacts", $finalContactId);
-                        
+
                         if (!$stmt->execute()) {
                             $stmt = $pdo->prepare("DELETE FROM `contacts` WHERE `id` = :id");
                             $stmt->bindParam(":id", $cid);
@@ -354,92 +356,91 @@ class DatabaseManager {
         }
     }
 
-    public static function ValidateField($form_input, $validation_type) {
+    public static function ValidateField($form_input, $validation_type)
+    {
         $retVal = false;
-      
+
         switch ($validation_type) {
-          case 'email':
-            $emailRegex = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
-            if (!preg_match($emailRegex, $form_input)) {
-              return $retVal;
-            }
-            break;
-      
-          case 'phone':
-            $phoneRegex = '/^\d{10}$/';
-            if (!preg_match($phoneRegex, $form_input)) {
-              return $retVal;
-            }
-            break;
-      
-          case 'phone_nonrequired':
-            $phoneRegex = '/^\d{10}$/';
-            if (strlen($form_input) > 0 && !preg_match($phoneRegex, $form_input)) {
-              return $retVal;
-            }
-            break;
-      
-          case 'zipCode':
-            $zipcodeRegex = '/^\d{5}$/';
-            if (!preg_match($zipcodeRegex, $form_input)) {
-              return $retVal;
-            }
-            break;
-      
-          case 'address':
-            // Customize the regular expression for street address validation
-            $streetAddressRegex = '/^[a-zA-Z0-9\s.,\'-]+$/';
-            if (!preg_match($streetAddressRegex, $form_input)) {
-              return $retVal;
-            }
-            break;
-      
-          case 'address_nonrequired':
-            // Customize the regular expression for street address validation
-            $streetAddressRegex = '/^[a-zA-Z0-9\s.,\'-]+$/';
-            if (!empty($form_input)) {
-              if (!preg_match($streetAddressRegex, $form_input)) {
+            case 'email':
+                $emailRegex = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
+                if (!preg_match($emailRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'phone':
+                $phoneRegex = '/^\d{10}$/';
+                if (!preg_match($phoneRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'phone_nonrequired':
+                $phoneRegex = '/^\d{10}$/';
+                if (strlen($form_input) > 0 && !preg_match($phoneRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'zipCode':
+                $zipcodeRegex = '/^\d{5}$/';
+                if (!preg_match($zipcodeRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'address':
+                // Customize the regular expression for street address validation
+                $streetAddressRegex = '/^[a-zA-Z0-9\s.,\'-]+$/';
+                if (!preg_match($streetAddressRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'address_nonrequired':
+                // Customize the regular expression for street address validation
+                $streetAddressRegex = '/^[a-zA-Z0-9\s.,\'-]+$/';
+                if (!empty($form_input)) {
+                    if (!preg_match($streetAddressRegex, $form_input)) {
+                        return $retVal;
+                    } elseif (strlen($form_input) <= 3) {
+                        return $retVal;
+                    }
+                }
+                break;
+
+            case 'name':
+                if (strlen($form_input) <= 2) {
+                    return $retVal;
+                }
+                break;
+
+            case 'name_nonrequired':
+                if (strlen($form_input) > 0 && strlen($form_input) <= 2) {
+                    return $retVal;
+                }
+                break;
+
+            case 'contractType':
+                if ($form_input === null) {
+                    return $retVal;
+                }
+                break;
+
+            case 'state':
+                $stateRegex = '/^[a-zA-Z]+$/';
+                if (!preg_match($stateRegex, $form_input) || strlen($form_input) != 2) {
+                    return $retVal;
+                }
+                break;
+
+            default:
+                $retVal = true;
                 return $retVal;
-              } elseif (strlen($form_input) <= 3) {
-                return $retVal;
-              }
-            }
-            break;
-      
-          case 'name':
-            if (strlen($form_input) <= 2) {
-              return $retVal;
-            }
-            break;
-      
-          case 'name_nonrequired':
-            if (strlen($form_input) > 0 && strlen($form_input) <= 2) {
-              return $retVal;
-            }
-            break;
-      
-          case 'contractType':
-            if ($form_input === null) {
-              return $retVal;
-            }
-            break;
-      
-          case 'state':
-            $stateRegex = '/^[a-zA-Z]+$/';
-            if (!preg_match($stateRegex, $form_input) || strlen($form_input) != 2) {
-              return $retVal;
-            }
-            break;
-      
-          default:
-            $retVal = true;
-            return $retVal;
         }
-      
+
         // Validation passed
         $retVal = true;
         return $retVal;
-      }
+    }
 }
-
-?>

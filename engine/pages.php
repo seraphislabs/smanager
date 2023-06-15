@@ -1,29 +1,13 @@
 <?php
     class PageManager {
-        public static function GeneratePopupFrame($_windowName, $_windowContent) {
-            echo ("<div class='draggable-window'>
-            <div class='window-header'>
-              <h3 class='window-title'>$windowName</h3>
-              <button class='window-close'>Close</button>
-            </div>
-            <div class='window-content'>
-            $_windowContent
-            </div>
-          </div>");
-        }
-        public static function GenerateAccountsPage($_dbInfo, $_email, $_password, $_companyid, $_currentPage) {
+        public static function GenerateAccountsPage($_dbInfo) {
             $returnedCode = "";
             // Permission Check
-            if (!DatabaseManager::CheckPermissions($_dbInfo, $_email, $_password, ['va'])) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
             }
 
-            $retArray = DatabaseManager::GetAccounts($_dbInfo, $_email, $_password, $_companyid, $_currentPage);
-
-            // Ensure its always at least 1
-            if ($_currentPage <= 0) {
-                $_currentPage = 1;
-            }
+            $retArray = DatabaseManager::GetAccounts($_dbInfo);
 
             $returnedCode .= <<<HTML
             <script type='text/javascript'>           
@@ -75,23 +59,25 @@
             $returnedCode .= "</div>";
             $returnedCode .= "</div><div id='rightpane_viewport' style='top:110px'>";
 
-            $returnedCode .= ViewAccountList::GenerateListItems($retArray, $_currentPage);
+            $returnedCode .= ViewAccountList::GenerateListItems($retArray);
 
             $returnedCode .= "</div>";
 
-            $returnedCode .= self::GenerateAccountsViewListFooter($retArray, $_currentPage);
+            $returnedCode .= "<div id='rightpane_footer'>";
+            $returnedCode .= "</div>";
             return $returnedCode;
         }
 
-        public static function GenerateViewAccountPage($_dbInfo, $_email, $_password, $_companyid, $_accountid) {
+        public static function GenerateViewAccountPage($_dbInfo, $_accountid) {
+
             $returnedCode = "";
             // Permission Check
-            if (!DatabaseManager::CheckPermissions($_dbInfo, $_email, $_password, ['va'])) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
             }
 
             // TODO: LOAD ACCOUNT INFO
-            $accountInfo = DatabaseManager::GetAccount($_dbInfo, $_email, $_password, $_companyid, $_accountid);
+            $accountInfo = DatabaseManager::GetAccount($_dbInfo, $_accountid);
 
             if (!is_array($accountInfo)) {
                 die();
@@ -116,10 +102,10 @@
             return $returnedCode;
         }
 
-        public static function GenerateNewAccountPage($_dbInfo, $_email, $_password) {
+        public static function GenerateNewAccountPage($_dbInfo) {
             $returnedCode = "";
             // Permission Check
-            if (!DatabaseManager::CheckPermissions($_dbInfo, $_email, $_password, ['ca'])) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['ca'])) {
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
             }
 
@@ -190,6 +176,9 @@
 
             $returnedCode .= <<<HTML
                 <script type="text/javascript">
+                    $("#btn_close_popup").click(function () {
+                        ClosePopup();
+                    });
                     $('#submit_new_account_form').click(function () {
 
                         if(!$(this).hasClass('disabled')) {
@@ -266,11 +255,6 @@
                                     $('#formsection_locations_list').html(""); 
                                 }
                             });
-
-
-                            /*$('#formsection_locations_list').slideUp(200, function() {
-                                $('#formsection_locations_list').html("");  
-                            });*/
                         } else {
                             $('#formsection_locations_list').html(serviceAddressTemplate).slideDown({
                                 duration: 200,
@@ -285,9 +269,6 @@
                                     scrollView.css('overflow-y', 'scroll');
                                 }
                             });
-
-
-                            /*$('#formsection_locations_list').html(serviceAddressTemplate).slideDown(200); */
                         }
                     });
                     $(document).on('change', '.checkbox_contact_isprimary', function() {
@@ -416,27 +397,9 @@
 
             $returnedCode .= "</div>
             <div class='popup_footer'>
-        <div id='submit_new_account_form' class='button_type_2'>Save</div><div class='button_type_1 btn_temp'>Discard</div>
-        ";
+            <div id='submit_new_account_form' class='button_type_2'>Save</div><div class='button_type_1' id='btn_close_popup'>Discard</div>
+            ";
             
-            return $returnedCode;
-        }
-
-        public static function GenerateAccountsViewListFooter($_retArray, $_currentPage) {
-            $maxAccounts = $_retArray['count'];
-
-            $maxPageNumber = ceil(($maxAccounts / 30));
-            $returnedCode = "";
-            $returnedCode .= "<div id='rightpane_footer'>";
-            if ($_currentPage != 1) {
-                $returnedCode .= "<img class='pagebutton1 viewaccounts_pageleft' src='img/left_arrow_gray.png'/>";
-            }
-            $returnedCode .= "<span style='font-size:16px'>$_currentPage</span>";
-            if ($_currentPage < $maxPageNumber) {
-                $returnedCode .= "<img class='pagebutton1 viewaccounts_pageright' src='img/right_arrow_gray.png'/>";
-            }
-            $returnedCode .= "</div>";
-
             return $returnedCode;
         }
     }

@@ -246,4 +246,23 @@ function AjaxCall(_xhrArray, data, callback) {
 
     return returnString;
   }
+
+  function GetURLParameters() {
+    var params = {};
+    var queryString = window.location.search.slice(1);  // Remove the '?' at the start of the string
+    var paramArray = queryString.split('&');  // Split the query string into its component parts
+    
+    for (var i = 0; i < paramArray.length; i++) {
+        var paramPart = paramArray[i].split('=');  // Split each part into an array of [key, value]
+        
+        if (paramPart[1] === undefined) {  // If there was no '=', add an empty value
+            paramPart[1] = '';
+        }
+
+        params[decodeURIComponent(paramPart[0])] = decodeURIComponent(paramPart[1]);  
+        // Use decodeURIComponent to get a human-readable string, and add it to our final object
+    }
+    
+    return params;
+}
   
