@@ -76,8 +76,8 @@
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
             }
 
-            // TODO: LOAD ACCOUNT INFO
             $accountInfo = DatabaseManager::GetAccount($_dbInfo, $_accountid);
+            $primaryContactInfo = DatabaseManager::GetContact($_dbInfo, $accountInfo['primarycontactid']);
 
             if (!is_array($accountInfo)) {
                 die();
@@ -96,7 +96,22 @@
             $returnedCode .= "<div class='rightpane_fullheader'>";
             $returnedCode .= $accountInfo['name'];
             $returnedCode .= "</div>";
-            $returnedCode .= "</div><div id='rightpane_viewport' style='top:110px'>";
+            $returnedCode .= "</div><div id='rightpane_viewport' style='top:50px'>";
+
+            $returnedCode .= "<div class='formsection_row_even'>";
+
+            $returnedCode .= "<div class='formsectionfull'>";
+            $returnedCode .= "<div class='formsection_header'>Account Details</div>";
+            $returnedCode .= ViewAccount::GenerateAccountDetails($accountInfo);
+            $returnedCode .= "</div>";
+
+            $returnedCode .= "<div class='formsectionfull'>";
+            $returnedCode .= "<div class='formsection_header'>Contact Information</div>";
+            $returnedCode .= ViewAccount::GenerateAccountContactDetails($primaryContactInfo);
+            $returnedCode .= "</div>";
+
+            $returnedCode .= "</div>";
+
             $returnedCode .= "</div>";
 
             return $returnedCode;

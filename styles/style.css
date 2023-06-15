@@ -313,7 +313,7 @@ body {
     left:0px;
     display:flex;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
     color:#14A76C;
     font-size:0.6em;
 }

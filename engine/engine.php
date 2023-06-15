@@ -103,7 +103,6 @@
 	
 			$returnedCode .= "</div>";	
 	
-			//TODO: PAGENATIONFIX
 			$returnedCode .= "<div id='rightpane_container'>";
 			if ($_page == "ViewAccount") {
 				$returnedCode .= Action_LoadViewAccount($_dbInfo, $_accountid);
@@ -117,12 +116,12 @@
 			$returnedCode .= <<<HTML
 			<script>
 				$('.input_login_password').keydown(function (event) {
-				if (event.keyCode === 13) {
-				event.preventDefault();
-				var loginEmail = $('.input_login_email').val();
-				var loginPassword = $('.input_login_password').val();
-				StartSession(loginEmail, loginPassword);
-				}
+					if (event.keyCode === 13) {
+					event.preventDefault();
+					var loginEmail = $('.input_login_email').val();
+					var loginPassword = $('.input_login_password').val();
+					StartSession(loginEmail, loginPassword);
+					}
 				});
 				$('.input_login_email').keydown(function (event) {
 					if (event.keyCode === 13) {
@@ -176,7 +175,6 @@
 				echo("<script>history.pushState(null, null, '/index.php');</script>");
 				session_destroy();
 				die();
-				break;
 			case "StartPortal":
 				$get_PageData = json_decode($_POST['pagedata'], true);
 				echo (Action_StartPortal($dbInfo, $get_PageData));

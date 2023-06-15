@@ -16,6 +16,42 @@ class LeftPaneMenuItem {
     }
 }
 
+class ViewAccount {
+    public static function GenerateAccountDetails($_account) { 
+        $returnedCode = "";
+        if (is_array($_account)) { 
+            $accountType = $_account['type'];
+            $accountStreet1 = $_account['street1'];
+            $accountStreet2 = $_account['street2'];
+            $accountCity = $_account['city'];
+            $accountState = $_account['state'];
+            $accountZipcode = $_account['zipcode'];
+
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountType</div></div>";
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountStreet1 $accountStreet2 $accountCity, $accountState, $accountZipcode</div></div>";
+        }
+        return $returnedCode;
+    }
+
+    public static function GenerateAccountContactDetails($_primaryContact) {
+        if (is_array($_primaryContact)) { 
+            $accountFirstName = $_primaryContact['firstname'];
+            $accountLastName = $_primaryContact['lastname'];
+            $accountPrimaryPhone = $_primaryContact['primaryphone'];
+            $accountSecondaryPhone = $_primaryContact['secondaryphone'];
+            $accountEmail = $_primaryContact['email'];
+
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountFirstName $accountLastName</div></div>";
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountPrimaryPhone</div></div>";
+            if (strlen($accountSecondaryPhone) > 0) {
+                $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountSecondaryPhone</div></div>";
+            }
+            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountEmail</div></div>";
+        }
+        return $returnedCode;
+    }
+}
+
 class ViewAccountList {
     public static function GenerateListItems($_retArray) {
         $count = 0;

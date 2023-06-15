@@ -8,10 +8,26 @@
     padding-bottom:4px;
 }
 
+.formsection_row_even {
+    width:100%;
+    display:flex;
+    justify-content: space-evenly;
+    gap:15px;
+    box-sizing: border-box;
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
 .formsection {
     box-sizing: border-box;
     margin-top:10px;
     width:400px;
+}
+
+.formsectionfull {
+    box-sizing: border-box;
+    margin-top:10px;
+    width:50%;
 }
 
 .formsection_header {
