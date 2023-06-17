@@ -27,6 +27,11 @@
 .formsectionfull {
     box-sizing: border-box;
     margin-top:10px;
+    width:100%;
+}
+.formsectionhalf {
+    box-sizing: border-box;
+    margin-top:10px;
     width:50%;
 }
 
@@ -47,6 +52,14 @@
 
 .formsection_line {
     width:100%;
+    display:flex;
+    justify-content: space-between;
+    gap:8px;
+    box-sizing: border-box;
+    padding-top:4px;
+    padding-bottom:4px;
+}
+.formsection_line_width_unset {
     display:flex;
     justify-content: space-between;
     gap:8px;

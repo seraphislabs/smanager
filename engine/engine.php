@@ -16,6 +16,9 @@
 		if (in_array('ac', $perms)) {
 			$returnedCode .= LeftPaneMenuItem::GenerateButton("Accounts");
 		}
+		if (in_array('vt', $perms)) {
+			$returnedCode .= LeftPaneMenuItem::GenerateButton("Employees");
+		}
 
 		return $returnedCode;
 	}
@@ -38,6 +41,10 @@
 			case "Dashboard":
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
 				break;
+			case "employees":
+				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
+				$returnedCode .= PageManager::GenerateEmployeesPage($_dbInfo);
+				break;
 		}
 
 		return $returnedCode;
@@ -52,6 +59,13 @@
 
 	function Action_ValidateNewAccountForm($_dbInfo, $_formInformation) { 
 		$retVar = DatabaseManager::AddNewAccount($_dbInfo, $_formInformation);
+		$boolString = $retVar['success'] ? "true" : "false";
+		$retString = $boolString . "|" . $retVar['response'];
+		return $retString;
+	}
+
+	function Action_ValidateNewEmployeeForm($_dbInfo, $_formInformation) { 
+		$retVar = DatabaseManager::AddNewEmployee($_dbInfo, $_formInformation);
 		$boolString = $retVar['success'] ? "true" : "false";
 		$retString = $boolString . "|" . $retVar['response'];
 		return $retString;
@@ -173,6 +187,7 @@
 		switch ($action) {
 			case "Logout":
 				echo("<script>history.pushState(null, null, '/index.php');</script>");
+				session_unset();
 				session_destroy();
 				die();
 			case "StartPortal":
@@ -187,9 +202,17 @@
 			case "GenerateNewAccountPage":
 				echo (PageManager::GenerateNewAccountPage($dbInfo));
 				break;
+			case "GenerateNewEmployeePage":
+				echo (PageManager::GenerateNewEmployeePage($dbInfo));
+				break;
 			case "SubmitNewAccountForm":
 				$formData = json_decode($_POST['formdata'], true);
 				echo(Action_ValidateNewAccountForm($dbInfo, $formData));
+				break;
+			case "SubmitNewEmployeeForm":
+				$formData = json_decode($_POST['formdata'], true);
+				echo(Action_ValidateNewEmployeeForm($dbInfo, $formData));
+				echo($formData['employeeInformation']['firstName']);
 				break;
 			case "ViewAccount":
 				$accountid = $_POST['accountid'];

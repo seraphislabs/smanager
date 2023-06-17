@@ -5,6 +5,27 @@ function ValidateForm(form_input, validation_type) {
   };
 
   switch (validation_type) {
+    case 'year':
+      var yearRegex = /^\d{4}$/;
+      if (!yearRegex.test(form_input)) {
+        retVal.response = 'Invalid year';
+        return retVal;
+      }
+      break;
+    case 'date':
+      var dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2[0-9]|3[0-1])\/\d{4}$/;
+      if (!dateRegex.test(form_input)) {
+        retVal.response = 'Invalid Date';
+        return retVal;
+      }
+      break;
+    case 'date_my':
+      var datemyRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
+      if (!datemyRegex.test(form_input)) {
+        retVal.response = 'Invalid Date';
+        return retVal;
+      }
+      break;
     case 'email':
       var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(form_input)) {
@@ -14,7 +35,7 @@ function ValidateForm(form_input, validation_type) {
       break;
 
     case 'phone':
-      var phoneRegex = /^\d{10}$/;
+      var phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})/;
       if (!phoneRegex.test(form_input)) {
         retVal.response = 'Invalid phone number';
         return retVal;
@@ -22,7 +43,7 @@ function ValidateForm(form_input, validation_type) {
       break;
 
     case 'phone_nonrequired':
-      var phoneRegex = /^\d{10}$/;
+      var phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})/;
       if (form_input.length > 0 && !phoneRegex.test(form_input)) {
         retVal.response = 'Invalid phone number';
         return retVal;
@@ -218,6 +239,45 @@ function AjaxCall(_xhrArray, data, callback) {
 
     return returnInformation;
   }
+
+  function SerializeNewEmployeeForm() {
+    var formInformation = {};
+    var employeeInformation = {};
+
+    var rejectedDivs = [];
+
+    var retBool = true;
+
+    // Populate Account Information
+    $(".popup_scrollable").find('.formsection_serialize').each(function() {
+      var dataSerialize = $(this).data('serialize');
+      if (dataSerialize != "none" && dataSerialize != "undefined") {
+        var fieldValue = $(this).val();
+        var serializeType = $(this).data('validation');
+
+        if (!ValidateForm(fieldValue, serializeType).success) {
+          rejectedDivs.push($(this));
+          retBool = false;
+        }
+        else {
+          $(this).removeClass('formsection_validation_error');
+        }
+        employeeInformation[dataSerialize] = fieldValue;
+      }
+    });
+
+    formInformation['employeeInformation'] = employeeInformation;
+
+    $.each(rejectedDivs, function(index, item) {
+      $(this).addClass('formsection_validation_error');
+    });
+
+    var returnInformation = {};
+    returnInformation['success'] = retBool;
+    returnInformation['formInformation'] = formInformation;
+
+    return returnInformation;
+  }
   
   function NewAccountFormSerialize(elementarray) {
     var returnString = "";
@@ -264,5 +324,36 @@ function AjaxCall(_xhrArray, data, callback) {
     }
     
     return params;
+}
+
+function InitDatePickers() {
+  $('.formsection_datepicker').each(function () {
+    $(this).datepicker({
+      dateFormat: 'mm/yy',
+      changeMonth: true,
+      changeYear: true,
+      showButtonPanel: true,
+    });
+  });
+  $('.formsection_datepicker_full').each(function () {
+    $(this).datepicker({
+      dateFormat: 'mm/dd/yy',
+      changeMonth: true,
+      changeYear: true,
+      showButtonPanel: true,
+    });
+  });
+}
+
+function InitInputMasks() {
+  $('.formsection_date_full_mask').each(function () {
+    $(this).mask('00/00/0000');
+  });
+  $('.formsection_date_my_mask').each(function () {
+    $(this).mask('00/0000');
+  });
+  $('.formsection_phone_mask').each(function () {
+    $(this).mask('(000) 000-0000');
+  });
 }
   

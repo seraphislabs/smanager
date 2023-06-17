@@ -10,6 +10,9 @@ class LeftPaneMenuItem {
             case "Dashboard":
                 $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>Dashboard</div><img src='img/menu_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Dashboard</span></div>";
                 break;
+            case "Employees":
+                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>employees</div><img src='img/tech_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Employees</span></div>";
+                break;
         }
 
         return $returnedCode;
@@ -41,7 +44,7 @@ class ViewAccount {
             $accountSecondaryPhone = $_primaryContact['secondaryphone'];
             $accountEmail = $_primaryContact['email'];
 
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountFirstName $accountLastName</div></div>";
+            $returnedCode = "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountFirstName $accountLastName</div></div>";
             $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountPrimaryPhone</div></div>";
             if (strlen($accountSecondaryPhone) > 0) {
                 $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountSecondaryPhone</div></div>";

@@ -49,7 +49,7 @@ class DatabaseManager
     private static function GetLoginPasswordHash($_pdo)
     {
         $_email = $_SESSION['email'];
-        $stmt = $_pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+        $stmt = $_pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
         $stmt->bindParam(":email", $_email);
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
@@ -67,7 +67,7 @@ class DatabaseManager
         $pdo = self::connect($_dbInfo, 'servicemanager');
 
         if (self::ValidateLogin($pdo)) {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
             $stmt->bindParam(":email", $_email);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
@@ -84,7 +84,7 @@ class DatabaseManager
         $pdo = self::connect($_dbInfo, 'servicemanager');
 
         if (self::ValidateLogin($pdo)) {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
             $stmt->bindParam(":email", $_email);
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
@@ -107,6 +107,21 @@ class DatabaseManager
         }
 
         return false;
+    }
+
+    public static function GetEmployeeAccounts($_dbInfo) {
+        $_companyid = $_SESSION['companyid'];
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+
+        if (self::ValidateLogin($pdo)) {
+            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` WHERE `companyid` = :companyid AND `role` = 'employee'");
+            $stmt->bindParam(":companyid", $_companyid);
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $retVal = $results;
+            }
+        }
     }
 
     public static function GetAccounts($_dbInfo)
@@ -170,6 +185,184 @@ class DatabaseManager
             return $results;
         }
         return false;
+    }
+
+    public static function AddNewEmployee($_dbInfo, $_formInformation)
+    {
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+
+        $retVar = [];
+        $retVar['success'] = true;
+        $retVar['response'] = "Success";
+
+        if (self::ValidateLogin($pdo)) {
+            $employeeInformation = $_formInformation['employeeInformation'];
+            if (!is_array($employeeInformation)) {
+                return false;
+            }
+
+            if (!self::CheckPermissions($_dbInfo, ['ce'])) {
+                $retVar['success'] = false;
+                $retVar['response'] = "You do not have permission to view this page. Speak to your account manager to gain access.";
+                return $retVar;
+            }
+
+            $validationFields = [
+                "firstName" => "name",
+                "lastName" => "name",
+                "dob" => "date_full",
+                "street1" => "address",
+                "street2" => "address_nonrequired",
+                "city" => "name",
+                "state" => "state",
+                "zipCode" => "zipCode",
+                "phone" => "phone_nonrequired",
+                "email" => "email",
+                "workPhone" => "phone_nonrequired",
+                "workEmail" => "email",
+                "dlNumber" => "name",
+                "dlExpiration" => "date_my",
+                "pvMake" => "name",
+                "pvModel" => "name",
+                "pvColor" => "name",
+                "pvPlate" => "name_nonrequired",
+                "pvYear" => "year",
+                "cvMake" => "name",
+                "cvModel" => "name",
+                "cvYear" => "year",
+                "cvVID" => "name",
+                "cvPlate" => "name",
+                "cvRegExp" => "date_my",
+            ];
+
+            foreach($validationFields as $field => $validationType) {
+                if (array_key_exists($field, $employeeInformation))
+                if (!self::ValidateField($employeeInformation[$field], $validationType)) {
+                    $retVar['success'] = false;
+                    $retVar['response'] = "Validation Failed";
+                    return $retVar;
+                }
+            }
+
+            // Create Contact for Primary Contact
+            $stmt = $pdo->prepare(
+                "INSERT INTO `users` (
+                    `password`,
+                    `email`,
+                    `companyid`,
+                    `permissions`,
+                    `firstname`,
+                    `lastname`,
+                    `dob`,
+                    `role`,
+                    `street1`,
+                    `street2`,
+                    `city`,
+                    `state`,
+                    `zipcode`,
+                    `phone`,
+                    `workphone`,
+                    `workemail`,
+                    `roledetails`,
+                    `dlnumber`,
+                    `dlexpiration`,
+                    `cvmake`,
+                    `cvmodel`,
+                    `cvvin`,
+                    `cvplate`,
+                    `cvyear`,
+                    `svregexp`,
+                    `pvmake`,
+                    `pvmodel`,
+                    `pvcolor`,
+                    `pvplate`,
+                    `pvyear`
+                ) VALUES (
+                    :password,
+                    :email,
+                    :companyid,
+                    :permissions,
+                    :firstname,
+                    :lastname,
+                    :dob,
+                    :role,
+                    :street1,
+                    :street2,
+                    :city,
+                    :state,
+                    :zipcode,
+                    :phone,
+                    :workphone,
+                    :workemail,
+                    '',
+                    :dlnumber,
+                    :dlexpiration,
+                    :cvmake,
+                    :cvmodel,
+                    :cvvin,
+                    :cvplate,
+                    :cvyear,
+                    :svregexp,
+                    :pvmake,
+                    :pvmodel,
+                    :pvcolor,
+                    :pvplate,
+                    :pvyear
+                )"
+            );
+            
+            $tempRole = 'Technician';
+            $tempPermissions = 'ac|va|ca|vt|ce';
+            $tempPassword = PasswordEncrypt::Encrypt('test');
+            $stmt->bindParam(':password', $tempPassword);
+            $stmt->bindParam(':firstname', $employeeInformation['firstName']);
+            $stmt->bindParam(':lastname', $employeeInformation['lastName']);
+            $xdob = date('Y-m-d', strtotime($employeeInformation['dob']));
+            $stmt->bindParam(':dob', $xdob);
+            $stmt->bindParam(':email', $employeeInformation['email']);
+            $stmt->bindParam(':companyid', $_SESSION['companyid']);
+            $stmt->bindParam(':permissions', $tempPermissions);
+            $stmt->bindParam(':role', $tempRole);
+            $stmt->bindParam(':street1', $employeeInformation['street1']);
+            $stmt->bindParam(':street2', $employeeInformation['street2']);
+            $stmt->bindParam(':city', $employeeInformation['city']);
+            $stmt->bindParam(':state', $employeeInformation['state']);
+            $stmt->bindParam(':zipcode', $employeeInformation['zipCode']);
+            $stmt->bindParam(':phone', $employeeInformation['phone']);
+            $stmt->bindParam(':workphone', $employeeInformation['workPhone']);
+            $stmt->bindParam(':workemail', $employeeInformation['workEmail']);
+            $xdlnumber = $employeeInformation['dlNumber'] ?? '';
+            $stmt->bindParam(':dlnumber', $xdlnumber);
+            $xdlexpiration = $employeeInformation['dlExpiration'] ?? '';
+            $stmt->bindParam(':dlexpiration', $xdlexpiration);
+            $xcvmake = $employeeInformation['cvMake'] ?? '';
+            $stmt->bindParam(':cvmake', $xcvmake);
+            $xcvmodel = $employeeInformation['cvModel'] ?? '';
+            $stmt->bindParam(':cvmodel', $xcvmodel);
+            $xcvvin = $employeeInformation['cvVID'] ?? '';
+            $stmt->bindParam(':cvvin', $xcvvin);
+            $xcvplate = $employeeInformation['cvPlate'] ?? '';
+            $stmt->bindParam(':cvplate', $xcvplate);
+            $xcvyear = $employeeInformation['cvYear'] ?? '';
+            $stmt->bindParam(':cvyear', $xcvyear);
+            $xsvregexp = $employeeInformation['cvRegExp'] ?? '';
+            $stmt->bindParam(':svregexp', $xsvregexp);
+            $pvmake = $employeeInformation['pvMake'] ?? '';
+            $stmt->bindParam(':pvmake', $pvmake);
+            $pvmodel = $employeeInformation['pvModel'] ?? '';
+            $stmt->bindParam(':pvmodel', $pvmodel);
+            $pvcolor = $employeeInformation['pvColor'] ?? '';
+            $stmt->bindParam(':pvcolor', $pvcolor);
+            $pvplate = $employeeInformation['pvPlate'] ?? '';
+            $stmt->bindParam(':pvplate', $pvplate);
+            $pvyear = $employeeInformation['pvYear'] ?? '';
+            $stmt->bindParam(':pvyear', $pvyear);
+            $stmt->execute();
+            //Contact ID
+            $eid = $pdo->lastInsertId();
+
+            return $retVar;
+        }
     }
 
     public static function AddNewAccount($_dbInfo, $_formInformation)
@@ -377,6 +570,24 @@ class DatabaseManager
         $retVal = false;
 
         switch ($validation_type) {
+            case 'year':
+                $yearRegex = '/^\d{4}$/';
+                if (!preg_match($yearRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+            case 'date':
+                $dateRegex = '/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2[0-9]|3[0-1])\/\d{4}$/';
+                if (!preg_match($dateRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+            case 'date_my':
+                $datemyRegex = '/^(0[1-9]|1[0-2])\/\d{4}$/';
+                if (!preg_match($datemyRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
             case 'email':
                 $emailRegex = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
                 if (!preg_match($emailRegex, $form_input)) {
