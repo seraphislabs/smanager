@@ -13,10 +13,10 @@
 
 		$returnedCode .= LeftPaneMenuItem::GenerateButton("Dashboard");
 
-		if (in_array('ac', $perms)) {
+		if (in_array('va', $perms)) {
 			$returnedCode .= LeftPaneMenuItem::GenerateButton("Accounts");
 		}
-		if (in_array('vt', $perms)) {
+		if (in_array('ve', $perms)) {
 			$returnedCode .= LeftPaneMenuItem::GenerateButton("Employees");
 		}
 
@@ -45,6 +45,10 @@
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
 				$returnedCode .= PageManager::GenerateEmployeesPage($_dbInfo);
 				break;
+			case "EmployeeSettings";
+				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
+				$returnedCode .= PageManager::GenerateEmployeeSettingsPage($_dbInfo);
+				break;
 		}
 
 		return $returnedCode;
@@ -71,6 +75,13 @@
 		return $retString;
 	}
 
+	function Action_ValidateNewRoleForm($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid) {
+		$retVar = DatabaseManager::AddNewRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid);
+		$boolString = $retVar['success'] ? "true" : "false";
+		$retString = $boolString . "|" . $retVar['response'];
+		return $retString;
+	}
+
 	function Action_StartSession($_dbInfo) {
 		session_unset();
 		$_SESSION['email'] = $_POST['email'];
@@ -81,6 +92,10 @@
 			$_SESSION['companyid'] = $accountInfo['companyid'];
 			$_SESSION['firstname'] = $accountInfo['firstname'];
 		}
+	}
+
+	function Action_OpenSettingsMenu($_dbInfo) {
+		return PageManager::GenerateSettingsMenu($_dbInfo);
 	}
 
 	function Action_StartPortal($_dbInfo, $_pageData) {
@@ -98,6 +113,12 @@
 		}
 
 		if (Action_CheckSession($_dbInfo)) {
+			$returnedCode .= <<<HTML
+				<script>
+					
+				</script>
+			HTML;
+
 			$returnedCode .= "
 			<div id='topbar_container'>
 			<div class='sitelogo'><img src='img/logo1.png' width='400px'/></div>
@@ -105,7 +126,7 @@
 			<div class='topbarbuttons'>
 			<img src='img/user_green.png'/>
 			<img src='img/help_green.png'/>
-			<img src='img/settings_green.png'/>
+			<img class='open_settings_page' src='img/settings_green.png'/>
 			</div>
 			<div class='searchboxholder'><input type='text' placeholder='Search'/><img src='img/search_gray.png'/></div>
 			<div class='topbarloginnote'>Welcome back, " . $_SESSION['firstname']  . " <span class='text_button_type_1' id='logoutbutton'>LOGOUT</span></div>
@@ -121,7 +142,7 @@
 			if ($_page == "ViewAccount") {
 				$returnedCode .= Action_LoadViewAccount($_dbInfo, $_accountid);
 			}
-			else {
+ 			else {
 				$returnedCode .= Action_LoadPage($_dbInfo, $_page);
 			}
 			$returnedCode .= "</div>";
@@ -199,6 +220,13 @@
 				$get_currentPage = 1;
 				echo (Action_LoadPage($dbInfo, $buttonid));
 				break;
+			case "GenerateNewRolePage":
+				$post_roleid = 0;
+				if (isset($_POST['roleid'])) {
+					$post_roleid = $_POST['roleid'];
+				}
+				echo (PageManager::GenerateNewRolePage($dbInfo, $post_roleid));
+				break;
 			case "GenerateNewAccountPage":
 				echo (PageManager::GenerateNewAccountPage($dbInfo));
 				break;
@@ -212,7 +240,6 @@
 			case "SubmitNewEmployeeForm":
 				$formData = json_decode($_POST['formdata'], true);
 				echo(Action_ValidateNewEmployeeForm($dbInfo, $formData));
-				echo($formData['employeeInformation']['firstName']);
 				break;
 			case "ViewAccount":
 				$accountid = $_POST['accountid'];
@@ -220,6 +247,16 @@
 				break;
 			case "StartSession":
 				Action_StartSession($dbInfo);
+				break;
+			case "OpenSettingsMenu":
+				echo(Action_OpenSettingsMenu($dbInfo));
+				break;
+			case "AddNewRole":
+				$perms = $_POST['perms'];
+				$rolename = $_POST['name'];
+				$isDispatchable = $_POST['isDispatchable'];
+				$roleId = $_POST['roleid'];
+				echo(Action_ValidateNewRoleForm($dbInfo, $rolename, $perms, $isDispatchable, $roleId));
 				break;
 		}
 	}

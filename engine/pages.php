@@ -2,6 +2,7 @@
     class PageManager {
         public static function GenerateAccountsPage($_dbInfo) {
             $returnedCode = "";
+            $canAddAccount = DatabaseManager::CheckPermissions($_dbInfo, ['ca']);
             // Permission Check
             if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
@@ -49,7 +50,9 @@
 
             $returnedCode .= "<div id='rightpane_header'>";
             $returnedCode .= "<div class='listheaderbuttoncontainer'>";
-            $returnedCode .= "<div class='listheaderbutton btn_newaccountdialogue'><img src='img/add_user_green.png' class='img_icon_small' style='margin-right:6px'/> New</div>";
+            if ($canAddAccount) {
+                $returnedCode .= "<div class='listheaderbutton btn_newaccountdialogue'><img src='img/add_user_green.png' class='img_icon_small' style='margin-right:6px'/> New</div>";
+            }
             $returnedCode .= "</div>";
             $returnedCode .= "<div class='accountviewlistcontainer'>";
             $returnedCode .= "<div class='accountviewlistheaders'>
@@ -69,7 +72,8 @@
         }
 
         public static function GenerateEmployeesPage($_dbInfo) {
-            if (!DatabaseManager::CheckPermissions($_dbInfo, ['vt'])) {
+            $canAddEmployee = DatabaseManager::CheckPermissions($_dbInfo, ['ce']);
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['ve'])) {
                 die("You do not have permission to view this page. Speak to your account manager to gain access.");
             }
 
@@ -97,7 +101,9 @@
 
             $returnedCode .= "<div id='rightpane_header'>";
             $returnedCode .= "<div class='listheaderbuttoncontainer'>";
-            $returnedCode .= "<div class='listheaderbutton btn_newemployeedialogue'><img src='img/add_user_green.png' class='img_icon_small' style='margin-right:6px'/> New</div>";
+            if ($canAddEmployee) {
+                $returnedCode .= "<div class='listheaderbutton btn_newemployeedialogue'><img src='img/add_user_green.png' class='img_icon_small' style='margin-right:6px'/> New</div>";
+            }
             $returnedCode .= "</div>";
             $returnedCode .= "<div class='accountviewlistcontainer'>";
             $returnedCode .= "<div class='accountviewlistheaders'>
@@ -107,10 +113,396 @@
             $returnedCode .= "</div>";
             $returnedCode .= "</div><div id='rightpane_viewport' style='top:110px'>";
 
+            $returnedCode .= "</div>";
+
             //$employees = DatabaseManager::GetEmployeeAccounts($_dbInfo);
 
             $returnedCode .= "</div>";
 
+            $returnedCode .= "<div id='rightpane_footer'>";
+            $returnedCode .= "</div>";
+            return $returnedCode;
+        }
+
+        public static function GenerateNewRolePage($_dbInfo, $_roleid) {
+            $returnedCode = <<<HTML
+                <script>
+                    $("#submit_new_role").click(function() {
+                        var endperms = "";
+                        var first = true;
+                        $("#permissions_listings").find('.formsection_permissions_checkbox').each(function () {
+                            if ($(this).is(':checked')) {
+                                if (!first) {
+                                    endperms += "|";
+                                }
+                                endperms += $(this).data('flag');
+                                first = false;
+                            }
+                        });
+
+                        if(!$(this).hasClass('disabled')) {
+                            $(this).addClass('disabled');
+                        }
+
+                        var isDispatchable = $('.checkbox_can_be_dispatched').is(":checked");
+                        var roleName = $(".formsection_rolename").val();
+                        var requestData = [
+                            {name: 'action', value: 'AddNewRole'},
+                            {name: 'name', value: roleName},
+                            {name: 'perms', value: endperms},
+                            {name: 'isDispatchable', value: isDispatchable},
+                            {name: 'roleid', value: $_roleid}                    
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                var resVar = response.split('|');
+                                if (resVar[0] == 'true') {
+                                    $('.popup_wrapper').hide();
+                                    $('.popup_darken').fadeOut(400);
+                                    ClickLeftPaneMenuItem('EmployeeSettings', false);
+                                }
+                                else {
+                                    $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
+                                }
+                                if($('#submit_new_role').hasClass('disabled')) {
+                                    $('#submit_new_role').removeClass('disabled');
+                                }
+                            }
+                        });
+                    });
+                    $("#btn_close_popup").click(function () {
+                        ClosePopup();
+                    });
+                </script>
+            HTML;
+
+            if ($_roleid > 0) {
+                $returnedCode .= "
+                <div class='popup_topbar'><span style='color:white;'>Edit</span> Role</div>
+                <div class='popup_scrollable'>";
+            }
+            else {
+                $returnedCode .= "
+            <div class='popup_topbar'><span style='color:white;'>New</span> Role</div>
+            <div class='popup_scrollable'>";
+            }
+
+            $returnedCode .= "
+                <div class='formsectionfull'>
+                    <div class='formsection_line_leftjustify'>
+                    <div class='formsection_label_1'>Role Name: </div><input data-roleid='$_roleid' class='formsection_input formsection_rolename'/>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='padding-left:20px;'>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='checkbox_can_be_dispatched'>
+                            <span class='slider round'></span>
+                        </label>
+                        <span class='checkbox_switch_label'>Can be dispatched</span>
+                    </div>
+                    </div>
+                    <div class='formsection_mass_control_group' id='permissions_listings'>
+                        <div class='formsection_control_group'>
+                            <div class='formsection_control_header'>Accounts</div>
+                            <div class='formsection_control_options'>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='va'/>View Accounts</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ca'/>Create Accounts</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ea'/>Edit Accounts</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='da'/>Delete Accounts</div>
+                            </div>
+                        </div>
+                        <div class='formsection_control_group'>
+                            <div class='formsection_control_header'>Employees</div>
+                            <div class='formsection_control_options'>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ve'/>View Employees</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ce'/>Add Employees</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ee'>Edit Employee Details</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ses'/>See Schedule</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ees'/>Edit Schedule</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='cer'/>Create New Roles</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='eer'/>Change Employee Roles</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='eerp'/>Edit Role Permissions</div>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='edwh'/>Edit Default Work Hours</div>
+                            </div>
+                        </div>          
+                    </div>
+                </div>
+            ";
+
+            $returnedCode .= "
+            </div>
+            <div class='popup_footer'>
+            <div id='submit_new_role' class='button_type_2'>Save</div><div class='button_type_1' id='btn_close_popup'>Discard</div>
+            </div>
+            ";
+
+            if ($_roleid > 0) {
+                $roleInformation = json_encode(DatabaseManager::GetRole($_dbInfo, $_roleid));
+
+                $returnedCode .= <<<HTML
+                <script tyle='text/javascript'>
+                    var roleInformation = `$roleInformation`;
+                    var roleData = JSON.parse(roleInformation);
+                    
+                    var permString = roleData['permissions'];
+                    var perms = permString.split('|');
+
+                    $('.formsection_rolename').val(roleData['name']);
+                    if (roleData['dispatchable'] == "true") {
+                        $('.checkbox_can_be_dispatched').prop("checked", true);
+                    }
+                    $('.formsection_permissions_checkbox').each(function () {
+                        var flag = $(this).data('flag');
+                        if (perms.includes(flag)) {
+                            $(this).prop("checked", true);
+                        }
+                    });
+
+                </script>
+                HTML;
+            }
+
+            return $returnedCode;
+        }
+
+        public static function GenerateEmployeeSettingsPage($_dbInfo) {
+            $returnedCode = <<<HTML
+                <script type='text/javascript'>
+                    InitTimePickers();
+                    $('.btn_open_new_role').click(function() {
+                        $('.popup_darken').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500);
+                        SetLoadingIcon('.popup_scrollable');
+                        var requestData = [
+                            {name: 'action', value: 'GenerateNewRolePage'}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $('.popup_content').html(response).show();
+                            }
+                        });
+                    });
+                    $('.schedule_enable').change(function() {
+                        var timeField = $(this).closest('.formsection_line_leftjustify').children('.formsection_toggle_time_fields');
+                        if (timeField.is(':visible')) {
+                            timeField.fadeOut(200);
+                        }
+                        else {
+                            timeField.fadeIn(200);
+                        }
+                    });
+                </script>
+            HTML;
+
+            $getRoles = DatabaseManager::GetRoles($_dbInfo);
+            $rolesList = ViewEmployeeRollsList::GenerateListItems($getRoles);
+
+            $returnedCode .= "<div id='rightpane_viewport' style='top:0px'>";
+
+            // Get Settings
+            /*$returnedCode .= 
+            "
+                <div class='formsection_width_unset' style='width:800px'>
+                    <div class='formsection_header'>
+                    Default Working Hours
+                    </div>
+                    <div class='formsection_content'>
+                        <div class='formsection_subheader_title' style='padding-top:10px;padding-bottom:10px;'>
+                        Enter the general weekly business hours for employees. When this setting is used, employees will be scheduled for these hours automatically.
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Monday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable' checked>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Tuesday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable' checked>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Wednesday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable' checked>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Thursday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable' checked>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Friday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable' checked>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Saturday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable'>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields' style='display:none;'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                        <div class='formsection_line_leftjustify'><div class='formsection_label_1'>Sunday:</div>
+                        <div class='checkbox_switch'>
+                            <label class='switch'>
+                                <input type='checkbox' class='schedule_enable'>
+                                <span class='slider round'></span>
+                            </label>
+                        </div>
+                        <div class='formsection_toggle_time_fields' style='display:none;'>
+                        <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        to
+                        <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker' />
+                        </div>
+                        </div>
+                    </div>
+                </div>";*/
+
+                $returnedCode .= 
+                   "<div class='formsection_width_unset' style='width:800px'>
+                    <div class='formsection_header'>
+                    Employee Roles / Permissions
+                    </div>
+                    <div class='formsection_content'>
+                        <div class='formsection_subheader_title'>
+                            <div class='formsection_line_centered_between'>
+                                This is a list of your employee roles and the permissions for each role.
+                                <div class='button_type_1 btn_open_new_role'><img src='img/add_user_green.png' style ='width:20px;padding-right:10px;'/>New Role</div>
+                            </div>
+                        </div>
+                        <div style='padding-left:40px;' id='display_employee_roles'>
+                        $rolesList
+                        </div>
+                    </div>
+                </div>   
+            ";
+
+            $returnedCode .= 
+                   "<div class='formsection_width_unset' style='width:800px;margin-top:20px;'>
+                    <div class='formsection_header'>
+                    Employee Shifts
+                    </div>
+                    <div class='formsection_content'>
+                        <div class='formsection_subheader_title'>
+                            <div class='formsection_line_centered_between'>
+                                This is a list of assignable shifts for your employees.
+                                <div class='button_type_1 btn_open_new_role'><img src='img/add_user_green.png' style ='width:20px;padding-right:10px;'/>New Shift</div>
+                            </div>
+                        </div>
+                        <div style='padding-left:40px;' id='display_employee_roles'>
+                        </div>
+                    </div>
+                </div>   
+            ";
+
+            $returnedCode .= "</div>";
+            return $returnedCode;
+        }
+
+        public static function GenerateSettingsPage($_dbInfo) {
+
+            $returnedCode = <<<HTML
+                <script type='text/javascript'>
+                    function OpenNewEmployeePage() {
+                        $('.popup_darken').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500);
+                        SetLoadingIcon('.popup_scrollable');
+                        var requestData = [
+                            {name: 'action', value: 'GenerateNewEmployeePage'}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $('.popup_content').html(response).show();
+                            }
+                        });
+                    }
+                    $('.btn_newemployeedialogue').click(function() {
+                        OpenNewEmployeePage();
+                    });
+                </script>
+            HTML;
+
+            $returnedCode .= "<div id='rightpane_viewport' style='top:0px'>";
+
+            // Get Settings
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+            $returnedCode .= "<div class='formsection_line'>";
+            $returnedCode .= "<div class='button_type_1'>Dashboard Settings</div>";
+            $returnedCode .= "</div>";
+
+           
             $returnedCode .= "<div id='rightpane_footer'>";
             $returnedCode .= "</div>";
             return $returnedCode;
@@ -482,6 +874,41 @@
             </div>
             ";
 
+            return $returnedCode;
+        }
+
+        public static function GenerateSettingsMenu($_dbInfo) {
+            $returnedCode = <<<HTML
+                <script type='text/javascript'>
+                    $('.open_employee_settings_page').click(function() { 
+                        var requestData = [
+                        {name: 'action', value: 'LeftPaneButtonClick'},
+                        {name: 'buttonid', value: 'EmployeeSettings'}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $("#rightpane_container").html(response);
+                            }
+                        });
+                    });
+                </script>
+            HTML;
+
+            $returnedCode .= "<div class='settingsmenu_header'>Settings</div>
+            <div class='settingsmenu_divider'></div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Dashboard</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Dispatch</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Message</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Work Order</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Serice Report</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Invoice</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Account</div>
+            <div class='settingsmenu_button open_employee_settings_page'><img src='img/tech_green.png' width='30px' style='padding-right:10px;'/>Employee Hours / Roles</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Report</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Inventory</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Contract Builder</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Branding</div>";
             return $returnedCode;
         }
 

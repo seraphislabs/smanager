@@ -2,6 +2,7 @@ body {
     margin: 0;
     font-family: 'Quicksand', sans-serif;
     font-size: 20px;
+    overflow:hidden;
 }
 
 #pagewrap_master {
@@ -30,6 +31,7 @@ body {
     width:100%;
     background-color: white;
     min-width:650px;
+    overflow:hidden;
 }
 
 .login_wrapper {
@@ -270,7 +272,7 @@ body {
 
 .searchboxholder {
     position:absolute;
-    bottom:55px;
+    top:35px;
     right:0px;
     left:0px;
     display:flex;
@@ -301,13 +303,13 @@ body {
 
 .topbarbuttons {
     position:absolute;
-    right:10px;
-    top:15px;
+    right:5px;
+    bottom: 0px;
 }
 
 .topbarloginnote {
     position:absolute;
-    bottom:8px;
+    bottom:52px;
     right:0px;
     left:0px;
     display:flex;

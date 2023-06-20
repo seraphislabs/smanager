@@ -1,5 +1,6 @@
 var nextWindowID = 1;
 var xhrArray = [];
+var settingsMenuOpen = false;
 
 $(window).on('popstate', function(event) {
   ClosePopup();
@@ -126,5 +127,33 @@ $(document).ready(function() {
 
   $(document).on('click', '#logoutbutton', function( ) {
     Logout();
+  });
+
+  $(document).on('click', function(event) {
+    if(settingsMenuOpen) {
+      if (!$(event.target).closest('.open_settings_page').length) {
+        $('.settingsmenu_container').hide().html("");
+        settingsMenuOpen = false;
+      }
+    }
+  });
+
+  $(document).on('click', '.open_settings_page', function() {
+    if (!settingsMenuOpen) {
+      var requestData = [
+        {name: 'action', value: 'OpenSettingsMenu'}
+      ];
+      CancelAllAjaxCalls();
+      AjaxCall(xhrArray, requestData, function(status, response) {
+        if (status) {
+          $('.settingsmenu_container').html(response).show();
+          settingsMenuOpen = true;
+        }
+      });
+    }
+    else {
+      $('.settingsmenu_container').hide().html("");
+      settingsMenuOpen = false;
+    }
   });
 });

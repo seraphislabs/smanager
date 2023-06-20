@@ -80,8 +80,12 @@ class DatabaseManager
 
     public static function GetUserPermissions($_dbInfo)
     {
+        $_companyid = $_SESSION['companyid'];
+
+        $ccid = $_companyid + 1000;
         $_email = $_SESSION['email'];
         $pdo = self::connect($_dbInfo, 'servicemanager');
+        $pdo2 = self::connect($_dbInfo, "company_" . $ccid);
 
         if (self::ValidateLogin($pdo)) {
             $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
@@ -89,8 +93,23 @@ class DatabaseManager
             $stmt->execute();
             if ($stmt->rowCount() == 1) {
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $roleid = $results[0]['role'];
+
+                $stmt2 = $pdo2->prepare("SELECT * FROM `roles` WHERE `id`=:roleid");
+                $stmt2->bindParam(":roleid", $roleid);
+                $stmt2->execute();
+
+                $permString = "";
+
+                if ($stmt2->rowCount() == 1) {
+                    $results2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                    $permString = $results2[0]['permissions'];
+                }
+
                 $pdo = null;
-                $retArray = explode("|", $results[0]['permissions']);
+                $pdo2 = null;
+                $retArray = explode("|", $permString);
                 return $retArray;
             }
         }
@@ -124,6 +143,28 @@ class DatabaseManager
         }
     }
 
+    public static function GetRoles($_dbInfo) {
+        $_companyid = $_SESSION['companyid'];
+
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        $retVal = null;
+
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `roles` ORDER BY `id` LIMIT 10");
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $retVal = $results;
+            }
+        }
+        $pdo1 = null;
+        $pdo = null;
+        return $retVal;
+    }
+
     public static function GetAccounts($_dbInfo)
     {
         $_companyid = $_SESSION['companyid'];
@@ -145,6 +186,25 @@ class DatabaseManager
         $pdo1 = null;
         $pdo = null;
         return $retVal;
+    }
+
+    public static function GetRole($_dbInfo, $_roleid) {
+        $_companyid = $_SESSION['companyid'];
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `roles` WHERE `id` = :roleid");
+            $stmt->bindParam(":roleid", $_roleid);
+            $stmt->execute();
+            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $pdo1 = null;
+            $pdo = null;
+
+            return $results;
+        }
+        return false;
     }
 
     public static function GetAccount($_dbInfo, $_accountid)
@@ -250,7 +310,6 @@ class DatabaseManager
                     `password`,
                     `email`,
                     `companyid`,
-                    `permissions`,
                     `firstname`,
                     `lastname`,
                     `dob`,
@@ -281,7 +340,6 @@ class DatabaseManager
                     :password,
                     :email,
                     :companyid,
-                    :permissions,
                     :firstname,
                     :lastname,
                     :dob,
@@ -311,8 +369,7 @@ class DatabaseManager
                 )"
             );
             
-            $tempRole = 'Technician';
-            $tempPermissions = 'ac|va|ca|vt|ce';
+            $tempRole = 7;
             $tempPassword = PasswordEncrypt::Encrypt('test');
             $stmt->bindParam(':password', $tempPassword);
             $stmt->bindParam(':firstname', $employeeInformation['firstName']);
@@ -321,7 +378,6 @@ class DatabaseManager
             $stmt->bindParam(':dob', $xdob);
             $stmt->bindParam(':email', $employeeInformation['email']);
             $stmt->bindParam(':companyid', $_SESSION['companyid']);
-            $stmt->bindParam(':permissions', $tempPermissions);
             $stmt->bindParam(':role', $tempRole);
             $stmt->bindParam(':street1', $employeeInformation['street1']);
             $stmt->bindParam(':street2', $employeeInformation['street2']);
@@ -363,6 +419,55 @@ class DatabaseManager
 
             return $retVar;
         }
+    }
+    public static function AddNewRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid) {
+        $_companyid = $_SESSION['companyid'];
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        $retVar = [];
+        $retVar['success'] = true;
+        $retVar['response'] = "Success";
+
+        if (self::ValidateLogin($pdo1)) {
+            if (self::ValidateField($_name, 'name')) {
+
+                if ($_roleid > 0) {
+                    $stmt = $pdo->prepare("SELECT * FROM `roles` WHERE `id` = :roleid");
+                    $stmt->bindParam(":roleid", $_roleid);
+                    $stmt->execute();
+                    $rowCount = $stmt->rowCount();
+                    if ($rowCount == 1) {
+                        $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                        $rowid = $results['id'];
+                        $stmt = $pdo->prepare("UPDATE `roles` SET `name` = :name , `permissions` = :permissions , `dispatchable` = :dispatchable WHERE `id` = :roleid");
+                        $stmt->bindParam(":name", $_name);
+                        $stmt->bindParam(":permissions", $_perms);
+                        $stmt->bindParam(":dispatchable", $_dispatchable);
+                        $stmt->bindParam(":roleid", $_roleid);
+                        $stmt->execute();
+                    }
+                }
+                else {
+                    $stmt = $pdo->prepare("INSERT INTO `roles` (`name`,`permissions`,`dispatchable`) VALUES (:name,:permissions,:dispatchable)");
+                    $stmt->bindParam(":name", $_name);
+                    $stmt->bindParam(":permissions", $_perms);
+                    $stmt->bindParam(":dispatchable", $_dispatchable);
+                    $stmt->execute();
+                }
+            }
+            else {
+                $retVar['success'] = false;
+                $retVar['response'] = "Validation Error";
+                return $retVar;
+            }
+        }
+        else {
+            $retVar['success'] = false;
+            $retVar['response'] = "Database Error";
+        }
+        return $retVar;
     }
 
     public static function AddNewAccount($_dbInfo, $_formInformation)
@@ -559,6 +664,10 @@ class DatabaseManager
                         $lidx = $pdo->lastInsertId();
                     }
                 }
+            }
+            else {
+                $retVar['success'] = false;
+                $retVar['response'] = "Database Error";
             }
 
             return $retVar;

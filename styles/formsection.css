@@ -8,6 +8,39 @@
     padding-bottom:4px;
 }
 
+.formsection_center_content {
+    width: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-direction: column;
+}
+
+.formsection_mass_control_group {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    width:700px;
+}
+
+.formsection_control_group {
+    padding:10px;
+    color:#b2b0bd;
+}
+
+.formsection_control_header {
+    margin-bottom:10px;
+    text-decoration: underline;
+}
+
+.formsection_control_option {
+    font-size:0.75em;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content: left;
+}
+
 .formsection_row_even {
     width:100%;
     display:flex;
@@ -33,6 +66,12 @@
     box-sizing: border-box;
     margin-top:10px;
     width:50%;
+}
+
+.formsectionthird {
+    box-sizing: border-box;
+    margin-top:10px;
+    width:33.33%;
 }
 
 .formsection_header {
@@ -72,6 +111,18 @@
     width:100%;
     display:flex;
     justify-content:center;
+    align-items: center;
+    gap:8px;
+    box-sizing: border-box;
+    padding-top:4px;
+    padding-bottom:4px;
+}
+
+.formsection_line_centered_between {
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
     gap:8px;
     box-sizing: border-box;
     padding-top:4px;
@@ -103,6 +154,20 @@
     box-sizing: border-box;
     padding-top:4px;
     padding-bottom:4px;
+    flex-wrap:nowrap;
+}
+
+.formsection_line_leftjustify {
+    width:100%;
+    display:flex;
+    justify-content: left;
+    gap:8px;
+    box-sizing: border-box;
+    padding-top:4px;
+    padding-bottom:4px;
+    align-items: center;
+    color:#b2b0bd;
+    flex-wrap:nowrap;
 }
 
 .formsection_input {
@@ -131,6 +196,19 @@
     border-radius:9px;
     padding:8px;
     width:40px;
+}
+
+.formsection_input_fixed_2 {
+    box-sizing: border-box;
+    border:1px solid #b2b0bd;
+    border-radius:9px;
+    padding:8px;
+    width:120px;
+}
+
+.formsection_label_1 {
+    width:130px;
+    text-align: right;
 }
 
 .formsection_input_option {

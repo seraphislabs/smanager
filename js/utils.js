@@ -356,4 +356,20 @@ function InitInputMasks() {
     $(this).mask('(000) 000-0000');
   });
 }
+
+function InitTimePickers() {
+  $('.formsection_input_timepicker').each(function() {
+    var dTime = $(this).data('defaulttime');
+    $(this).timepicker({
+      timeFormat: 'h:mm p',
+      interval: 1,
+      minTime: '00:00am',
+      maxTime: '11:49pm',
+      defaultTime: dTime,
+      startTime: '00:00am',
+      dynamic: false,
+      dropdown: false
+    });
+  });
+}
   

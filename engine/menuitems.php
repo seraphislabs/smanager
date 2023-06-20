@@ -79,4 +79,58 @@ class ViewAccountList {
     }
 }
 
+class ViewEmployeeRollsList {
+    public static function GenerateListItems($_retArray) {
+        $count = 0;
+        $returnedCode = "";
+        $_roles = $_retArray;
+        if (is_array($_roles)) {
+            foreach($_roles as $role) {
+                $count++;
+                $color = "#E0DFE5";
+
+                if ($count%2 == 0) {
+                    $color = "#FAFAFA";
+                }
+
+                $roleName = $role['name'];
+                $roleId = $role['id'];
+
+                $returnedCode .= "
+                <div class='formsection_line_leftjustify edit_role_button' data-roleid='$roleId'>
+                    <img src='img/edit_green.png' style='width:20px;'/>$roleName
+                </div>
+                ";
+
+                /*$accountName = $account['name'];
+                $accountType = $account['type'];
+                $aid = $account['id'];
+                $returnedCode .= "<div class='accountviewlistitem' data-accountid='$aid' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";*/
+            }
+        }
+
+        $returnedCode .= <<<HTML
+            <script>
+                $(".edit_role_button").click(function() {
+                        var roleid = $(this).data('roleid');
+                        $('.popup_darken').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500);
+                        var requestData = [
+                            {name: 'action', value: 'GenerateNewRolePage'},
+                            {name: 'roleid', value: roleid}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $('.popup_content').html(response).show();
+                            }
+                        });
+                    });
+            </script>
+        HTML;
+
+        return $returnedCode;
+    }
+}
+
 ?>
