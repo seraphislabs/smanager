@@ -30,13 +30,13 @@
 
 .formsection_control_header {
     margin-bottom:10px;
+    margin-left:10px;
     text-decoration: underline;
 }
 
 .formsection_control_option {
     font-size:0.75em;
-    display:flex;
-    gap:10px;
+    display:inline-flex;
     align-items:center;
     justify-content: left;
 }

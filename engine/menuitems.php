@@ -37,6 +37,7 @@ class ViewAccount {
     }
 
     public static function GenerateAccountContactDetails($_primaryContact) {
+        $returnedCode = "";
         if (is_array($_primaryContact)) { 
             $accountFirstName = $_primaryContact['firstname'];
             $accountLastName = $_primaryContact['lastname'];
@@ -79,6 +80,57 @@ class ViewAccountList {
     }
 }
 
+class ViewShiftsList {
+    public static function GenerateListItems($_retArray) {
+        $count = 0;
+        $returnedCode = "";
+        $_shifts = $_retArray;
+        if (is_array($_shifts)) {
+            foreach($_shifts as $shift) {
+                $count++;
+                $color = "#E0DFE5";
+
+                if ($count%2 == 0) {
+                    $color = "#FAFAFA";
+                }
+
+                $shiftName = $shift['name'];
+                $shiftId = $shift['id'];
+
+                $returnedCode .= "
+                <div class='formsection_line_leftjustify edit_shift_button' data-shiftid='$shiftId'>
+                    <img src='img/edit_green.png' style='width:20px;'/>$shiftName
+                </div>
+                ";
+            }
+        }
+
+        $returnedCode .= <<<HTML
+            <script>
+                $(".edit_shift_button").click(function() {
+                        var shiftid = $(this).data('shiftid');
+                        $('.popup_darken').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500);
+                        $('.popup_content').fadeIn(300);
+                        SetLoadingIcon('.popup_content');
+                        var requestData = [
+                            {name: 'action', value: 'GenerateNewShiftPage'},
+                            {name: 'shiftid', value: shiftid}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $('.popup_content').html(response).show();
+                            }
+                        });
+                    });
+            </script>
+        HTML;
+
+        return $returnedCode;
+    }
+}
+
 class ViewEmployeeRollsList {
     public static function GenerateListItems($_retArray) {
         $count = 0;
@@ -114,7 +166,9 @@ class ViewEmployeeRollsList {
                 $(".edit_role_button").click(function() {
                         var roleid = $(this).data('roleid');
                         $('.popup_darken').fadeIn(500);
-                        $('.popup_wrapper').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500); 
+                        $('.popup_scrollable').fadeIn(300);
+                        SetLoadingIcon('.popup_scrollable');
                         var requestData = [
                             {name: 'action', value: 'GenerateNewRolePage'},
                             {name: 'roleid', value: roleid}
@@ -122,7 +176,7 @@ class ViewEmployeeRollsList {
                         CancelAllAjaxCalls();
                         AjaxCall(xhrArray, requestData, function(status, response) {
                             if (status) {
-                                $('.popup_content').html(response).show();
+                                $('.popup_content').html(response).fadeIn(300);
                             }
                         });
                     });

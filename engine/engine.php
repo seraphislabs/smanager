@@ -82,6 +82,13 @@
 		return $retString;
 	}
 
+	function Action_ValidateNewShiftForm($_dbInfo, $_shiftInformation) {
+		$retVar = DatabaseManager::AddNewShift($_dbInfo, $_shiftInformation);
+		$boolString = $retVar['success'] ? "true" : "false";
+		$retString = $boolString . "|" . $retVar['response'];
+		return $retString;
+	}
+
 	function Action_StartSession($_dbInfo) {
 		session_unset();
 		$_SESSION['email'] = $_POST['email'];
@@ -227,6 +234,13 @@
 				}
 				echo (PageManager::GenerateNewRolePage($dbInfo, $post_roleid));
 				break;
+			case "GenerateNewShiftPage":
+				$post_shiftid = 0;
+				if (isset($_POST['shiftid'])) {
+					$post_shiftid = $_POST['shiftid'];
+				}
+				echo (PageManager::GenerateNewShiftPage($dbInfo, $post_shiftid));
+				break;
 			case "GenerateNewAccountPage":
 				echo (PageManager::GenerateNewAccountPage($dbInfo));
 				break;
@@ -257,6 +271,11 @@
 				$isDispatchable = $_POST['isDispatchable'];
 				$roleId = $_POST['roleid'];
 				echo(Action_ValidateNewRoleForm($dbInfo, $rolename, $perms, $isDispatchable, $roleId));
+				break;
+			case "AddNewShift":
+				$postInfo = $_POST['shiftInformation'];
+				$shiftInformation = json_decode($postInfo, true);
+				echo(Action_ValidateNewShiftForm($dbInfo, $shiftInformation));
 				break;
 		}
 	}

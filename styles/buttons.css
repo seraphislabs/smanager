@@ -156,3 +156,34 @@ input:checked + .slider:before {
   color :#14A76C;
   cursor: pointer;
 }
+
+.edit_shift_button:hover {
+  color :#14A76C;
+  cursor: pointer;
+}
+
+/* Hide the default checkbox */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  outline: none;
+  transition: all 0.1s ease-in-out;
+  cursor:pointer;
+}
+
+/* Custom styling for the checkbox */
+input[type="checkbox"]:checked {
+  background-color:#14A76C;
+  border-color: #14A76C;
+}
+
+input[type="checkbox"]:hover {
+  border-color:#33363F;
+}

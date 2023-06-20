@@ -35,7 +35,7 @@ function ValidateForm(form_input, validation_type) {
       break;
 
     case 'phone':
-      var phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})/;
+      var phoneRegex = /^(?=.*\d)\(\d{3}\) \d{3}-\d{4}$/;
       if (!phoneRegex.test(form_input)) {
         retVal.response = 'Invalid phone number';
         return retVal;
@@ -43,7 +43,7 @@ function ValidateForm(form_input, validation_type) {
       break;
 
     case 'phone_nonrequired':
-      var phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})/;
+      var phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
       if (form_input.length > 0 && !phoneRegex.test(form_input)) {
         retVal.response = 'Invalid phone number';
         return retVal;
@@ -236,6 +236,111 @@ function AjaxCall(_xhrArray, data, callback) {
     var returnInformation = {};
     returnInformation['success'] = retBool;
     returnInformation['formInformation'] = formInformation;
+
+    return returnInformation;
+  }
+
+  function SerializeNewShiftForm() {
+    var shiftInformation = {};
+    var returnInformation = {};
+
+    var mondayEnabled = $('.formsection_data_checkbox_monday').prop('checked');
+    var tuesdayEnabled = $('.formsection_data_checkbox_tuesday').prop('checked');
+    var wednesdayEnabled = $('.formsection_data_checkbox_wednesday').prop('checked');
+    var thursdayEnabled = $('.formsection_data_checkbox_thursday').prop('checked');
+    var fridayEnabled = $('.formsection_data_checkbox_friday').prop('checked');
+    var saturdayEnabled = $('.formsection_data_checkbox_saturday').prop('checked');
+    var sundayEnabled = $('.formsection_data_checkbox_sunday').prop('checked');
+
+    if (mondayEnabled) {
+      var shiftStart = $('.formsection_data_monday_start').val();
+      var shiftEnd = $('.formsection_data_monday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['monday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (tuesdayEnabled) {
+      var shiftStart = $('.formsection_data_tuesday_start').val();
+      var shiftEnd = $('.formsection_data_tuesday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['tuesday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (wednesdayEnabled) {
+      var shiftStart = $('.formsection_data_wednesday_start').val();  
+      var shiftEnd = $('.formsection_data_wednesday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['wednesday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (thursdayEnabled) {
+      var shiftStart = $('.formsection_data_thursday_start').val();
+      var shiftEnd = $('.formsection_data_thursday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['thursday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (fridayEnabled) {
+      var shiftStart = $('.formsection_data_friday_start').val();
+      var shiftEnd = $('.formsection_data_friday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['friday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (saturdayEnabled) {
+      var shiftStart = $('.formsection_data_saturday_start').val();
+      var shiftEnd = $('.formsection_data_saturday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['saturday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    if (sundayEnabled) {
+      var shiftStart = $('.formsection_data_sunday_start').val();
+      var shiftEnd = $('.formsection_data_sunday_end').val();
+
+      if (shiftStart.length > 0 && shiftEnd.length > 0) {
+        shiftInformation['sunday'] = {
+          'start': shiftStart,
+          'end': shiftEnd
+        };
+      }
+    }
+
+    shiftInformation['name'] = $('.formsection_data_shift_name').val();
+
+    shiftInformation['id'] = $('.formsection_data_shift_name').data('shiftid');
+    returnInformation['shiftInformation'] = shiftInformation;
+    returnInformation['success'] = true;
 
     return returnInformation;
   }

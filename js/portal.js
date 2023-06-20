@@ -132,7 +132,9 @@ $(document).ready(function() {
   $(document).on('click', function(event) {
     if(settingsMenuOpen) {
       if (!$(event.target).closest('.open_settings_page').length) {
-        $('.settingsmenu_container').hide().html("");
+        $('.settingsmenu_container').fadeOut(200, function () {
+          $(this).html("");
+        });
         settingsMenuOpen = false;
       }
     }
@@ -143,11 +145,17 @@ $(document).ready(function() {
       var requestData = [
         {name: 'action', value: 'OpenSettingsMenu'}
       ];
+      $('.settingsmenu_container').fadeIn(400);
+      SetLoadingIcon(".settingsmenu_container");
       CancelAllAjaxCalls();
       AjaxCall(xhrArray, requestData, function(status, response) {
         if (status) {
           $('.settingsmenu_container').html(response).show();
           settingsMenuOpen = true;
+        }
+        else {
+          $('.settingsmenu_container').hide().html("");
+          settingsMenuOpen = false;
         }
       });
     }

@@ -71,6 +71,290 @@
             return $returnedCode;
         }
 
+        public static function GenerateNewShiftPage($_dbInfo, $_shiftid) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
+                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+            }
+            $returnedCode = <<<HTML
+                <script>
+                    var phpShiftId = `$_shiftid`;
+                    InitTimePickers();
+
+                    if (phpShiftId > 0) {
+                        $('.popup_scrollable').hide();
+                    }
+                    $('.schedule_enable').change(function() {
+                        var timeField = $(this).closest('.formsection_line_leftjustify').children('.formsection_toggle_time_fields');
+                        if (timeField.is(':visible')) {
+                            timeField.fadeOut(200);
+                        }
+                        else {
+                            timeField.fadeIn(200);
+                        }
+                    });
+                    $("#submit_new_shift").click(function() {
+                        var endperms = "";
+                        var first = true;
+
+                        if(!$(this).hasClass('disabled')) {
+                            $(this).addClass('disabled');
+                        }
+
+                        var returnInformation = SerializeNewShiftForm();
+                        var shiftInformation = JSON.stringify(returnInformation['shiftInformation']);
+
+                        var requestData = [
+                            {name: 'action', value: 'AddNewShift'},
+                            {name: 'shiftInformation', value: shiftInformation}            
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                var resVar = response.split('|');
+                                if (resVar[0] == 'true') {
+                                    $('.popup_wrapper').hide();
+                                    $('.popup_darken').fadeOut(400);
+                                    ClickLeftPaneMenuItem('EmployeeSettings', false);
+                                }
+                                else {
+                                    $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
+                                }
+                                if($('#submit_new_role').hasClass('disabled')) {
+                                    $('#submit_new_role').removeClass('disabled');
+                                }
+                            }
+                        });
+                    });
+                    $("#btn_close_popup").click(function () {
+                        ClosePopup();
+                    });
+                </script>
+            HTML;
+
+            if ($_shiftid > 0) {
+                $returnedCode .= "
+                <div class='popup_topbar'><span style='color:white;'>Edit</span> Shift</div>
+                <div class='popup_scrollable'>";
+            }
+            else {
+                $returnedCode .= "
+            <div class='popup_topbar'><span style='color:white;'>New</span> Shift</div>
+            <div class='popup_scrollable'>";
+            }
+
+            $returnedCode .= "
+                <div class='formsectionfull' id='timeselections'>
+                    <div class='formsection_line_leftjustify'>
+                    <div class='formsection_label_1'>Shift Name: </div><input data-shiftid='$_shiftid' class='formsection_input formsection_data_shift_name'/>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Monday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_monday' checked>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_monday'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_monday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_monday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Tuesday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_tuesday' checked>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_tuesday'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_tuesday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_tuesday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Wednesday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_wednesday' checked>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_wednesday'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_wednesday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_wednesday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Thursday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_thursday' checked>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_thursday'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_thursday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_thursday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Friday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_friday' checked>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_friday'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_friday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_friday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Saturday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_saturday'>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_saturday' style='display:none;'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_saturday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_saturday_end' />
+                    </div>
+                    </div>
+                    <div class='formsection_line_leftjustify' style='height:40px;'><div class='formsection_label_1'>Sunday:</div>
+                    <div class='checkbox_switch'>
+                        <label class='switch'>
+                            <input type='checkbox' class='schedule_enable formsection_data_checkbox_sunday'>
+                            <span class='slider round'></span>
+                        </label>
+                    </div>
+                    <div class='formsection_toggle_time_fields formsection_data_toggle_sunday' style='display:none;'>
+                    <input type='text' data-defaulttime='09:00am' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_sunday_start' />
+                    to
+                    <input type='text' data-defaulttime='05:00pm' class='formsection_input_fixed_2 formsection_input_timepicker formsection_data_sunday_end' />
+                    </div>
+
+                </div>
+            ";
+
+            $returnedCode .= "
+            </div>
+            <div class='popup_footer'>
+            <div id='submit_new_shift' class='button_type_2'>Save</div><div class='button_type_1' id='btn_close_popup'>Discard</div>
+            </div>
+            ";
+
+            if ($_shiftid > 0) {
+                $shiftInformation = json_encode(DatabaseManager::GetShift($_dbInfo, $_shiftid));
+
+                $returnedCode .= <<<HTML
+                <script type='text/javascript'>
+                    var shiftInformation = `$shiftInformation`;
+                    var shiftData = JSON.parse(shiftInformation);
+
+                    var shiftName = shiftData['name'];
+
+                    var mondayString = shiftData['monday'].split('|');
+                    var mondayStart = mondayString[0];
+                    var mondayEnd = mondayString[1];
+                    var tuesdayString = shiftData['tuesday'].split('|');
+                    var tuesdayStart = tuesdayString[0];
+                    var tuesdayEnd = tuesdayString[1];
+                    var wednesdayString = shiftData['wednesday'].split('|');
+                    var wednesdayStart = wednesdayString[0];
+                    var wednesdayEnd = wednesdayString[1];
+                    var thursdayString = shiftData['thursday'].split('|');
+                    var thursdayStart = thursdayString[0];
+                    var thursdayEnd = thursdayString[1];
+                    var fridayString = shiftData['friday'].split('|');
+                    var fridayStart = fridayString[0];
+                    var fridayEnd = fridayString[1];
+                    var saturdayString = shiftData['saturday'].split('|');
+                    var saturdayStart = saturdayString[0];
+                    var saturdayEnd = saturdayString[1];
+                    var sundayString = shiftData['sunday'].split('|');
+                    var sundayStart = sundayString[0];
+                    var sundayEnd = sundayString[1];
+
+                    $('.formsection_data_shift_name').val(shiftName);
+
+                    $('.schedule_enable').each(function () {
+                        $(this).prop('checked', false);
+                    });
+
+                    $('.formsection_toggle_time_fields').each(function () {
+                        $(this).hide();
+                    });
+
+                    if (shiftData['monday'] !== undefined && shiftData['monday'] !== null && shiftData['monday'].length > 0) {  
+                        $('.formsection_data_monday_start').timepicker('destroy');
+                        $('.formsection_data_monday_start').data('defaulttime',mondayStart);
+                        $('.formsection_data_monday_end').timepicker('destroy');
+                        $('.formsection_data_monday_end').data('defaulttime',mondayEnd); 
+                        $('.formsection_data_checkbox_monday').prop('checked', true);
+                        $('.formsection_data_toggle_monday').show();
+                    }
+                    if (shiftData['tuesday'] !== undefined && shiftData['tuesday'] !== null && shiftData['tuesday'].length > 0) {
+                        $('.formsection_data_tuesday_start').timepicker('destroy');
+                        $('.formsection_data_tuesday_start').data('defaulttime',tuesdayStart);
+                        $('.formsection_data_tuesday_end').timepicker('destroy');
+                        $('.formsection_data_tuesday_end').data('defaulttime',tuesdayEnd);
+                        $('.formsection_data_checkbox_tuesday').prop('checked', true);
+                        $('.formsection_data_toggle_tuesday').show();
+                    }
+                    if (shiftData['wednesday'] !== undefined && shiftData['wednesday'] !== null && shiftData['wednesday'].length > 0) {
+                        $('.formsection_data_wednesday_start').timepicker('destroy');
+                        $('.formsection_data_wednesday_start').data('defaulttime',wednesdayStart);
+                        $('.formsection_data_wednesday_end').timepicker('destroy');
+                        $('.formsection_data_wednesday_end').data('defaulttime',wednesdayEnd);
+                        $('.formsection_data_checkbox_wednesday').prop('checked', true);
+                        $('.formsection_data_toggle_wednesday').show();
+                    }
+                    if (shiftData['thursday'] !== undefined && shiftData['thursday'] !== null && shiftData['thursday'].length > 0) {
+                        $('.formsection_data_thursday_start').timepicker('destroy');
+                        $('.formsection_data_thursday_start').data('defaulttime',thursdayStart);
+                        $('.formsection_data_thursday_end').timepicker('destroy');
+                        $('.formsection_data_thursday_end').data('defaulttime',thursdayEnd);
+                        $('.formsection_data_checkbox_thursday').prop('checked', true);
+                        $('.formsection_data_toggle_thursday').show();
+                    }
+                    if(shiftData['friday'] !== undefined && shiftData['friday'] !== null && shiftData['friday'].length > 0) {
+                        $('.formsection_data_friday_start').timepicker('destroy');
+                        $('.formsection_data_friday_start').data('defaulttime',fridayStart);
+                        $('.formsection_data_friday_end').timepicker('destroy');
+                        $('.formsection_data_friday_end').data('defaulttime',fridayEnd);
+                        $('.formsection_data_checkbox_friday').prop('checked', true);
+                        $('.formsection_data_toggle_friday').show();
+                    }
+                    if (shiftData['saturday'] !== undefined && shiftData['saturday'] !== null && shiftData['saturday'].length > 0) {
+                        $('.formsection_data_saturday_start').timepicker('destroy');
+                        $('.formsection_data_saturday_start').data('defaulttime', saturdayStart);
+                        $('.formsection_data_saturday_end').timepicker('destroy');
+                        $('.formsection_data_saturday_end').data('defaulttime', saturdayEnd);
+                        $('.formsection_data_checkbox_saturday').prop('checked', true);
+                        $('.formsection_data_toggle_saturday').show();
+                    }
+                    if (shiftData['sunday'] !== undefined && shiftData['sunday'] !== null && shiftData['sunday'].length > 0) {
+                        $('.formsection_data_sunday_start').timepicker('destroy');
+                        $('.formsection_data_sunday_start').data('defaulttime',sundayStart);
+                        $('.formsection_data_sunday_end').timepicker('destroy');
+                        $('.formsection_data_sunday_end').data('defaulttime',sundayEnd);
+                        $('.formsection_data_checkbox_sunday').prop('checked', true);
+                        $('.formsection_data_toggle_sunday').show();
+                    }
+                    InitTimePickers();
+                    $('.popup_scrollable').show();
+                </script>
+                HTML;
+            }
+
+            return $returnedCode;
+        }
+
         public static function GenerateEmployeesPage($_dbInfo) {
             $canAddEmployee = DatabaseManager::CheckPermissions($_dbInfo, ['ce']);
             if (!DatabaseManager::CheckPermissions($_dbInfo, ['ve'])) {
@@ -125,8 +409,15 @@
         }
 
         public static function GenerateNewRolePage($_dbInfo, $_roleid) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
+                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+            }
             $returnedCode = <<<HTML
                 <script>
+                    var phpRoleId = `$_roleid`;
+                    if (phpRoleId > 0) {
+                        $('.popup_scrollable').hide();
+                    }
                     $("#submit_new_role").click(function() {
                         var endperms = "";
                         var first = true;
@@ -221,11 +512,16 @@
                                 <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ses'/>See Schedule</div>
                                 <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ees'/>Edit Schedule</div>
                                 <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='cer'/>Create New Roles</div>
-                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='eer'/>Change Employee Roles</div>
                                 <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='eerp'/>Edit Role Permissions</div>
                                 <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='edwh'/>Edit Default Work Hours</div>
                             </div>
-                        </div>          
+                        </div> 
+                        <div class='formsection_control_group'>
+                            <div class='formsection_control_header'>Company Settings</div>
+                            <div class='formsection_control_options'>
+                                <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='emes'/>Edit Roles / Shifts / Permissions</div>
+                            </div>
+                        </div>         
                     </div>
                 </div>
             ";
@@ -258,7 +554,7 @@
                             $(this).prop("checked", true);
                         }
                     });
-
+                    $('.popup_scrollable').show();
                 </script>
                 HTML;
             }
@@ -267,20 +563,37 @@
         }
 
         public static function GenerateEmployeeSettingsPage($_dbInfo) {
+            if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
+                die("You do not have permission to view this page. Speak to your account manager to gain access.");
+            }
             $returnedCode = <<<HTML
                 <script type='text/javascript'>
                     InitTimePickers();
                     $('.btn_open_new_role').click(function() {
                         $('.popup_darken').fadeIn(500);
                         $('.popup_wrapper').fadeIn(500);
-                        SetLoadingIcon('.popup_scrollable');
+                        SetLoadingIcon('.popup_content');
                         var requestData = [
                             {name: 'action', value: 'GenerateNewRolePage'}
                         ];
                         CancelAllAjaxCalls();
                         AjaxCall(xhrArray, requestData, function(status, response) {
                             if (status) {
-                                $('.popup_content').html(response).show();
+                                $('.popup_content').html(response).fadeIn(500);
+                            }
+                        });
+                    });
+                    $('.btn_open_new_shift').click(function() {
+                        $('.popup_darken').fadeIn(500);
+                        $('.popup_wrapper').fadeIn(500);
+                        SetLoadingIcon('.popup_content');
+                        var requestData = [
+                            {name: 'action', value: 'GenerateNewShiftPage'}
+                        ];
+                        CancelAllAjaxCalls();
+                        AjaxCall(xhrArray, requestData, function(status, response) {
+                            if (status) {
+                                $('.popup_content').html(response).fadeIn(500);
                             }
                         });
                     });
@@ -298,6 +611,9 @@
 
             $getRoles = DatabaseManager::GetRoles($_dbInfo);
             $rolesList = ViewEmployeeRollsList::GenerateListItems($getRoles);
+
+            $getShifts = DatabaseManager::GetShifts($_dbInfo);
+            $shiftsList = ViewShiftsList::GenerateListItems($getShifts);
 
             $returnedCode .= "<div id='rightpane_viewport' style='top:0px'>";
 
@@ -434,10 +750,11 @@
                         <div class='formsection_subheader_title'>
                             <div class='formsection_line_centered_between'>
                                 This is a list of assignable shifts for your employees.
-                                <div class='button_type_1 btn_open_new_role'><img src='img/add_user_green.png' style ='width:20px;padding-right:10px;'/>New Shift</div>
+                                <div class='button_type_1 btn_open_new_shift'><img src='img/add_user_green.png' style ='width:20px;padding-right:10px;'/>New Shift</div>
                             </div>
                         </div>
-                        <div style='padding-left:40px;' id='display_employee_roles'>
+                        <div style='padding-left:40px;' id='display_shifts'>
+                        $shiftsList
                         </div>
                     </div>
                 </div>   
@@ -780,7 +1097,7 @@
             HTML;
 
             $returnedCode .= "
-            <div class='popup_topbar'><span style=\'color:white;\'>New</span> Employee</div>
+            <div class='popup_topbar'><span style='color:white;'>New</span> Employee</div>
             <div class='popup_scrollable'>
                 
                     <div class='formsectionfull' id='formsection_employee_details'>
@@ -799,7 +1116,7 @@
                                 <input type='text' class='formsection_input formsection_serialize' data-validation='name' data-serialize='city' placeholder='City'/><input type='text' class='formsection_input_fixed formsection_serialize' data-validation='state' data-serialize='state' maxlength='2' placeholder='AZ'/><input type='text' class='formsection_input formsection_serialize' data-validation='zipCode' data-serialize='zipCode' placeholder='Zip Code'/>
                             </div>
                             <div class='formsection_line'>
-                                <input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone_nonrequired' data-serialize='phone' placeholder='Phone Number'/><input type='text' class='formsection_input formsection_serialize' data-validation='email' data-serialize='email' placeholder='Email'/>
+                                <input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone' data-serialize='phone' placeholder='Phone Number'/><input type='text' class='formsection_input formsection_serialize' data-validation='email' data-serialize='email' placeholder='Email'/>
                             </div>
                             <div class='formsection_line_width_unset' style='width:200px;'>
                                 <input type='text' class='formsection_input formsection_serialize formsection_date_full_mask' data-validation='date' data-serialize='dob' placeholder='Date of Birth (day/month/year)'/>
@@ -878,6 +1195,8 @@
         }
 
         public static function GenerateSettingsMenu($_dbInfo) {
+            $myPerms = DatabaseManager::GetUserPermissions($_dbInfo);
+
             $returnedCode = <<<HTML
                 <script type='text/javascript'>
                     $('.open_employee_settings_page').click(function() { 
@@ -885,6 +1204,7 @@
                         {name: 'action', value: 'LeftPaneButtonClick'},
                         {name: 'buttonid', value: 'EmployeeSettings'}
                         ];
+                        SetLoadingIcon('#rightpane_container');
                         CancelAllAjaxCalls();
                         AjaxCall(xhrArray, requestData, function(status, response) {
                             if (status) {
@@ -903,8 +1223,13 @@
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Work Order</div>
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Serice Report</div>
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Invoice</div>
-            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Account</div>
-            <div class='settingsmenu_button open_employee_settings_page'><img src='img/tech_green.png' width='30px' style='padding-right:10px;'/>Employee Hours / Roles</div>
+            <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Account</div>";
+
+            if (DatabaseManager::ManuallyCheckPermissions($myPerms, ["emes"])) {
+                $returnedCode .= "<div class='settingsmenu_button open_employee_settings_page'><img src='img/tech_green.png' width='30px' style='padding-right:10px;'/>Employee Hours / Roles</div>";
+            }
+            
+            $returnedCode .= "
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Report</div>
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Inventory</div>
             <div class='settingsmenu_button'><img src='img/report_green.png' width='30px' style='padding-right:10px;'/>Contract Builder</div>
@@ -933,7 +1258,7 @@
                 <input type='text' class='formsection_input formsection_serialize' data-validation='name' data-serialize='city' placeholder='City'/><input type='text' class='formsection_input_fixed formsection_serialize' data-validation='state' data-serialize='state' maxlength='2' placeholder='AZ'/><input type='text' class='formsection_input formsection_serialize' data-validation='zipCode' data-serialize='zipCode' placeholder='Zip Code'/>
             </div>
             <div class='formsection_line'>
-                <input type='text' class='formsection_input formsection_serialize' data-validation='phone' data-serialize='primaryPhone' placeholder='Billing Primary Phone'/><input type='text' class='formsection_input formsection_serialize' data-validation='phone_nonrequired' data-serialize='secondaryPhone' placeholder='Billing Secondary Phone'/>
+                <input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone' data-serialize='primaryPhone' placeholder='Billing Primary Phone'/><input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone_nonrequired' data-serialize='secondaryPhone' placeholder='Billing Secondary Phone'/>
             </div>
             <div class='formsection_line'>
                 <input type='text' class='formsection_input formsection_serialize' data-validation='email' data-serialize='email' placeholder='Billing Email'/>
@@ -949,7 +1274,7 @@
                     <input type='text' class='formsection_input formsection_serialize' data-validation='name' data-serialize='contact_firstName' placeholder='Contact First Name'/><input type='text' class='formsection_input formsection_serialize' data-validation='name' data-serialize='contact_lastName' placeholder='Contact Last Name'/>
                 </div>
                 <div class='formsection_line'>
-                    <input type='text' class='formsection_input formsection_serialize' data-validation='phone' data-serialize='contact_primaryPhone' placeholder='Primary Phone'/><input type='text' class='formsection_input formsection_serialize' data-validation='phone_nonrequired' data-serialize='contact_secondaryPhone' placeholder='Secondary Phone'/>
+                    <input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone' data-serialize='contact_primaryPhone' placeholder='Primary Phone'/><input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone_nonrequired' data-serialize='contact_secondaryPhone' placeholder='Secondary Phone'/>
                 </div>
                 <div class='formsection_line'>
                     <input type='text' class='formsection_input formsection_serialize' data-validation='email' data-serialize='contact_email' placeholder='Email'/>
@@ -1038,7 +1363,9 @@
                                 $('.billing_address_toggle_section').html("");
                             });
                         } else {
-                            $('.billing_address_toggle_section').html(billingTemplate).slideDown(200);
+                            $('.billing_address_toggle_section').html(billingTemplate).slideDown(200, function() {
+                                InitInputMasks();
+                            });
                         }
                     });
                     $('#formsection_cid_1_combo').change(function() { 
@@ -1077,6 +1404,7 @@
                                 complete: function() {
                                     var scrollView = $('.popup_scrollable');
                                     scrollView.css('overflow-y', 'scroll');
+                                    InitInputMasks();
                                 }
                             });
                         }
@@ -1114,6 +1442,7 @@
                                 complete: function() {
                                     var scrollView = $('.popup_scrollable');
                                     scrollView.css('overflow-y', 'scroll');
+                                    InitInputMasks();
                                 }
                             });
                         }
@@ -1122,7 +1451,7 @@
                 HTML;
 
             $returnedCode .= "
-            <div class='popup_topbar'><span style=\'color:white;\'>New</span> Account</div><div class='popup_scrollable'>
+            <div class='popup_topbar'><span style='color:white;'>New</span> Account</div><div class='popup_scrollable'>
                 <div class='formsection_row'>
                     <div class='formsection' id='formsection_newaccount_details'>
                         <div class='formsection_header'>Account Details</div>
@@ -1152,7 +1481,7 @@
                                 <input type='text' class='formsection_input formsection_serialize' data-validation='name' data-serialize='city' placeholder='Contact City'/><input type='text' class='formsection_input_fixed formsection_serialize' data-validation='state' data-serialize='state' maxlength='2' placeholder='AZ'/><input type='text' class='formsection_input formsection_serialize' data-validation='zipCode' data-serialize='zipCode' placeholder='Zip Code'/>
                             </div>
                             <div class='formsection_line'>
-                                <input type='text' class='formsection_input formsection_serialize' data-validation='phone' data-serialize='primaryPhone' placeholder='Primary Phone'/><input type='text' class='formsection_input formsection_serialize' data-validation='phone_nonrequired' data-serialize='secondaryPhone' placeholder='Secondary Phone'/>
+                                <input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone' data-serialize='primaryPhone' placeholder='Primary Phone'/><input type='text' class='formsection_input formsection_serialize formsection_phone_mask' data-validation='phone_nonrequired' data-serialize='secondaryPhone' placeholder='Secondary Phone'/>
                             </div>
                             <div class='formsection_line'>
                                 <input type='text' class='formsection_input formsection_serialize' data-validation='email' data-serialize='email' placeholder='Email'/>
@@ -1210,6 +1539,12 @@
             <div id='submit_new_account_form' class='button_type_2'>Save</div><div class='button_type_1' id='btn_close_popup'>Discard</div>
             </div>
             ";
+
+            $returnedCode .= <<<HTML
+                <script>
+                    InitInputMasks();
+                </script>
+            HTML;
             
             return $returnedCode;
         }
