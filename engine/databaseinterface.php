@@ -1,5 +1,4 @@
 <?php
-
 class DatabaseManager
 {
     public static function connect($_dbInfo, $_dbname)
@@ -9,6 +8,7 @@ class DatabaseManager
         try {
             $pdo = new PDO($dsn, $_dbInfo['dusername'], $_dbInfo['dpassword']);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->exec("SET time_zone = '-05:00'");
             return $pdo;
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
@@ -138,36 +138,65 @@ class DatabaseManager
         return false;
     }
 
+    public static function GetEmployee($_dbInfo, $_employeeid) {
+        $_companyid = $_SESSION['companyid'];
+        $ccid = $_companyid + 1000;
+        $pdo = self::connect($_dbInfo, 'servicemanager');
+
+        if (self::ValidateLogin($pdo)) {
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `id` = :employeeid");
+            $stmt->bindParam(":employeeid", $_employeeid);
+            $stmt->execute();
+            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $pdo1 = null;
+            $pdo = null;
+
+            return $results;
+        }
+        return false;
+    }
+
     public static function GetEmployeeAccounts($_dbInfo) {
         $_companyid = $_SESSION['companyid'];
         $pdo = self::connect($_dbInfo, 'servicemanager');
 
         if (self::ValidateLogin($pdo)) {
-            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` WHERE `companyid` = :companyid AND `role` = 'employee'");
+            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `companyid` = :companyid");
             $stmt->bindParam(":companyid", $_companyid);
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $retVal = $results;
+                return $retVal;
             }
         }
+
+        return null;
     }
 
-    public static function GetShifts($_dbInfo) {
+    public static function GetShifts($_dbInfo, $asAssoc) {
         $_companyid = $_SESSION['companyid'];
 
         $ccid = $_companyid + 1000;
         $pdo1 = self::connect($_dbInfo, 'servicemanager');
         $pdo = self::connect($_dbInfo, "company_" . $ccid);
 
-        $retVal = null;
+        $retVal = [];
 
         if (self::ValidateLogin($pdo1)) {
             $stmt = $pdo->prepare("SELECT * FROM `shifts` ORDER BY `id`");
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $retVal = $results;
+                if ($asAssoc) {
+                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($results as $result) {
+                        $retVal[$result['id']] = $result;
+                    }
+                }
+                else {
+                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $retVal = $results;
+                }
             }
         }
         $pdo1 = null;
@@ -175,21 +204,64 @@ class DatabaseManager
         return $retVal;
     }
 
-    public static function GetRoles($_dbInfo) {
+    public static function GetHolidaySchedules($_dbInfo) {
         $_companyid = $_SESSION['companyid'];
 
         $ccid = $_companyid + 1000;
         $pdo1 = self::connect($_dbInfo, 'servicemanager');
         $pdo = self::connect($_dbInfo, "company_" . $ccid);
 
-        $retVal = null;
+        $retVal = [];
+
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `holidayschedules` ORDER BY `id`");
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($results as $result) {
+                    $rAr = [];
+                    $rAr['scheduleinfo'] = $result;
+
+                    $stmt = $pdo->prepare("SELECT * FROM `offdays` WHERE `holidayscheduleid` = :holidayscheduleid");
+                    $stmt->bindParam(":holidayscheduleid", $result['id']);
+                    $stmt->execute();
+
+                    $resultsx = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $rAr['offdays'] = $resultsx;
+
+                    array_push($retVal, $rAr);
+                }
+
+                return $retVal;
+            }
+        }  
+        return null;
+    }
+
+    public static function GetRoles($_dbInfo, $asAssoc) {
+        $_companyid = $_SESSION['companyid'];
+
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        $retVal = [];
 
         if (self::ValidateLogin($pdo1)) {
             $stmt = $pdo->prepare("SELECT * FROM `roles` ORDER BY `id`");
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $retVal = $results;
+                if ($asAssoc) {
+                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($results as $result) {
+                        $retVal[$result['id']] = $result;
+                    }
+                }
+                else {
+                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $retVal = $results;
+                }
             }
         }
         $pdo1 = null;
@@ -278,6 +350,25 @@ class DatabaseManager
         return false;
     }
 
+    public static function GetLocationsByAccount($_dbInfo, $_accountid) {
+        $_companyid = $_SESSION['companyid'];
+        $ccid = $_companyid + 1000;
+        $pdo1 = self::connect($_dbInfo, 'servicemanager');
+        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        if (self::ValidateLogin($pdo1)) {
+            $stmt = $pdo->prepare("SELECT * FROM `locations` WHERE `accountid` = :id");
+            $stmt->bindParam(":id", $_accountid);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $pdo1 = null;
+            $pdo = null;
+
+            return $results;
+        }
+        return false;
+    }
+
     public static function GetContact($_dbInfo, $_contactid)
     {
         $_companyid = $_SESSION['companyid'];
@@ -322,6 +413,8 @@ class DatabaseManager
                 "firstName" => "name",
                 "lastName" => "name",
                 "dob" => "date_full",
+                "role" => "selectnumvalue",
+                "shift" => "selectnumvalue",
                 "street1" => "address",
                 "street2" => "address_nonrequired",
                 "city" => "name",
@@ -365,6 +458,7 @@ class DatabaseManager
                     `lastname`,
                     `dob`,
                     `role`,
+                    `shift`,
                     `street1`,
                     `street2`,
                     `city`,
@@ -395,6 +489,7 @@ class DatabaseManager
                     :lastname,
                     :dob,
                     :role,
+                    :shift,
                     :street1,
                     :street2,
                     :city,
@@ -420,7 +515,8 @@ class DatabaseManager
                 )"
             );
             
-            $tempRole = 7;
+            $tempRole = $employeeInformation['role'];
+            $tempShift = $employeeInformation['shift'];
             $tempPassword = PasswordEncrypt::Encrypt('test');
             $stmt->bindParam(':password', $tempPassword);
             $stmt->bindParam(':firstname', $employeeInformation['firstName']);
@@ -430,6 +526,7 @@ class DatabaseManager
             $stmt->bindParam(':email', $employeeInformation['email']);
             $stmt->bindParam(':companyid', $_SESSION['companyid']);
             $stmt->bindParam(':role', $tempRole);
+            $stmt->bindParam(':shift', $tempShift);
             $stmt->bindParam(':street1', $employeeInformation['street1']);
             $stmt->bindParam(':street2', $employeeInformation['street2']);
             $stmt->bindParam(':city', $employeeInformation['city']);
@@ -715,11 +812,14 @@ class DatabaseManager
 
             $locations = $_formInformation['locations'];
 
+            $count = 0;
             if (is_array($locations)) {
                 if (count($locations) > 0) {
                     foreach ($locations as $location) {
+                        $count++;
                         $finalContactId = $cid;
                         if (
+                            !self::ValidateField($location['name'], 'name_nonrequired') ||
                             !self::ValidateField($location['street1'], 'name') ||
                             !self::ValidateField($location['street2'], 'address_nonrequired') ||
                             !self::ValidateField($location['city'], 'name') ||
@@ -782,8 +882,14 @@ class DatabaseManager
                             $finalContactId = $pdo->lastInsertId();
                         }
 
+                        $locationName = $location['name'];
+
+                        if (count == 1) {
+                            $locationName = "Primary Location";
+                        }
                         // Create Location
-                        $stmt = $pdo->prepare("INSERT INTO `locations` (`accountid`,`street1`,`street2`,`city`,`state`,`zipcode`,`contacts`,`notes`) VALUES (:accountid,:street1,:street2,:city,:state,:zipcode,:contacts,'')");
+                        $stmt = $pdo->prepare("INSERT INTO `locations` (`name`, `accountid`,`street1`,`street2`,`city`,`state`,`zipcode`,`contacts`,`notes`) VALUES (:accountname,:accountid,:street1,:street2,:city,:state,:zipcode,:contacts,'')");
+                        $stmt->bindParam(":accountname", $locationName);
                         $stmt->bindParam(":accountid", $aid);
                         $stmt->bindParam(":street1", $location['street1']);
                         $stmt->bindParam(":street2", $location['street2']);
@@ -856,6 +962,13 @@ class DatabaseManager
             case 'phone':
                 $phoneRegex = '/^(?=.*\d)\(\d{3}\) \d{3}-\d{4}$/';
                 if (!preg_match($phoneRegex, $form_input)) {
+                    return $retVal;
+                }
+                break;
+
+            case 'selectnumvalue':
+                $selectnumvalueRegex = '/^-?\d+$/';
+                if (strlen($form_input) > 0 && !preg_match($selectnumvalueRegex, $form_input)) {
                     return $retVal;
                 }
                 break;

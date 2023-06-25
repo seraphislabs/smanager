@@ -1,4 +1,4 @@
-.accountviewlistheaders {
+.viewlistheaders {
     display:grid;
     grid-template-columns: 1fr 1fr;
     border:2px solid #14A76C;
@@ -7,7 +7,7 @@
     border-top-right-radius: 9px;
 }
 
-.accountviewlistitem {
+.viewlistitem {
     display:grid;
     grid-template-columns: 1fr 1fr;
     padding:10px;
@@ -16,7 +16,7 @@
     color:#33363F;
 }
 
-.accountviewlistitem:hover {
+.viewlistitem:hover {
     border:2px solid #14A76C;
     border-width: -2px;
     cursor:pointer;
@@ -24,6 +24,6 @@
     font-weight:bold;
 }
 
-.accountviewlistcontainer {
+.viewlistcontainer {
     width:100%;
 }

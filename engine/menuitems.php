@@ -1,87 +1,462 @@
 <?php
 
-class LeftPaneMenuItem {
+class MenuListing {
+    public static function GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid) {
+        $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
+        $shiftInfo = DatabaseManager::GetShift($_dbInfo, $employeeInfo['shift']);
+        return self::GenerateThisMonthSchedule($_month, $_year, $shiftInfo);
+    }
+
+    public static function GenerateThisMonthSchedule($_month, $_year, $_schedule) {
+        $returnedCode = "";
+
+        $_month = ltrim($_month, "0");
+        $_year = ltrim($_year, "0");
+
+        $returnedCode .= <<<HTML
+                <div class='calendar_loading' style='display:none;'></div>
+        HTML;
+
+        // Calculate previous month and number of days in previous month
+        $prevMonth = ($_month == 1) ? 12 : $_month - 1;
+        $prevYear = ($_month == 1) ? $_year - 1 : $_year;
+        $prevNumDays = cal_days_in_month(CAL_GREGORIAN, $prevMonth, $prevYear);
+
+        // Calculate the day of the week for the first day of the current month
+        $firstDayOfWeek = date('N', strtotime("{$_year}-{$_month}-01"));
+        // Calculate the number of days to display from the previous month
+        $numPrevDays = $firstDayOfWeek - 1;
+
+        // Display the days from the previous month
+        for ($day = $prevNumDays - $numPrevDays + 1; $day <= $prevNumDays; $day++) {
+            $date = "$prevMonth/$day/$prevYear";
+            $dayOfWeek = date('l', strtotime($date));
+
+            $dayOfWeekLwr = strtolower($dayOfWeek);
+            $scheduleTime = "";
+            if (strlen($_schedule[$dayOfWeekLwr]) > 0)
+            {
+                $scheduleTime = str_replace("|", "<br/>", $_schedule[$dayOfWeekLwr]);
+            }
+            $day = ltrim($day, "0");
+
+            if ($dayOfWeek == 'Monday') {
+                $returnedCode .= '<span class="calendar_week">';
+            }
+
+            $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+
+            if ($dateTime < new DateTime('today')) {
+                $returnedCode .= <<<HTML
+                <div class='calendar_day'>
+                    <div class='calendar_day_header'>
+                        <span class='textcolor_grey'>$prevMonth/$day</span>
+                    </div>
+                </div>
+                HTML;
+            }
+            else if (date('m/d/Y', strtotime($date)) == date('m/d/Y')) 
+            {
+                if (HolidayChecker::IsHoliday($dateTime)) {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$prevMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_orange'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                } else {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span class='textcolor_green'>$prevMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_grey'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+            }
+            else
+            {
+                if (HolidayChecker::IsHoliday($dateTime)) {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$prevMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_orange'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                } else {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$prevMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_grey'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+            }
+
+            if ($dayOfWeek == 'Sunday') {
+                $returnedCode .= '</span>';
+            }
+        }
+
+        // Display the days from the current month
+        $numDays = cal_days_in_month(CAL_GREGORIAN, $_month, $_year);
+
+        for ($day = 1; $day <= $numDays; $day++) {
+            $date = "$_month/$day/$_year";
+            $dayOfWeek = date('l', strtotime($date));
+
+            $dayOfWeekLwr = strtolower($dayOfWeek);
+            $scheduleTime = "";
+            if (strlen($_schedule[$dayOfWeekLwr]) > 0)
+            {
+                $scheduleTime = str_replace("|", "<br/>", $_schedule[$dayOfWeekLwr]);
+            }
+            $day = ltrim($day, "0");
+
+            if ($dayOfWeek == 'Monday') {
+                $returnedCode .= '<span class="calendar_week">';
+            }
+
+            $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+
+            if ($dateTime < new DateTime('today')) {
+                $returnedCode .= <<<HTML
+                <div class='calendar_day'>
+                    <div class='calendar_day_header'>
+                        <span class='textcolor_grey'>$_month/$day</span>
+                    </div>
+                </div>
+                HTML;
+            } else {
+                if (HolidayChecker::IsHoliday($dateTime)) {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$_month/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_orange'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+                else if (date('m/d/Y', strtotime($date)) == date('m/d/Y')) 
+                {
+                    if (HolidayChecker::IsHoliday($dateTime)) {
+                        $returnedCode .= <<<HTML
+                        <div class='calendar_day'>
+                            <div class='calendar_day_header'>
+                                <span>$_month/$day</span>
+                            </div>
+                            <div class='calendar_day_content' style='margin-top:8px;'>
+                                <span class='textcolor_orange'>$scheduleTime</span>
+                            </div>
+                        </div>
+                        HTML;
+                    } else {
+                        $returnedCode .= <<<HTML
+                        <div class='calendar_day' style='background-color:#ebf5f1;'>
+                            <div class='calendar_day_header'>
+                                <span class='textcolor_green'>$_month/$day</span>
+                            </div>
+                            <div class='calendar_day_content' style='margin-top:8px;'>
+                                <span class='textcolor_grey'>$scheduleTime</span>
+                            </div>
+                        </div>
+                        HTML;
+                    }
+                }
+                else 
+                {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$_month/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_grey'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+            }
+
+            if ($dayOfWeek == 'Sunday') {
+                $returnedCode .= '</span>';
+            }
+        }
+
+        // Display the days from the next month
+        $nextMonth = ($_month == 12) ? 1 : $_month + 1;
+        $nextYear = ($_month == 12) ? $_year + 1 : $_year;
+        $numNextDays = 8 - date('N', strtotime("$nextYear-$nextMonth-01"));
+
+        for ($day = 1; $day <= $numNextDays; $day++) {
+            $date = "$nextMonth/$day/$nextYear";
+            $dayOfWeek = date('l', strtotime($date));
+
+            $dayOfWeekLwr = strtolower($dayOfWeek);
+            $scheduleTime = "";
+            if (strlen($_schedule[$dayOfWeekLwr]) > 0)
+            {
+                $scheduleTime = str_replace("|", "<br/>", $_schedule[$dayOfWeekLwr]);
+            }
+            $day = ltrim($day, "0");
+
+            if ($dayOfWeek == 'Monday') {
+                $returnedCode .= '<span class="calendar_week">';
+            }
+
+            $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+
+            if ($dateTime < new DateTime('today')) {
+                $returnedCode .= <<<HTML
+                <div class='calendar_day'>
+                    <div class='calendar_day_header'>
+                        <span class='textcolor_grey'>$nextMonth/$day</span>
+                    </div>
+                </div>
+                HTML;
+            } 
+            else if (date('m/d/Y', strtotime($date)) == date('m/d/Y')) 
+            {
+                if (HolidayChecker::IsHoliday($dateTime)) {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$nextMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_orange'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                } else {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span class='textcolor_green'>$nextMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_grey'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+            }
+            else
+            {
+                if (HolidayChecker::IsHoliday($dateTime)) {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$nextMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_orange'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                } else {
+                    $returnedCode .= <<<HTML
+                    <div class='calendar_day'>
+                        <div class='calendar_day_header'>
+                            <span>$nextMonth/$day</span>
+                        </div>
+                        <div class='calendar_day_content' style='margin-top:8px;'>
+                            <span class='textcolor_grey'>$scheduleTime</span>
+                        </div>
+                    </div>
+                    HTML;
+                }
+            }
+
+            if ($dayOfWeek == 'Sunday') {
+                $returnedCode .= '</span>';
+            }
+        }
+
+        return $returnedCode;
+    }
+
+    public static function GetRolesAsSelect($_dbInfo) {
+        $returnedCode = "";
+
+        $retVar = DatabaseManager::GetRoles($_dbInfo, false);
+
+        foreach($retVar as $role) {
+            $roleName = $role['name'];
+            $roleID = $role['id'];
+            $returnedCode .= <<<HTML
+            <option value='$roleID'>$roleName</option>
+            HTML;
+        }
+
+        return $returnedCode;
+    }
+
+    public static function GetShiftsAsSelect($_dbInfo) {
+        $returnedCode = "";
+
+        $retVar = DatabaseManager::GetShifts($_dbInfo, false);
+
+        foreach($retVar as $shift) {
+            $shiftName = $shift['name'];
+            $shiftID = $shift['id'];
+            $returnedCode .= <<<HTML
+            <option value='$shiftID'>$shiftName</option>
+            HTML;
+        }
+
+        return $returnedCode;
+    }
+
     public static function GenerateButton($buttonType) {
         $returnedCode = "";
         switch ($buttonType) {
             case "Accounts":
-                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>Accounts</div><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>";
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='Accounts'><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>
+                HTML;
                 break;
             case "Dashboard":
-                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>Dashboard</div><img src='img/menu_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Dashboard</span></div>";
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='Dashboard'><img src='img/menu_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Dashboard</span></div>
+                HTML;
                 break;
             case "Employees":
-                $returnedCode = "<div class='leftpanebutton'><div class='buttonid' style='display:none'>employees</div><img src='img/tech_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Employees</span></div>";
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='Employees'><img src='img/tech_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Employees</span></div>
+                HTML;
+                break;
+            case "WorkOrders":
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='WorkOrders'><img src='img/order_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Work Orders</span></div>
+                HTML;
+                break;
+            case "Invoices":
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='Invoices'><img src='img/invoice_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Invoices</span></div>
+                HTML;
+                break;
+            case "ServiceReports":
+                $returnedCode = <<<HTML
+                <div class='leftpanebutton' data-buttonid='ServiceReports'><img src='img/report_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Service Reports</span></div>
+                HTML;
                 break;
         }
 
         return $returnedCode;
     }
-}
 
-class ViewAccount {
-    public static function GenerateAccountDetails($_account) { 
+    public static function GenerateEmployeesList($_dbInfo, $_retArray, $_shifts, $_roles) {
         $returnedCode = "";
-        if (is_array($_account)) { 
-            $accountType = $_account['type'];
-            $accountStreet1 = $_account['street1'];
-            $accountStreet2 = $_account['street2'];
-            $accountCity = $_account['city'];
-            $accountState = $_account['state'];
-            $accountZipcode = $_account['zipcode'];
+        $employees = $_retArray;
+        if (is_array($employees)) {
+            foreach($employees as $employee) {
+                $employeeName = $employee['firstname'] . ' ' . $employee['lastname'];
+                $employeeRole = $employee['role'];
+                $employeeShift = $employee['shift'];
+                $employeeId = $employee['id'];
 
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountType</div></div>";
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountStreet1 $accountStreet2 $accountCity, $accountState, $accountZipcode</div></div>";
-        }
-        return $returnedCode;
-    }
+                $roleName = $_roles[$employeeRole]['name'];
+                $shiftName = $_shifts[$employeeShift]['name'];
 
-    public static function GenerateAccountContactDetails($_primaryContact) {
-        $returnedCode = "";
-        if (is_array($_primaryContact)) { 
-            $accountFirstName = $_primaryContact['firstname'];
-            $accountLastName = $_primaryContact['lastname'];
-            $accountPrimaryPhone = $_primaryContact['primaryphone'];
-            $accountSecondaryPhone = $_primaryContact['secondaryphone'];
-            $accountEmail = $_primaryContact['email'];
-
-            $returnedCode = "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountFirstName $accountLastName</div></div>";
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountPrimaryPhone</div></div>";
-            if (strlen($accountSecondaryPhone) > 0) {
-                $returnedCode .= "<div class='accountviewlistitem' style='background-color:#E0DFE5'><div class='accountviewlistitemsub'>$accountSecondaryPhone</div></div>";
+                $returnedCode .= <<<HTML
+                <tr class='openemployeebutton' data-employeeid='$employeeId'>
+                    <td>$employeeName</td>
+                    <td>$roleName</td>
+                    <td>$shiftName</td>
+                </tr>
+                HTML;
             }
-            $returnedCode .= "<div class='accountviewlistitem' style='background-color:#FAFAFA'><div class='accountviewlistitemsub'>$accountEmail</div></div>";
         }
+
+        $returnedCode .= <<<HTML
+        <script>
+            $('.openemployeebutton').click(function () { 
+                $(this).hide();
+                var eid = $(this).data('employeeid');
+                var requestData = [
+                {name: 'action', value: 'ViewEmployee'},
+                {name: 'employeeid', value: eid}
+                ];
+                CancelAllAjaxCalls();
+                SetLoadingIcon('#rightpane_container');
+                AjaxCall(xhrArray, requestData, function(status, response) {
+                    if (status) {
+                        $('#rightpane_container').html(response);
+                    }
+                });
+
+                console.log('clicked');
+            });
+        </script>
+    HTML;
+
         return $returnedCode;
     }
-}
 
-class ViewAccountList {
-    public static function GenerateListItems($_retArray) {
-        $count = 0;
+    public static function GenerateAccountsList($_retArray) {
         $returnedCode = "";
         $_accounts = $_retArray;
         if (is_array($_accounts)) {
             foreach($_accounts as $account) {
-                $count++;
-                $color = "#E0DFE5";
-
-                if ($count%2 == 0) {
-                    $color = "#FAFAFA";
-                }
 
                 $accountName = $account['name'];
                 $accountType = $account['type'];
                 $aid = $account['id'];
-                $returnedCode .= "<div class='accountviewlistitem' data-accountid='$aid' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";
+
+                $returnedCode .= <<<HTML
+                <tr class='openaccountbutton' data-accountid='$aid'>
+                    <td>$accountName</td>
+                    <td>$accountType</td>
+                </tr>
+                HTML;
             }
         }
+
+        $returnedCode .= <<<HTML
+            <script>
+                $('.openaccountbutton').click(function () { 
+                    $(this).hide();
+                    var aid = $(this).data('accountid');
+                    var requestData = [
+                    {name: 'action', value: 'ViewAccount'},
+                    {name: 'accountid', value: aid}
+                    ];
+                    CancelAllAjaxCalls();
+                    SetLoadingIcon('#rightpane_container');
+                    AjaxCall(xhrArray, requestData, function(status, response) {
+                        if (status) {
+                            $('#rightpane_container').html(response);
+                        }
+                    });
+
+                    console.log('clicked');
+                });
+            </script>
+        HTML;
+
         return $returnedCode;
     }
-}
 
-class ViewShiftsList {
-    public static function GenerateListItems($_retArray) {
+    public static function GenerateShiftsList($_retArray) {
         $count = 0;
         $returnedCode = "";
         $_shifts = $_retArray;
@@ -97,11 +472,20 @@ class ViewShiftsList {
                 $shiftName = $shift['name'];
                 $shiftId = $shift['id'];
 
-                $returnedCode .= "
-                <div class='formsection_line_leftjustify edit_shift_button' data-shiftid='$shiftId'>
-                    <img src='img/edit_green.png' style='width:20px;'/>$shiftName
+                $returnedCode .= <<<HTML
+                <div class='formsection_line_leftjustify_width_unset edit_shift_button' data-shiftid='$shiftId'>
+                    <img src='img/edit_green.png' style='width:20px;'/><span class='tooltip_trigger'>$shiftName
+                    <span class='mytooltip' style='display:none;'>
+                    <span style='color:#14A76C'>$shiftName</span><br/>
+                    Monday: 9-5<br/>
+                    Tuesday: 9-5<br/>
+                    Wednesday: 9-5<br/>
+                    Thursday: 9-5<br/>
+                    Friday: 9-5
+                    </span>
+                    </span>
                 </div>
-                ";
+                HTML;
             }
         }
 
@@ -129,10 +513,72 @@ class ViewShiftsList {
 
         return $returnedCode;
     }
-}
 
-class ViewEmployeeRollsList {
-    public static function GenerateListItems($_retArray) {
+    public static function GenerateLocationsList($_dbInfo, $_retArray) {
+        $returnedCode = "";
+        $count = 0;
+        $_locations = $_retArray;
+        if (is_array($_locations)) {
+            foreach($_locations as $location) {
+                $count++;
+                $locationName = $location['name'];
+                $locationAddress = $location['city'] . "<span class='textcolor_green'>&nbsp;|&nbsp;</span>" .$location['street1'];
+                $lid = $location['id'];
+                $lcs = $location['contacts'];
+                $lcsf = explode("|", $lcs);
+                $lcdata = DatabaseManager::GetContact($_dbInfo, $lcsf[0]);
+
+                $locationContactName = $lcdata['firstname'] . " " . $lcdata['lastname'];
+                $locationContactPhone = $lcdata['primaryphone'];
+
+                if (count($_locations) > 1 ) {
+                    if ($locationName == "") {
+                        $locationName = "Location $count";
+                    }
+                }
+                else {
+                    if ($locationName == "") {
+                        $locationName = "Primary Location";
+                    }
+                }
+
+                $returnedCode .= <<<HTML
+                <tr class='openlocationbuttonx' data-accountid='$lid'>
+                    <td>$locationName</td>
+                    <td>$locationAddress</td>
+                    <td>$locationContactName</td>
+                    <td>$locationContactPhone</td>
+                </tr>
+                HTML;
+            }
+        }
+
+        $returnedCode .= <<<HTML
+            <script>
+                $('.openlocationbutton').click(function () { 
+                    $(this).hide();
+                    var aid = $(this).data('accountid');
+                    var requestData = [
+                    {name: 'action', value: 'ViewAccount'},
+                    {name: 'accountid', value: aid}
+                    ];
+                    CancelAllAjaxCalls();
+                    SetLoadingIcon('#rightpane_container');
+                    AjaxCall(xhrArray, requestData, function(status, response) {
+                        if (status) {
+                            $('#rightpane_container').html(response);
+                        }
+                    });
+
+                    console.log('clicked');
+                });
+            </script>
+        HTML;
+
+        return $returnedCode;
+    }
+
+    public static function GenerateEmployeeRoleList($_retArray) {
         $count = 0;
         $returnedCode = "";
         $_roles = $_retArray;
@@ -147,17 +593,11 @@ class ViewEmployeeRollsList {
 
                 $roleName = $role['name'];
                 $roleId = $role['id'];
-
-                $returnedCode .= "
+                $returnedCode .= <<<HTML
                 <div class='formsection_line_leftjustify edit_role_button' data-roleid='$roleId'>
                     <img src='img/edit_green.png' style='width:20px;'/>$roleName
                 </div>
-                ";
-
-                /*$accountName = $account['name'];
-                $accountType = $account['type'];
-                $aid = $account['id'];
-                $returnedCode .= "<div class='accountviewlistitem' data-accountid='$aid' style='background-color:$color'><div class='accountviewlistitemsub'>$accountName</div><div class='accountviewlistitemsub'>$accountType</div></div>";*/
+                HTML;
             }
         }
 

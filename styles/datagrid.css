@@ -1,0 +1,103 @@
+
+
+  .table_employees {
+    display: grid;
+    border-collapse: collapse;
+    min-width: 100%;
+    grid-template-columns: 
+      minmax(150px, 1fr)
+      minmax(150px, 1.67fr)
+      minmax(150px, 1.67fr);
+  }
+
+  .table_accounts {
+    display: grid;
+    border-collapse: collapse;
+    min-width: 100%;
+    grid-template-columns: 
+      minmax(150px, 1fr)
+      minmax(150px, 1.67fr);
+  }
+
+  .table_accountdetails {
+    display: grid;
+    border-collapse: collapse;
+    min-width: 100%;
+    grid-template-columns: 
+      minmax(80px, 0.5fr)
+      minmax(150px, 1.67fr);
+  }
+
+  .table_employeedetails {
+    display: grid;
+    border-collapse: collapse;
+    min-width: 100%;
+    grid-template-columns: 
+      minmax(120px, 0.66fr)
+      minmax(120px, 1.67fr);
+  }
+
+  .table_accountlocationdetails {
+    display: grid;
+    border-collapse: collapse;
+    min-width: 100%;
+    grid-template-columns: 
+      minmax(150px, 1fr)
+      minmax(150px, 1.67fr)
+      minmax(150px, 1.67fr)
+      minmax(150px, 1.67fr);
+  }
+  
+  thead,
+  tbody,
+  tr {
+    display: contents;
+  }
+
+  tr:hover td {
+    cursor:pointer;
+    color:#14A76C;
+  }
+  
+  th,
+  td {
+    padding: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+  }
+  
+  th {
+    position: sticky;
+    top: 0;
+    background: white;
+    text-align: left;
+    font-weight: normal;
+    font-size: 1.3rem;
+    color: black;
+    border-top: 2px solid #14A76C;
+    border-bottom: 2px solid #14A76C;
+    padding: 5px;
+    padding-left: 13px;
+  }
+
+  th:first-child {
+    border-left: 2px solid #14A76C;
+    border-top-left-radius: 9px;
+  }
+  
+  th:last-child {
+    border-right: 2px solid #14A76C;
+    border-top-right-radius: 9px;
+  }
+  
+  td {
+    display:flex;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #33363F;
+  }
+  
+  tr:nth-child(odd) td {
+    background: #ecebef;
+  }

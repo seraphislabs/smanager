@@ -1,0 +1,111 @@
+.display_container {
+      position:relative;
+      display:flex;
+      align-items: center;
+      justify-content:flex-start;
+      flex-direction: column;
+      overflow:auto;
+      height:100%;
+}
+
+.display_row {
+      position: relative;
+      display:flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-width:1000px;
+      width:90%;
+      gap:10px;
+      background-color: white;
+}
+
+.display_row_scrollable{
+   position: relative;
+   display:flex;
+   align-items: flex-start;
+   justify-content: center;
+   overflow:auto;
+   min-width:1000px;
+   width:90%;
+   gap:10px;
+   margin-bottom:20px;
+}
+
+.display_header {
+   position:sticky;
+   display:flex;
+   align-items: center;
+   justify-content: left;
+   width:90%;
+   min-width:1000px;
+   background-color: #33363F;
+   color:white;
+   padding:12px;
+   margin:0;
+   overflow:hidden;
+}
+
+.display_section {
+   flex:1;
+   position:relative;
+   padding:10px;
+   min-width:395px;
+}
+
+.display_section_nowrap {
+   flex:1;
+   position:relative;
+   padding:10px;
+   white-space: nowrap;
+}
+
+.display_section_header {
+      top:0;
+      right:0;
+      left:0;
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #14A76C;
+      color:white;
+      padding:12px;
+      box-sizing: border-box;
+      margin:0;
+      flex:1;
+      border-top-left-radius: 9px;
+      border-top-right-radius: 9px;
+}
+
+.display_section_header_2 {
+   top:0;
+   right:0;
+   left:0;
+   display:flex;
+   align-items: center;
+   justify-content: center;
+   color:#33363F;
+   padding:12px;
+   font-size:0.9em;
+   box-sizing: border-box;
+   margin:0;
+   flex:1;
+   border-top-left-radius: 9px;
+   border-top-right-radius: 9px;
+}
+
+.display_section_content {
+   color: #33363F;
+   position:relative;
+}
+
+.display_section_content_data_display {
+   display:contents;
+}
+
+.display_section_content_data_display div {
+   background: white;
+}
+
+.display_section_content_data_display:nth-child(odd) div {
+   background: #E0DFE5;
+}

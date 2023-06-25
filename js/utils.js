@@ -98,6 +98,13 @@ function ValidateForm(form_input, validation_type) {
         return retVal;
       }
       break;
+    case 'selectnumvalue':
+      var selectnumvalueRegex = /^-?\d+$/;
+      if (!selectnumvalueRegex.test(form_input)) {
+        retVal.response = 'Select Not Selected';
+        return retVal;
+      }
+      break;
     case 'state': {
       var stateRegex = /^[a-zA-Z]+$/;
       if (!stateRegex.test(form_input) || form_input.length != 2) {

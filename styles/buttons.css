@@ -39,6 +39,10 @@
     justify-content: center;
 }
 
+.button_type_2:focus {
+  border:1px solid yellow;
+}
+
 .button_type_2:hover {
     color:black;
     cursor:pointer;
@@ -64,6 +68,41 @@
 .button_type_3:hover {
     color:#33363F;
     cursor:pointer;
+}
+
+.button_type_4 {
+  padding:5px;
+}
+
+.button_type_4:hover {
+  color:#14A76C;
+  cursor:pointer;
+}
+
+.listheaderbutton {
+  width:auto;
+  padding-top:12px;
+  padding-bottom:12px;
+  padding-left:12px;
+  padding-right:12px;
+  font-size:20px;
+  background-color:#33363F;
+  color:white;
+  border-radius:9px;
+  border: 2px solid #14A76C;
+  display:inline-flex;
+  align-items: center;
+}
+
+.listheaderbutton:hover {
+  color:#14A76C;
+  cursor:pointer;
+}
+
+.listheaderbuttoncontainer {
+  padding-bottom:5px;
+  padding-top:5px;
+  width:100%;
 }
 
 .text_button_type_1 {
@@ -158,6 +197,11 @@ input:checked + .slider:before {
 }
 
 .edit_shift_button:hover {
+  color :#14A76C;
+  cursor: pointer;
+}
+
+.edit_holiday_schedule_button:hover {
   color :#14A76C;
   cursor: pointer;
 }

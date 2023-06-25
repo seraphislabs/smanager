@@ -170,6 +170,18 @@
     flex-wrap:nowrap;
 }
 
+.formsection_line_leftjustify_width_unset {
+    display:flex;
+    justify-content: left;
+    gap:8px;
+    box-sizing: border-box;
+    padding-top:4px;
+    padding-bottom:4px;
+    align-items: center;
+    color:#b2b0bd;
+    flex-wrap:nowrap;
+}
+
 .formsection_input {
     box-sizing: border-box;
     border:1px solid #b2b0bd;
@@ -211,8 +223,16 @@
     text-align: right;
 }
 
+input:focus {
+    border: 1px solid black;
+}
+
+select:focus {
+    border: 1px solid black;
+}
+
 .formsection_input_option {
-    color :#b2b0bd;
+    color : black;
 }
 
 .formsection_input::placeholder {

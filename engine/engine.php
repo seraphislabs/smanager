@@ -1,4 +1,5 @@
 <?php
+	date_default_timezone_set('America/New_York');
 	session_start();
 	require('databaseinterface.php');
 	require_once("/nginx/protectedfiles/config.php");
@@ -11,13 +12,22 @@
 
 		$returnedCode = "";
 
-		$returnedCode .= LeftPaneMenuItem::GenerateButton("Dashboard");
+		$returnedCode .= MenuListing::GenerateButton("Dashboard");
 
 		if (in_array('va', $perms)) {
-			$returnedCode .= LeftPaneMenuItem::GenerateButton("Accounts");
+			$returnedCode .= MenuListing::GenerateButton("Accounts");
 		}
-		if (in_array('ve', $perms)) {
-			$returnedCode .= LeftPaneMenuItem::GenerateButton("Employees");
+		if (in_array('vel', $perms)) {
+			$returnedCode .= MenuListing::GenerateButton("Employees");
+		}
+		if (in_array('vwo', $perms)) {
+			$returnedCode .= MenuListing::GenerateButton("WorkOrders");
+		}
+		if (in_array('vi', $perms)) {
+			$returnedCode .= MenuListing::GenerateButton("Invoices");
+		}
+		if (in_array('vsr', $perms)) {
+			$returnedCode .= MenuListing::GenerateButton("ServiceReports");
 		}
 
 		return $returnedCode;
@@ -37,27 +47,45 @@
 		switch ($_pageid) {
 			case "Accounts":
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
-				$returnedCode .= PageManager::GenerateAccountsPage($_dbInfo);
+				$returnedCode .= PageViewAccounts::Generate($_dbInfo);
 			case "Dashboard":
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
 				break;
-			case "employees":
+			case "Employees":
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
-				$returnedCode .= PageManager::GenerateEmployeesPage($_dbInfo);
+				$returnedCode .= PageViewEmployees::Generate($_dbInfo);
+				break;
+			case "WorkOrders";
+				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
+				$returnedCode .= PageViewWorkOrders::Generate($_dbInfo);
 				break;
 			case "EmployeeSettings";
 				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
-				$returnedCode .= PageManager::GenerateEmployeeSettingsPage($_dbInfo);
+				$returnedCode .= PageEmployeeSettings::Generate($_dbInfo);
+				break;
+			case "ScheduleSettings";
+			 $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
+				$returnedCode .= PageScheduleSettings::Generate($_dbInfo);
+			break;
+			case "Invoices":
+				$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=$_pageid');</script>";
+				$returnedCode .= PageViewInvoices::Generate($_dbInfo);
 				break;
 		}
-
 		return $returnedCode;
 	}
 
 	function Action_LoadViewAccount($_dbInfo, $_accountid) {
 		$returnedCode = "";
 		$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccount&accountid=$_accountid');</script>";
-		$returnedCode .= PageManager::GenerateViewAccountPage($_dbInfo, $_accountid);
+		$returnedCode .= PageViewAccount::Generate($_dbInfo, $_accountid);
+		return $returnedCode;
+	}
+
+	function Action_LoadViewEmployee($_dbInfo, $_employeeid) {
+		$returnedCode = "";
+		$returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewEmployee&employeeid=$_employeeid');</script>";
+		$returnedCode .= PageViewEmployee::Generate($_dbInfo, $_employeeid);
 		return $returnedCode;
 	}
 
@@ -98,11 +126,22 @@
 		if (is_array($accountInfo)) {
 			$_SESSION['companyid'] = $accountInfo['companyid'];
 			$_SESSION['firstname'] = $accountInfo['firstname'];
+			$_SESSION['eid'] = $accountInfo['id'];
 		}
 	}
 
 	function Action_OpenSettingsMenu($_dbInfo) {
-		return PageManager::GenerateSettingsMenu($_dbInfo);
+		return MenuSettings::Generate($_dbInfo);
+	}
+
+	function Action_GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid) {
+		if (!DatabaseManager::CheckPermissions($_dbInfo, ['ves'])) {
+			if ($_SESSION['eid'] != $_employeeid) {
+							return "";
+			}
+  }
+		$monthSchedule = MenuListing::GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid);
+		return $monthSchedule;
 	}
 
 	function Action_StartPortal($_dbInfo, $_pageData) {
@@ -119,6 +158,10 @@
 			$_accountid = $_pageData['accountid'];
 		}
 
+		if (isset($_pageData['employeeid'])){
+			$_employeeid = $_pageData['employeeid'];
+		}
+
 		if (Action_CheckSession($_dbInfo)) {
 			$returnedCode .= <<<HTML
 				<script>
@@ -126,28 +169,40 @@
 				</script>
 			HTML;
 
-			$returnedCode .= "
+			$returnedCode .= <<<HTML
 			<div id='topbar_container'>
-			<div class='sitelogo'><img src='img/logo1.png' width='400px'/></div>
-			<div class='topright_pane'>
-			<div class='topbarbuttons'>
-			<img src='img/user_green.png'/>
-			<img src='img/help_green.png'/>
-			<img class='open_settings_page' src='img/settings_green.png'/>
-			</div>
-			<div class='searchboxholder'><input type='text' placeholder='Search'/><img src='img/search_gray.png'/></div>
-			<div class='topbarloginnote'>Welcome back, " . $_SESSION['firstname']  . " <span class='text_button_type_1' id='logoutbutton'>LOGOUT</span></div>
-			</div>
+				<div class='sitelogo'>
+					<img src='img/logo1.png' width='400px'/>
+				</div>
+				<div class='topright_pane'>
+					<div class='topbarbuttons'>
+						<img src='img/user_green.png'/>
+						<img src='img/help_green.png'/>
+						<img class='open_settings_page' src='img/settings_green.png'/>
+					</div>
+					<div class='searchboxholder'>
+						<input type='text' placeholder='Search'/><img src='img/search_gray.png'/>
+					</div>
+					<div class='topbarloginnote'>
+						Welcome back, $_SESSION[firstname] <span class='text_button_type_1' id='logoutbutton'></span>
+					</div>
+				</div>
 			</div>	
-			<div id='leftpane_container'>";
+			<div id='leftpane_container'>
+			HTML;
 	
 			$returnedCode .= PopulateLeftPaneMenu($_dbInfo);
 	
-			$returnedCode .= "</div>";	
-	
-			$returnedCode .= "<div id='rightpane_container'>";
+			$returnedCode .= <<<HTML
+			</div>
+				<div id='rightpane_container'>
+			HTML;
+			
 			if ($_page == "ViewAccount") {
 				$returnedCode .= Action_LoadViewAccount($_dbInfo, $_accountid);
+			}
+			if ($_page == "ViewEmployee") {
+				$returnedCode .= Action_LoadViewEmployee($_dbInfo, $_employeeid);
 			}
  			else {
 				$returnedCode .= Action_LoadPage($_dbInfo, $_page);
@@ -181,29 +236,29 @@
 			</script>
 			HTML;
 
-			$returnedCode .= "<div class='login_wrapper_bg'>
-			<div class='login_page_backer'>
-				<img src='img/logo2.png' width='340px' style='margin-left:8px;'/>
-				<div class='login_page_content'>
-				<div class='formsection_line' style='margin-bottom:10px;'>
-					<input type='text' placeholder='Email' class='input_login_email formsection_input_2'/>
-				</div>
-				<div class='formsection_line' style='margin-bottom:10px;'>
-					<input type='password' placeholder='Password' class='input_login_password formsection_input_2'/>
-				</div>
-				<div class='formsection_line_centered' style='margin-bottom:20px;'>
-					<div class='input_login_button button_type_2' style='padding-top:7px;padding-bottom:7px;padding-left:45px;padding-right:45px'>Log In</div>
-				</div>
-				<div class='formsection_line_centered' style='margin-bottom:20px;'>
-					<div class='formsection_input_centered_text_button'>Trouble Logging In?</div>
-				</div>
-				<div class='formsection_line_centered'>
-					<div class='formsection_input_centered_text'>This page is for current account holders. To set up a new account, reach out to your account manager.</div>
-				</div>
-				<div class='formsection_
+			$returnedCode .= <<<HTML
+			<div class='login_wrapper_bg'>
+				<div class='login_page_backer'>
+					<img src='img/logo2.png' width='340px' style='margin-left:8px;'/>
+					<div class='login_page_content'>
+					<div class='formsection_line' style='margin-bottom:10px;'>
+						<input type='text' placeholder='Email' class='input_login_email formsection_input_2'/>
+					</div>
+					<div class='formsection_line' style='margin-bottom:10px;'>
+						<input type='password' placeholder='Password' class='input_login_password formsection_input_2'/>
+					</div>
+					<div class='formsection_line_centered' style='margin-bottom:20px;'>
+						<div class='input_login_button button_type_2' style='padding-top:7px;padding-bottom:7px;padding-left:45px;padding-right:45px'>Log In</div>
+					</div>
+					<div class='formsection_line_centered' style='margin-bottom:20px;'>
+						<div class='formsection_input_centered_text_button'>Trouble Logging In?</div>
+					</div>
+					<div class='formsection_line_centered'>
+						<div class='formsection_input_centered_text'>This page is for current account holders. To set up a new account, reach out to your account manager.</div>
+					</div>
 				</div>
 			</div>
-			</div>";
+			HTML;
 		}
 
 		return $returnedCode;
@@ -232,20 +287,23 @@
 				if (isset($_POST['roleid'])) {
 					$post_roleid = $_POST['roleid'];
 				}
-				echo (PageManager::GenerateNewRolePage($dbInfo, $post_roleid));
+				echo (PopupNewRole::Generate($dbInfo, $post_roleid));
 				break;
 			case "GenerateNewShiftPage":
 				$post_shiftid = 0;
 				if (isset($_POST['shiftid'])) {
 					$post_shiftid = $_POST['shiftid'];
 				}
-				echo (PageManager::GenerateNewShiftPage($dbInfo, $post_shiftid));
+				echo (PopupNewShift::Generate($dbInfo, $post_shiftid));
 				break;
 			case "GenerateNewAccountPage":
-				echo (PageManager::GenerateNewAccountPage($dbInfo));
+				echo (PopupNewAccount::Generate($dbInfo));
 				break;
 			case "GenerateNewEmployeePage":
-				echo (PageManager::GenerateNewEmployeePage($dbInfo));
+				echo (PopupNewEmployee::Generate($dbInfo));
+				break;
+			case "GenerateNewHolidaySchedulePage":
+				echo (PopupNewHolidaySchedule::GeneratePage($dbInfo));
 				break;
 			case "SubmitNewAccountForm":
 				$formData = json_decode($_POST['formdata'], true);
@@ -258,6 +316,10 @@
 			case "ViewAccount":
 				$accountid = $_POST['accountid'];
 				echo(Action_LoadViewAccount($dbInfo, $accountid));
+				break;
+			case "ViewEmployee":
+				$employeeid = $_POST['employeeid'];
+				echo(Action_LoadViewEmployee($dbInfo, $employeeid));
 				break;
 			case "StartSession":
 				Action_StartSession($dbInfo);
@@ -277,6 +339,13 @@
 				$shiftInformation = json_decode($postInfo, true);
 				echo(Action_ValidateNewShiftForm($dbInfo, $shiftInformation));
 				break;
+			case "getmonthschedule":
+				$month = $_POST['month'];
+				$year = $_POST['year'];
+				$employeeid = $_POST['eid'];
+				echo(Action_GetMonthSchedule($dbInfo, $month, $year, $employeeid));
+				break;
+			break;
 		}
 	}
 ?>

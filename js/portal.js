@@ -1,6 +1,8 @@
 var nextWindowID = 1;
 var xhrArray = [];
 var settingsMenuOpen = false;
+var tooltipTimer;
+var tooltipText;
 
 $(window).on('popstate', function(event) {
   ClosePopup();
@@ -29,13 +31,11 @@ function SetLoadingIcon(selectedClass) {
 
 function UpdateSelectedMenuItem(menuItem) {
   $('.leftpanebutton').each(function() {
-    if ($(this).find('.buttonid').html() == menuItem) {
-      $(this).addClass('textcolor_green');
-      $(this).removeClass('textcolor_white');
+    if ($(this).data('buttonid') == menuItem) {
+      $(this).css("color", "#14A76C");
     }
     else {
-      $(this).removeClass('textcolor_green');
-      $(this).addClass('textcolor_white');
+      $(this).css("color", "white");
     }
   });
 }
@@ -94,12 +94,13 @@ function Logout() {
 }
 
 function StartPortal() {
-  var searchParams = new URLSearchParams(window.location.search);
   var urlParams = JSON.stringify(GetURLParameters());
 
   if (!urlParams.hasOwnProperty('page')) {
     urlParams['page'] = 'Dashboard';
   }
+
+  UpdateSelectedMenuItem(urlParams['page']);
 
   var requestData = {
     action:'StartPortal',
@@ -113,15 +114,44 @@ function StartPortal() {
   });
 }
 
+function HideTooltip() {
+  tooltipText = "";
+  clearTimeout(tooltipTimer);
+  $('.tooltip').hide();
+}
+
+function ShowTooltip(text) {  
+  $('.tooltip').html(text).show();
+}
+
 $(document).ready(function() {
   $(".popup_darken").hide();
   $(".popup_wrapper").hide();
   
   StartPortal();
 
+  $(document).on('mouseenter', '.tooltip_trigger', function() {
+    tooltipText = $(this).children('.mytooltip').html();
+    tooltipTimer = setTimeout(function() {
+      ShowTooltip(tooltipText);  
+    }, 150);
+  });
+
+  $(document).on('mouseleave', '.tooltip_trigger', function() {
+    HideTooltip();
+  });
+
+  $(document).on('mousemove', function(e) {
+    var tooltip = $('.tooltip');
+    tooltip.css({
+      top: e.clientY + 20, // Adjust the offset to your liking
+      left: e.clientX + 20 // Adjust the offset to your liking
+    });
+  });
+
   // Button Handlers
   $(document).on('click', '.leftpanebutton', function() {
-    var buttonid = $(this).find('.buttonid').html();
+    var buttonid = $(this).data('buttonid');
     ClickLeftPaneMenuItem(buttonid, true);
   });
 
