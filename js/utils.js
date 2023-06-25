@@ -1,156 +1,63 @@
-function ValidateForm(form_input, validation_type) {
-  var retVal = {
-    success: false,
-    response: ''
-  };
-
-  switch (validation_type) {
-    case 'year':
-      var yearRegex = /^\d{4}$/;
-      if (!yearRegex.test(form_input)) {
-        retVal.response = 'Invalid year';
-        return retVal;
-      }
-      break;
-    case 'date':
-      var dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2[0-9]|3[0-1])\/\d{4}$/;
-      if (!dateRegex.test(form_input)) {
-        retVal.response = 'Invalid Date';
-        return retVal;
-      }
-      break;
-    case 'date_my':
-      var datemyRegex = /^(0[1-9]|1[0-2])\/\d{4}$/;
-      if (!datemyRegex.test(form_input)) {
-        retVal.response = 'Invalid Date';
-        return retVal;
-      }
-      break;
-    case 'email':
-      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(form_input)) {
-        retVal.response = 'Invalid email';
-        return retVal;
-      }
-      break;
-
-    case 'phone':
-      var phoneRegex = /^(?=.*\d)\(\d{3}\) \d{3}-\d{4}$/;
-      if (!phoneRegex.test(form_input)) {
-        retVal.response = 'Invalid phone number';
-        return retVal;
-      }
-      break;
-
-    case 'phone_nonrequired':
-      var phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-      if (form_input.length > 0 && !phoneRegex.test(form_input)) {
-        retVal.response = 'Invalid phone number';
-        return retVal;
-      }
-      break;
-
-    case 'zipCode':
-      var zipcodeRegex = /^\d{5}$/;
-      if (!zipcodeRegex.test(form_input)) {
-        retVal.response = 'Invalid zip code';
-        return retVal;
-      }
-      break;
-
-    case 'address':
-      // Customize the regular expression for street address validation
-      var streetAddressRegex = /^[a-zA-Z0-9\s.,'-]+$/;
-      if (!streetAddressRegex.test(form_input)) {
-        retVal.response = 'Invalid street address';
-        return retVal;
-      }
-      break;
-    case 'address_nonrequired':
-      // Customize the regular expression for street address validation
-      var streetAddressRegex = /^[a-zA-Z0-9\s.,'-]+$/;
-      if (form_input != "") {
-        if (!streetAddressRegex.test(form_input)) {
-          retVal.response = 'Invalid street address';
-          return retVal;
-        }
-        else if (form_input.length <= 3) {
-          retVal.response = 'Invalid street address';
-          return retVal;
-        }
-      }
-      break;
-    case 'name':
-      if (form_input.length <= 2) {
-        retVal.response = 'Invalid Name Length';
-        return retVal;
-      }
-      break;
-    case 'name_nonrequired':
-      if (form_input.length > 0 && form_input.length <= 2) {
-        retVal.response = 'Invalid Name Length';
-        return retVal;
-      }
-      break;
-    case 'contractType':
-      if (form_input == null) {
-        retVal.response = 'Invalid Name Length';
-        return retVal;
-      }
-      break;
-    case 'selectnumvalue':
-      var selectnumvalueRegex = /^-?\d+$/;
-      if (!selectnumvalueRegex.test(form_input)) {
-        retVal.response = 'Select Not Selected';
-        return retVal;
-      }
-      break;
-    case 'state': {
-      var stateRegex = /^[a-zA-Z]+$/;
-      if (!stateRegex.test(form_input) || form_input.length != 2) {
-        retVal.response = 'State';
-        return retVal;
-      }
+function AjaxCall(_xhrArray, data, callback) {
+  var xhr = $.ajax({
+    url: 'engine/engine.php',
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded',
+    data: data,
+    success: function (response) {
+      callback(true, response);
+    },
+    error: function (xhr, status, error) {
+      callback(false, error);
     }
-    default:
-      retVal.success = true;
-      return retVal;
-  }
+  });
 
-  // Validation passed
-  retVal.success = true;
-  return retVal;
+  _xhrArray.push(xhr);
 }
 
-function AjaxCall(_xhrArray, data, callback) {
-    var xhr = $.ajax({
-      url: 'engine/engine.php',
-      type: 'POST',
-      contentType: 'application/x-www-form-urlencoded',
-      data: data,
-      success: function(response) {
-        callback(true, response);
-      },
-      error: function(xhr, status, error) {
-        callback(false, error);
+function SerializeNewAccountForm() {
+  var formInformation = {};
+  var accountInformation = {};
+
+  var rejectedDivs = [];
+
+  var retBool = true;
+
+  // Populate Account Information
+  $("#formsection_newaccount_details").find('.formsection_serialize').each(function () {
+    var dataSerialize = $(this).data('serialize');
+    if (dataSerialize != "none" && dataSerialize != "undefined") {
+      var fieldValue = $(this).val();
+      var serializeType = $(this).data('validation');
+
+      if (!ValidateForm(fieldValue, serializeType).success) {
+        rejectedDivs.push($(this));
+        retBool = false;
       }
-    });
+      else {
+        $(this).removeClass('formsection_validation_error');
+      }
+      accountInformation[dataSerialize] = fieldValue;
+    }
+  });
 
-    _xhrArray.push(xhr);
-  }
+  accountInformation['isServiceAddress'] = $('#additional_service_addresses_btn').prop("checked");
 
-  function SerializeNewAccountForm() {
-    var formInformation = {};
-    var accountInformation = {};
+  formInformation['accountInformation'] = accountInformation;
 
-    var rejectedDivs = [];
 
-    var retBool = true;
+  var billingInformation = {};
 
-    // Populate Account Information
-    $("#formsection_newaccount_details").find('.formsection_serialize').each(function() {
-      var dataSerialize = $(this).data('serialize');
-      if (dataSerialize != "none" && dataSerialize != "undefined") {
+  // Populate Billing Information
+  $("#formsection_billing_info").find('.formsection_serialize').each(function () {
+    var dataSerialize = $(this).data('serialize');
+    if (dataSerialize != "none" && dataSerialize != "undefined" && dataSerialize.length > 0) {
+
+      if ($(this).is(':checkbox')) {
+        var fieldValue = $(this).prop('checked');
+        billingInformation[dataSerialize] = fieldValue;
+      }
+      else {
         var fieldValue = $(this).val();
         var serializeType = $(this).data('validation');
 
@@ -161,25 +68,27 @@ function AjaxCall(_xhrArray, data, callback) {
         else {
           $(this).removeClass('formsection_validation_error');
         }
-        accountInformation[dataSerialize] = fieldValue;
+
+        billingInformation[dataSerialize] = fieldValue;
       }
-    });
+    }
+  });
 
-    accountInformation['isServiceAddress'] = $('#additional_service_addresses_btn').prop("checked");
+  formInformation['billingInformation'] = billingInformation;
 
-    formInformation['accountInformation'] = accountInformation;
+  var locations = [];
 
-    
-    var billingInformation = {};
+  //formsection_locations_list
 
-    // Populate Billing Information
-    $("#formsection_billing_info").find('.formsection_serialize').each(function() {
+  $("#formsection_locations_list").find('.formsection_location_entry').each(function () {
+    var location = {};
+
+    $(this).find('.formsection_serialize').each(function () {
       var dataSerialize = $(this).data('serialize');
-      if (dataSerialize != "none" && dataSerialize != "undefined" && dataSerialize.length > 0) {
-
+      if (dataSerialize != "none" && dataSerialize != "undefined") {
         if ($(this).is(':checkbox')) {
           var fieldValue = $(this).prop('checked');
-          billingInformation[dataSerialize] = fieldValue;
+          location[dataSerialize] = fieldValue;
         }
         else {
           var fieldValue = $(this).val();
@@ -193,249 +102,216 @@ function AjaxCall(_xhrArray, data, callback) {
             $(this).removeClass('formsection_validation_error');
           }
 
-          billingInformation[dataSerialize] = fieldValue;
+          location[dataSerialize] = fieldValue;
         }
       }
     });
 
-    formInformation['billingInformation'] = billingInformation;
+    locations.push(location);
+  })
 
-    var locations = [];
+  formInformation['locations'] = locations;
 
-    //formsection_locations_list
+  $.each(rejectedDivs, function (index, item) {
+    $(this).addClass('formsection_validation_error');
+  });
 
-    $("#formsection_locations_list").find('.formsection_location_entry').each(function() {
-      var location = {};
+  var returnInformation = {};
+  returnInformation['success'] = retBool;
+  returnInformation['formInformation'] = formInformation;
 
-      $(this).find('.formsection_serialize').each(function() {
-        var dataSerialize = $(this).data('serialize');
-        if (dataSerialize != "none" && dataSerialize != "undefined") {
-          if ($(this).is(':checkbox')) {
-            var fieldValue = $(this).prop('checked');
-            location[dataSerialize] = fieldValue;
-          }
-          else {
-            var fieldValue = $(this).val();
-            var serializeType = $(this).data('validation');
+  return returnInformation;
+}
 
-            if (!ValidateForm(fieldValue, serializeType).success) {
-              rejectedDivs.push($(this));
-              retBool = false;
-            }
-            else {
-              $(this).removeClass('formsection_validation_error');
-            }
+function SerializeNewShiftForm() {
+  var shiftInformation = {};
+  var returnInformation = {};
 
-            location[dataSerialize] = fieldValue;
-          }
-        }
-      });
+  var mondayEnabled = $('.formsection_data_checkbox_monday').prop('checked');
+  var tuesdayEnabled = $('.formsection_data_checkbox_tuesday').prop('checked');
+  var wednesdayEnabled = $('.formsection_data_checkbox_wednesday').prop('checked');
+  var thursdayEnabled = $('.formsection_data_checkbox_thursday').prop('checked');
+  var fridayEnabled = $('.formsection_data_checkbox_friday').prop('checked');
+  var saturdayEnabled = $('.formsection_data_checkbox_saturday').prop('checked');
+  var sundayEnabled = $('.formsection_data_checkbox_sunday').prop('checked');
 
-      locations.push(location);
-    })
+  if (mondayEnabled) {
+    var shiftStart = $('.formsection_data_monday_start').val();
+    var shiftEnd = $('.formsection_data_monday_end').val();
 
-    formInformation['locations'] = locations;
-
-    $.each(rejectedDivs, function(index, item) {
-      $(this).addClass('formsection_validation_error');
-    });
-
-    var returnInformation = {};
-    returnInformation['success'] = retBool;
-    returnInformation['formInformation'] = formInformation;
-
-    return returnInformation;
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['monday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
   }
 
-  function SerializeNewShiftForm() {
-    var shiftInformation = {};
-    var returnInformation = {};
+  if (tuesdayEnabled) {
+    var shiftStart = $('.formsection_data_tuesday_start').val();
+    var shiftEnd = $('.formsection_data_tuesday_end').val();
 
-    var mondayEnabled = $('.formsection_data_checkbox_monday').prop('checked');
-    var tuesdayEnabled = $('.formsection_data_checkbox_tuesday').prop('checked');
-    var wednesdayEnabled = $('.formsection_data_checkbox_wednesday').prop('checked');
-    var thursdayEnabled = $('.formsection_data_checkbox_thursday').prop('checked');
-    var fridayEnabled = $('.formsection_data_checkbox_friday').prop('checked');
-    var saturdayEnabled = $('.formsection_data_checkbox_saturday').prop('checked');
-    var sundayEnabled = $('.formsection_data_checkbox_sunday').prop('checked');
-
-    if (mondayEnabled) {
-      var shiftStart = $('.formsection_data_monday_start').val();
-      var shiftEnd = $('.formsection_data_monday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['monday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['tuesday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
     }
-
-    if (tuesdayEnabled) {
-      var shiftStart = $('.formsection_data_tuesday_start').val();
-      var shiftEnd = $('.formsection_data_tuesday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['tuesday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    if (wednesdayEnabled) {
-      var shiftStart = $('.formsection_data_wednesday_start').val();  
-      var shiftEnd = $('.formsection_data_wednesday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['wednesday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    if (thursdayEnabled) {
-      var shiftStart = $('.formsection_data_thursday_start').val();
-      var shiftEnd = $('.formsection_data_thursday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['thursday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    if (fridayEnabled) {
-      var shiftStart = $('.formsection_data_friday_start').val();
-      var shiftEnd = $('.formsection_data_friday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['friday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    if (saturdayEnabled) {
-      var shiftStart = $('.formsection_data_saturday_start').val();
-      var shiftEnd = $('.formsection_data_saturday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['saturday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    if (sundayEnabled) {
-      var shiftStart = $('.formsection_data_sunday_start').val();
-      var shiftEnd = $('.formsection_data_sunday_end').val();
-
-      if (shiftStart.length > 0 && shiftEnd.length > 0) {
-        shiftInformation['sunday'] = {
-          'start': shiftStart,
-          'end': shiftEnd
-        };
-      }
-    }
-
-    shiftInformation['name'] = $('.formsection_data_shift_name').val();
-
-    shiftInformation['id'] = $('.formsection_data_shift_name').data('shiftid');
-    returnInformation['shiftInformation'] = shiftInformation;
-    returnInformation['success'] = true;
-
-    return returnInformation;
   }
 
-  function SerializeNewEmployeeForm() {
-    var formInformation = {};
-    var employeeInformation = {};
+  if (wednesdayEnabled) {
+    var shiftStart = $('.formsection_data_wednesday_start').val();
+    var shiftEnd = $('.formsection_data_wednesday_end').val();
 
-    var rejectedDivs = [];
-
-    var retBool = true;
-
-    // Populate Account Information
-    $(".popup_scrollable").find('.formsection_serialize').each(function() {
-      var dataSerialize = $(this).data('serialize');
-      if (dataSerialize != "none" && dataSerialize != "undefined") {
-        var fieldValue = $(this).val();
-        var serializeType = $(this).data('validation');
-
-        if (!ValidateForm(fieldValue, serializeType).success) {
-          rejectedDivs.push($(this));
-          retBool = false;
-        }
-        else {
-          $(this).removeClass('formsection_validation_error');
-        }
-        employeeInformation[dataSerialize] = fieldValue;
-      }
-    });
-
-    formInformation['employeeInformation'] = employeeInformation;
-
-    $.each(rejectedDivs, function(index, item) {
-      $(this).addClass('formsection_validation_error');
-    });
-
-    var returnInformation = {};
-    returnInformation['success'] = retBool;
-    returnInformation['formInformation'] = formInformation;
-
-    return returnInformation;
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['wednesday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
   }
-  
-  function NewAccountFormSerialize(elementarray) {
-    var returnString = "";
-    var first = true;
 
-    elementarray.forEach(function(element) {
-      if (!first) {
-        returnString += "|";
-      }
-      first = false;
-      if ($(element).is('div')) {
-        
-      }
-      else if ($(element).is(':checkbox')) {
-        var isChecked = false;
+  if (thursdayEnabled) {
+    var shiftStart = $('.formsection_data_thursday_start').val();
+    var shiftEnd = $('.formsection_data_thursday_end').val();
 
-        if ($(element).is(':checked')) {
-          isChecked = true;
-        }
-        returnString += $(element).data('serialize') + "`" + isChecked;
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['thursday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
+  }
+
+  if (fridayEnabled) {
+    var shiftStart = $('.formsection_data_friday_start').val();
+    var shiftEnd = $('.formsection_data_friday_end').val();
+
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['friday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
+  }
+
+  if (saturdayEnabled) {
+    var shiftStart = $('.formsection_data_saturday_start').val();
+    var shiftEnd = $('.formsection_data_saturday_end').val();
+
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['saturday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
+  }
+
+  if (sundayEnabled) {
+    var shiftStart = $('.formsection_data_sunday_start').val();
+    var shiftEnd = $('.formsection_data_sunday_end').val();
+
+    if (shiftStart.length > 0 && shiftEnd.length > 0) {
+      shiftInformation['sunday'] = {
+        'start': shiftStart,
+        'end': shiftEnd
+      };
+    }
+  }
+
+  shiftInformation['name'] = $('.formsection_data_shift_name').val();
+
+  shiftInformation['id'] = $('.formsection_data_shift_name').data('shiftid');
+  returnInformation['shiftInformation'] = shiftInformation;
+  returnInformation['success'] = true;
+
+  return returnInformation;
+}
+
+function SerializeNewEmployeeForm() {
+  var formInformation = {};
+  var employeeInformation = {};
+
+  var rejectedDivs = [];
+
+  var retBool = true;
+
+  // Populate Account Information
+  $(".popup_scrollable").find('.formsection_serialize').each(function () {
+    var dataSerialize = $(this).data('serialize');
+    if (dataSerialize != "none" && dataSerialize != "undefined") {
+      var fieldValue = $(this).val();
+      var serializeType = $(this).data('validation');
+
+      if (!ValidateForm(fieldValue, serializeType).success) {
+        rejectedDivs.push($(this));
+        retBool = false;
       }
       else {
-        returnString += $(element).data('serialize') + "`" + $(element).val();
+        $(this).removeClass('formsection_validation_error');
       }
-    });
+      employeeInformation[dataSerialize] = fieldValue;
+    }
+  });
 
-    return returnString;
+  formInformation['employeeInformation'] = employeeInformation;
+
+  $.each(rejectedDivs, function (index, item) {
+    $(this).addClass('formsection_validation_error');
+  });
+
+  var returnInformation = {};
+  returnInformation['success'] = retBool;
+  returnInformation['formInformation'] = formInformation;
+
+  return returnInformation;
+}
+
+function NewAccountFormSerialize(elementarray) {
+  var returnString = "";
+  var first = true;
+
+  elementarray.forEach(function (element) {
+    if (!first) {
+      returnString += "|";
+    }
+    first = false;
+    if ($(element).is('div')) {
+
+    }
+    else if ($(element).is(':checkbox')) {
+      var isChecked = false;
+
+      if ($(element).is(':checked')) {
+        isChecked = true;
+      }
+      returnString += $(element).data('serialize') + "`" + isChecked;
+    }
+    else {
+      returnString += $(element).data('serialize') + "`" + $(element).val();
+    }
+  });
+
+  return returnString;
+}
+
+function GetURLParameters() {
+  var params = {};
+  var queryString = window.location.search.slice(1);  // Remove the '?' at the start of the string
+  var paramArray = queryString.split('&');  // Split the query string into its component parts
+
+  for (var i = 0; i < paramArray.length; i++) {
+    var paramPart = paramArray[i].split('=');  // Split each part into an array of [key, value]
+
+    if (paramPart[1] === undefined) {  // If there was no '=', add an empty value
+      paramPart[1] = '';
+    }
+
+    params[decodeURIComponent(paramPart[0])] = decodeURIComponent(paramPart[1]);
+    // Use decodeURIComponent to get a human-readable string, and add it to our final object
   }
 
-  function GetURLParameters() {
-    var params = {};
-    var queryString = window.location.search.slice(1);  // Remove the '?' at the start of the string
-    var paramArray = queryString.split('&');  // Split the query string into its component parts
-    
-    for (var i = 0; i < paramArray.length; i++) {
-        var paramPart = paramArray[i].split('=');  // Split each part into an array of [key, value]
-        
-        if (paramPart[1] === undefined) {  // If there was no '=', add an empty value
-            paramPart[1] = '';
-        }
-
-        params[decodeURIComponent(paramPart[0])] = decodeURIComponent(paramPart[1]);  
-        // Use decodeURIComponent to get a human-readable string, and add it to our final object
-    }
-    
-    return params;
+  return params;
 }
 
 function InitDatePickers() {
@@ -470,7 +346,7 @@ function InitInputMasks() {
 }
 
 function InitTimePickers() {
-  $('.formsection_input_timepicker').each(function() {
+  $('.formsection_input_timepicker').each(function () {
     var dTime = $(this).data('defaulttime');
     $(this).timepicker({
       timeFormat: 'h:mm p',
@@ -484,4 +360,3 @@ function InitTimePickers() {
     });
   });
 }
-  

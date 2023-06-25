@@ -53,9 +53,9 @@ class PageViewEmployees {
             <tbody>
         HTML;
 
-        $employees = DatabaseManager::GetEmployeeAccounts($_dbInfo);
-        $roles = DatabaseManager::GetRoles($_dbInfo, true);
-        $shifts = DatabaseManager::GetShifts($_dbInfo, true);
+        $employees = DatabaseManager::GetAllEmployees($_dbInfo);
+        $roles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, true);
+        $shifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, true);
 
         $employeeCode = ListEmployees::AsList($_dbInfo, $employees, $shifts, $roles);
         $returnedCode .= $employeeCode;

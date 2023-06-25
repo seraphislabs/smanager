@@ -1,6 +1,7 @@
 <?php
 	date_default_timezone_set('America/New_York');
 	session_start();
+	require("validation/validate.php");
 	require('databaseinterface.php');
 	require_once("/nginx/protectedfiles/config.php");
 	require('utils.php');
@@ -103,14 +104,14 @@
 	}
 
 	function Action_ValidateNewRoleForm($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid) {
-		$retVar = DatabaseManager::AddNewRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid);
+		$retVar = DatabaseManager::AddNewEmployeeRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid);
 		$boolString = $retVar['success'] ? "true" : "false";
 		$retString = $boolString . "|" . $retVar['response'];
 		return $retString;
 	}
 
 	function Action_ValidateNewShiftForm($_dbInfo, $_shiftInformation) {
-		$retVar = DatabaseManager::AddNewShift($_dbInfo, $_shiftInformation);
+		$retVar = DatabaseManager::AddNewEmployeeShift($_dbInfo, $_shiftInformation);
 		$boolString = $retVar['success'] ? "true" : "false";
 		$retString = $boolString . "|" . $retVar['response'];
 		return $retString;

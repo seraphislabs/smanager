@@ -18,7 +18,7 @@ class PageViewAccount {
         }
 
         $primaryContactInfo = DatabaseManager::GetContact($_dbInfo, $accountInfo['primarycontactid']);
-        $serviceLocations = DatabaseManager::GetLocationsByAccount($_dbInfo, $_accountid);
+        $serviceLocations = DatabaseManager::GetAllLocationsByAccount($_dbInfo, $_accountid);
 
         $locationsListings = ListLocations::AsList($_dbInfo, $serviceLocations);
 

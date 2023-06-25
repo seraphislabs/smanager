@@ -176,7 +176,7 @@ class PopupNewShift {
     HTML;
 
     if ($_shiftid > 0) {
-        $shiftInformation = json_encode(DatabaseManager::GetShift($_dbInfo, $_shiftid));
+        $shiftInformation = json_encode(DatabaseManager::GetEmployeeShift($_dbInfo, $_shiftid));
 
         $returnedCode .= <<<HTML
         <script type='text/javascript'>

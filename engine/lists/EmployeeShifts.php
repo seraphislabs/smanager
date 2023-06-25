@@ -4,7 +4,7 @@ class ListEmployeeShifts {
     public static function AsSelect($_dbInfo) {
         $returnedCode = "";
 
-        $retVar = DatabaseManager::GetShifts($_dbInfo, false);
+        $retVar = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
 
         foreach($retVar as $shift) {
             $shiftName = $shift['name'];

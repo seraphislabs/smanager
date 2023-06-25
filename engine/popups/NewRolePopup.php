@@ -145,7 +145,7 @@ class PopupNewRole {
         HTML;
 
         if ($_roleid > 0) {
-            $roleInformation = json_encode(DatabaseManager::GetRole($_dbInfo, $_roleid));
+            $roleInformation = json_encode(DatabaseManager::GetEmployeeRole($_dbInfo, $_roleid));
 
             $returnedCode .= <<<HTML
             <script tyle='text/javascript'>

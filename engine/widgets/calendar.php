@@ -3,7 +3,7 @@
 class Calendar {
     public static function GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid) {
         $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
-        $shiftInfo = DatabaseManager::GetShift($_dbInfo, $employeeInfo['shift']);
+        $shiftInfo = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
         return self::GenerateThisMonthSchedule($_month, $_year, $shiftInfo);
     }
 

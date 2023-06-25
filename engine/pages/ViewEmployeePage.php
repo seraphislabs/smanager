@@ -5,8 +5,8 @@ class PageViewEmployee {
     // Permission Check
 
     $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
-    $shiftInfo = DatabaseManager::GetShift($_dbInfo, $employeeInfo['shift']);
-    $roleInfo = DatabaseManager::GetRole($_dbInfo, $employeeInfo['role']);
+    $shiftInfo = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
+    $roleInfo = DatabaseManager::GetEmployeeRole($_dbInfo, $employeeInfo['role']);
 
     $year = date('Y');
     $month = date('m');

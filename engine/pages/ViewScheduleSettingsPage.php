@@ -38,10 +38,10 @@ class PageScheduleSettings {
             </script>
         HTML;
 
-        $getRoles = DatabaseManager::GetRoles($_dbInfo, false);
+        $getRoles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, false);
         $rolesList = ListEmployeeRoles::AsList($getRoles);
 
-        $getShifts = DatabaseManager::GetShifts($_dbInfo, false);
+        $getShifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
         $shiftsList = ListEmployeeShifts::AsList($getShifts);
 
         $returnedCode .= <<<HTML
@@ -60,7 +60,7 @@ class PageScheduleSettings {
                     <div style='padding-left:40px;' id='display_holiday_hours'>
         HTML;       
                 
-        $getHolidaySchedule = DatabaseManager::GetHolidaySchedules($_dbInfo);
+        $getHolidaySchedule = DatabaseManager::GetAllHolidaySchedules($_dbInfo);
 
         foreach ($getHolidaySchedule as $schedule) {
             $scheduleDaysoff = $schedule['offdays'];

@@ -24,10 +24,10 @@ class PageEmployeeSettings {
             </script>
         HTML;
 
-        $getRoles = DatabaseManager::GetRoles($_dbInfo, false);
+        $getRoles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, false);
         $rolesList = ListEmployeeRoles::AsList($getRoles);
 
-        $getShifts = DatabaseManager::GetShifts($_dbInfo, false);
+        $getShifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
         $shiftsList = ListEmployeeShifts::AsList($getShifts);
 
         $returnedCode .= <<<HTML

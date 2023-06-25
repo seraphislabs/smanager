@@ -8,7 +8,7 @@ class PageViewAccounts {
         die("You do not have permission to view this page. Speak to your account manager to gain access.");
     }
 
-    $retArray = DatabaseManager::GetAccounts($_dbInfo);
+    $retArray = DatabaseManager::GetAllAccounts($_dbInfo);
 
     $returnedCode .= <<<HTML
     <script type='text/javascript'>           
@@ -57,7 +57,7 @@ class PageViewAccounts {
         <tbody>
     HTML;
 
-    $accountsList = DatabaseManager::GetAccounts($_dbInfo);
+    $accountsList = DatabaseManager::GetAllAccounts($_dbInfo);
     $accountCode = ListAccounts::AsList($accountsList);
     $returnedCode .= $accountCode;
         

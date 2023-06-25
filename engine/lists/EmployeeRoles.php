@@ -5,7 +5,7 @@ class ListEmployeeRoles {
  public static function AsSelect($_dbInfo) {
   $returnedCode = "";
 
-  $retVar = DatabaseManager::GetRoles($_dbInfo, false);
+  $retVar = DatabaseManager::GetAllEmployeeRoles($_dbInfo, false);
 
   foreach($retVar as $role) {
       $roleName = $role['name'];
