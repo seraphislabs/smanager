@@ -16,8 +16,13 @@ class PageViewAccounts {
         $('.popup_darken').fadeIn(500);
         $('.popup_wrapper').fadeIn(500);
         SetLoadingIcon('.popup_scrollable');
+
+        var data = {};
+        
         var requestData = [
-            {name: 'action', value: 'GenerateNewAccountPage'}
+            {name: 'action', value: 'LoadPopup'},
+            {name: 'buttonid', value : 'NewAccount'},
+            {name: 'data', value : JSON.stringify(data)}
         ];
         CancelAllAjaxCalls();
         AjaxCall(xhrArray, requestData, function(status, response) {

@@ -38,4 +38,12 @@
             require_once $pagesDir . '/' . $page;
         }
     }
+
+    $pagesDir = __DIR__ . '/actions';
+    $pages = scandir($pagesDir);
+    foreach ($pages as $page) {
+        if (pathinfo($page, PATHINFO_EXTENSION) === 'php') {
+            require_once $pagesDir . '/' . $page;
+        }
+    }
 ?>

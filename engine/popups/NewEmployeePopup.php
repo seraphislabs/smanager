@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewEmployee {
-    public static function Generate($_dbInfo) {
+    public static function Generate($_dbInfo, $_data) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['ce'])) {
@@ -64,7 +64,7 @@ class PopupNewEmployee {
 
                     if (formattedString.success) {
                         var requestData = [
-                        {name: 'action', value: 'SubmitNewEmployeeForm'},
+                        {name: 'action', value: 'AddNewEmployee'},
                         {name: 'formdata', value: formInfo}
                         ];
                         CancelAllAjaxCalls();

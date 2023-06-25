@@ -11,8 +11,12 @@ class PageScheduleSettings {
                     $('.popup_darken').fadeIn(500);
                     $('.popup_wrapper').fadeIn(500);
                     SetLoadingIcon('.popup_content');
+                    var data = {};
+                    data['shiftid'] = 0;
                     var requestData = [
-                        {name: 'action', value: 'GenerateNewShiftPage'}
+                        {name: 'action', value: 'LoadPopup'},
+                        {name: 'buttonid', value: 'NewShift'},
+                        {name: 'data', value: JSON.stringify(data)}
                     ];
                     CancelAllAjaxCalls();
                     AjaxCall(xhrArray, requestData, function(status, response) {
@@ -25,8 +29,11 @@ class PageScheduleSettings {
                     $('.popup_darken').fadeIn(500);
                     $('.popup_wrapper').fadeIn(500);
                     SetLoadingIcon('.popup_content');
+                    var data = {};
                     var requestData = [
-                        {name: 'action', value: 'GenerateNewHolidaySchedulePage'}
+                        {name: 'action', value: 'LoadPopup'},
+                        {name: 'buttonid', value: 'NewHolidaySchedule'},
+                        {name: 'data', value: JSON.stringify(data)}
                     ];
                     CancelAllAjaxCalls();
                     AjaxCall(xhrArray, requestData, function(status, response) {

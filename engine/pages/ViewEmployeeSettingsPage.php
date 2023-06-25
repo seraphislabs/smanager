@@ -11,8 +11,12 @@ class PageEmployeeSettings {
                     $('.popup_darken').fadeIn(500);
                     $('.popup_wrapper').fadeIn(500);
                     SetLoadingIcon('.popup_content');
+                    var data = {};
+                    data['roleid'] = 0;
                     var requestData = [
-                        {name: 'action', value: 'GenerateNewRolePage'}
+                        {name: 'action', value: 'LoadPopup'},
+                        {name: 'buttonid', value: 'NewRole'},
+                        {name: 'data', value: JSON.stringify(data)}
                     ];
                     CancelAllAjaxCalls();
                     AjaxCall(xhrArray, requestData, function(status, response) {

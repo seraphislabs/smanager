@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewHolidaySchedule {
- public static function Generate($_dbInfo) {
+ public static function Generate($_dbInfo, $_data) {
 
  }
 }

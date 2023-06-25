@@ -42,12 +42,16 @@ class ListLocations {
 
         $returnedCode .= <<<HTML
             <script>
+                /*TODO*/
                 $('.openlocationbutton').click(function () { 
                     $(this).hide();
+                    var data = {};
                     var aid = $(this).data('accountid');
+                    data['accountid'] = aid;
                     var requestData = [
-                    {name: 'action', value: 'ViewAccount'},
-                    {name: 'accountid', value: aid}
+                    {name: 'action', value: 'LoadPage'},
+                    {name: 'buttonid', value: 'ViewAccount'},
+                    {name: 'data', value: JSON.stringify(data)}
                     ];
                     CancelAllAjaxCalls();
                     SetLoadingIcon('#rightpane_container');
@@ -56,8 +60,6 @@ class ListLocations {
                             $('#rightpane_container').html(response);
                         }
                     });
-
-                    console.log('clicked');
                 });
             </script>
         HTML;

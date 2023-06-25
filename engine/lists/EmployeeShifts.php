@@ -58,9 +58,12 @@ class ListEmployeeShifts {
                         $('.popup_wrapper').fadeIn(500);
                         $('.popup_content').fadeIn(300);
                         SetLoadingIcon('.popup_content');
+                        var data = {};
+                        data['shiftid'] = shiftid;
                         var requestData = [
-                            {name: 'action', value: 'GenerateNewShiftPage'},
-                            {name: 'shiftid', value: shiftid}
+                            {name: 'action', value: 'LoadPopup'},
+                            {name: 'buttonid', value: 'NewShift'},
+                            {name: 'data', value: JSON.stringify(data)}
                         ];
                         CancelAllAjaxCalls();
                         AjaxCall(xhrArray, requestData, function(status, response) {

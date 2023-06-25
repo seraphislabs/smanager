@@ -8,7 +8,7 @@ class MenuSettings {
             <script type='text/javascript'>
                 $('.open_employee_settings_page').click(function() { 
                     var requestData = [
-                    {name: 'action', value: 'LeftPaneButtonClick'},
+                    {name: 'action', value: 'LoadPage'},
                     {name: 'buttonid', value: 'EmployeeSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
@@ -21,7 +21,7 @@ class MenuSettings {
                 });
                 $('.open_schedule_settings_page').click(function() { 
                     var requestData = [
-                    {name: 'action', value: 'LeftPaneButtonClick'},
+                    {name: 'action', value: 'LoadPage'},
                     {name: 'buttonid', value: 'ScheduleSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');

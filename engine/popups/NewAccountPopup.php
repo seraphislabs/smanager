@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewAccount {
-    public static function Generate($_dbInfo) {
+    public static function Generate($_dbInfo, $_data) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['ca'])) {
@@ -94,7 +94,7 @@ class PopupNewAccount {
 
                     if (formattedString.success) {
                         var requestData = [
-                        {name: 'action', value: 'SubmitNewAccountForm'},
+                        {name: 'action', value: 'AddNewAccount'},
                         {name: 'formdata', value: formInfo}
                         ];
                         CancelAllAjaxCalls();

@@ -82,7 +82,7 @@ class PageViewEmployee {
             CancelAllAjaxCalls();
             var eid = `$_employeeid`;
             var requestData = [
-                    {name: 'action', value: 'getmonthschedule'},
+                    {name: 'action', value: 'GetScheduleForMonth'},
                     {name: 'month', value: month},
                     {name: 'year', value: year},
                     {name: 'eid', value: eid}
@@ -117,7 +117,7 @@ class PageViewEmployee {
             CancelAllAjaxCalls();
             var eid = `$_employeeid`;
             var requestData = [
-                    {name: 'action', value: 'getmonthschedule'},
+                    {name: 'action', value: 'GetScheduleForMonth'},
                     {name: 'month', value: month},
                     {name: 'year', value: year},
                     {name: 'eid', value: eid}

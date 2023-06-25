@@ -49,9 +49,12 @@ class ListEmployeeRoles {
                     $('.popup_wrapper').fadeIn(500); 
                     $('.popup_scrollable').fadeIn(300);
                     SetLoadingIcon('.popup_scrollable');
+                    var data = {};
+                    data['roleid'] = roleid;
                     var requestData = [
-                        {name: 'action', value: 'GenerateNewRolePage'},
-                        {name: 'roleid', value: roleid}
+                        {name: 'action', value: 'LoadPopup'},
+                        {name: 'buttonid', value: 'NewRole'},
+                        {name: 'data', value: JSON.stringify(data)}
                     ];
                     CancelAllAjaxCalls();
                     AjaxCall(xhrArray, requestData, function(status, response) {
