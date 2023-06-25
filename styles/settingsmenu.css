@@ -1,65 +1,65 @@
 .settingsmenu_container {
-    background-color: #33363F;
+    background-color: var(--color3);
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
-    width:300px;
-    position:absolute;
-    top:110px;
-    right:20px;
+    width: 300px;
+    position: absolute;
+    top: 110px;
+    right: 20px;
     box-sizing: border-box;
     border-radius: 9px;
 }
 
 .settingsmenu_divider {
     box-sizing: border-box;
-    position:relative;
-    width:100%;
-    border-bottom:1px solid white;
-    display:inline-block;
-    height:1px;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid var(--color8);
+    display: inline-block;
+    height: 1px;
 }
 
 .settingsmenu_divider_grey {
     box-sizing: border-box;
-    position:relative;
-    width:100%;
-    border-bottom:1px solid #818181;
-    display:inline-block;
-    height:1px;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid var(--color6);
+    display: inline-block;
+    height: 1px;
 }
 
 .settingsmenu_header {
     box-sizing: border-box;
-    position:relative;
-    color: white;
-    font-size:0.9em;
+    position: relative;
+    color: var(--color8);
+    font-size: 0.9em;
     text-align: left;
-    padding-left:30px;
-    padding-right:30px;
-    padding-top:12px;
-    padding-bottom:10px;
-    display:flex;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    display: flex;
     align-items: center;
 }
 
 .settingsmenu_button {
     box-sizing: border-box;
-    position:relative;
-    color: #f3f3f3;
-    font-size:0.9em;
+    position: relative;
+    color: var(--color5);
+    font-size: 0.9em;
     text-align: left;
-    padding-left:30px;
-    padding-right:30px;
-    padding-top:10px;
-    padding-bottom:10px;
-    display:flex;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
     align-items: center;
 }
 
 .settingsmenu_button:hover {
-    background-color: hsl(223, 5%, 28%);
-    cursor:pointer;
+    background-color: var(--color11);
+    cursor: pointer;
 }
 
 .open_settings_page:hover {
-    cursor:pointer;
+    cursor: pointer;
 }

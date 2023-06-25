@@ -1,97 +1,98 @@
 * {
     box-sizing: border-box;
-  }
+}
 
 body {
     margin: 0;
     font-family: 'Quicksand', sans-serif;
     font-size: 20px;
-    overflow:hidden;
-    background-color: #fafafa;
+    overflow: hidden;
+    background-color: var(--color5);
 }
 
 #pagewrap_master {
     display: flex;
-    overflow:hidden;
-    width:100%;
-    height:100%;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
     font-family: 'Quicksand', sans-serif;
     font-size: 20px;
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 #pagewrap,
 #rightslide {
-    overflow:hidden;
-    height:100vh;
+    overflow: hidden;
+    height: 100vh;
     position: fixed;
     top: 0;
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 #pagewrap {
     left: 0;
-    width:100%;
-    min-width:650px;
-    overflow:hidden;
+    width: 100%;
+    min-width: 650px;
+    overflow: hidden;
 }
 
 .textcolor_green {
-    color:#14A76C;
+    color: var(--color1);
 }
 
 .textcolor_grey {
-    color:#AEAEAE;
+    color: var(--color4);
 }
 
 .textcolor_orange {
-    color:#FF652f;
+    color: var(--color2);
 }
 
 .textcolor_white {
-    color:#b2b0bd;
+    color: var(--color5);
 }
 
 .login_wrapper {
-    position:absolute;
-    display:inline-block;
+    position: absolute;
+    display: inline-block;
     justify-content: space-between;
-    top:0;
-    right:0;
-    left:0;
-    bottom:0;
-    background-color:black;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: black;
     overflow: hidden;
 }
 
 .login_wrapper_bg {
-    position:absolute;
+    position: absolute;
     background-image: url('../img/bg1.png');
-    background-size:cover;
-    background-position:center;
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     min-width: 500px;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .disabled {
     opacity: 0.5;
     pointer-events: none;
-  }
+}
 
 .login_page_backer {
-    width:440px;
+    width: 440px;
     position: fixed;
-    top: 45vh; /* Adjust the percentage as desired */
+    top: 45vh;
+    /* Adjust the percentage as desired */
     left: 50%;
     transform: translate(-50%, -50%);
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -99,107 +100,108 @@ body {
 }
 
 .login_page_content {
-    background-color: white;
-    width:100%;
-    height:100%;
-    padding-left:55px;
-    padding-right:55px;
+    background-color: var(--color8);
+    width: 100%;
+    height: 100%;
+    padding-left: 55px;
+    padding-right: 55px;
     padding-top: 40px;
     padding-bottom: 40px;
-    margin-top:10px;
-    border-radius:9px;
+    margin-top: 10px;
+    border-radius: 9px;
     box-sizing: border-box;
 }
 
 #topbar_container {
-    height:100px;
-    width:100%;
-    background-color: #33363F;
+    height: 100px;
+    width: 100%;
+    background-color: var(--color3);
     top: 0px;
     left: 0px;
     right: 0px;
     position: absolute;
     box-sizing: border-box;
-    padding-left:22px;
-    padding-right:22px;
-    padding-top:0px;
-    padding-bottom:0px;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 0px;
+    padding-bottom: 0px;
     font-weight: bold;
-    border-bottom:1px solid black;
+    border-bottom: 1px solid var(--color7);
 }
 
 .sitelogo {
-    position:absolute;
+    position: absolute;
     left: 30px;
-    top:25px;
-    font-size:30px;
-    line-height:140px;
-    color:white;
+    top: 25px;
+    font-size: 30px;
+    line-height: 140px;
+    color: var(--color8);
     box-sizing: border-box;
-    text-align:center;
-    display:flex;
+    text-align: center;
+    display: flex;
     align-items: center;
 }
 
 #leftpane_container {
-    width:228px;
-    top:110px;
-    left:8px;
-    bottom:20px;
-    position:absolute;
+    width: 228px;
+    top: 110px;
+    left: 8px;
+    bottom: 20px;
+    position: absolute;
     box-sizing: border-box;
-    padding:0;
+    padding: 0;
 }
 
 #rightpane_container {
     left: 250px;
-    top:110px;
-    right:8px;
-    bottom:20px;
-    position:absolute;
+    top: 110px;
+    right: 8px;
+    bottom: 20px;
+    position: absolute;
     box-sizing: border-box;
     border-radius: 9px;
-    padding:0;
-    min-width:900px;
+    padding: 0;
+    min-width: 900px;
 }
 
 .rightpane_center_content {
-    display:inline-flex;
+    display: inline-flex;
     justify-content: center;
     align-items: flex-start;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
 .rightpane_fullheader {
-    width:100%;
-    background-color: #33363F;
-    color:white;
-    padding:12px;
+    width: 100%;
+    background-color: var(--color3);
+    color: var(--color8);
+    padding: 12px;
     box-sizing: border-box;
-    margin:0;
+    margin: 0;
 }
 
 .rightpane_flexheader {
-    position:sticky;
-    background-color: #33363F;
-    color:white;
-    padding:12px;
+    position: sticky;
+    background-color: var(--color3);
+    color: var(--color8);
+    padding: 12px;
     box-sizing: border-box;
-    margin:0;
+    margin: 0;
 }
 
 #rightpane_header {
-    position:sticky;
+    position: sticky;
     box-sizing: border-box;
     overflow: hidden;
-    padding:0px;
-    top:0;
-    left:0;
-    right:0;
+    padding: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
 }
+
 #rightpane_viewport {
-    width:100%;
+    width: 100%;
     overflow-y: auto;
     box-sizing: border-box;
 }
@@ -209,116 +211,116 @@ body {
 }
 
 .rightpane_textheader {
-    border-bottom:1px solid #14A76C;
-    color:#14A76C;
-    width:100%;
-    background-color:#33363F;
-    padding:10px;
+    border-bottom: 1px solid var(--color1);
+    color: var(--color4);
+    width: 100%;
+    background-color: var(--color3);
+    padding: 10px;
 }
 
 .leftpanebutton {
-    background-color: #33363F;
-    height:63px;
+    background-color: var(--color3);
+    height: 63px;
     line-height: 63px;
     width: 100%;
-    color: white;
-    display:flex;
-    align-items:center;
+    color: var(--color8);
+    display: flex;
+    align-items: center;
     letter-spacing: 1px;
 }
 
 .leftpanebutton:hover {
-    color: #14A76C;
-    cursor:pointer;
-    font-weight:bold;
+    color: var(--color1);
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .leftpanebuttonicon {
-    margin-right:10px;
-    margin-left:10px;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 
 .img_icon {
     width: 30px;
-    height:30px;
+    height: 30px;
 }
 
 .img_icon_small {
-    width:20px;
-    height:20px;
+    width: 20px;
+    height: 20px;
 }
 
 .loadingicon1 {
-    max-width:100%;
-    max-height:100%;
-    text-align:center;
+    max-width: 100%;
+    max-height: 100%;
+    text-align: center;
     vertical-align: middle;
-    position:absolute;
-    top:50%;
-    left:50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .topright_pane {
-    position:absolute;
-    right:30px;
+    position: absolute;
+    right: 30px;
     box-sizing: border-box;
-    height:100%;
-    width:320px;
-    top:0px;
+    height: 100%;
+    width: 320px;
+    top: 0px;
 }
 
 .searchboxholder {
-    position:absolute;
-    top:35px;
-    right:0px;
-    left:0px;
-    display:flex;
+    position: absolute;
+    top: 35px;
+    right: 0px;
+    left: 0px;
+    display: flex;
     align-items: center;
 }
 
 .searchboxholder img {
-    position:absolute;
-    width:22px;
-    height:22px;
-    right:14px;
-    background-color: white;
-    border-radius:9px;
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    right: 14px;
+    background-color: var(--color8);
+    border-radius: 9px;
 }
 
 .searchboxholder input {
-    position:absolute;
-    width:100%;
-    font-size:20px;
-    padding:5px;
+    position: absolute;
+    width: 100%;
+    font-size: 20px;
+    padding: 5px;
     line-height: 30px;
-    border-radius:9px;
+    border-radius: 9px;
 }
 
 .searchboxholder input::placeholder {
-    color: hsl(0, 0%, 41%);
+    color: var(--color4);
 }
 
 .topbarbuttons {
-    position:absolute;
-    right:5px;
+    position: absolute;
+    right: 5px;
     bottom: 0px;
 }
 
 .topbarloginnote {
-    position:absolute;
-    bottom:14px;
-    right:110px;
-    left:0px;
-    display:flex;
+    position: absolute;
+    bottom: 14px;
+    right: 110px;
+    left: 0px;
+    display: flex;
     align-items: center;
     justify-content: right;
-    color:#14A76C;
-    font-size:0.6em;
+    color: var(--color1);
+    font-size: 0.6em;
 }
 
 .topbarbuttons img {
-    width:32px;
-    height:32px;
-    padding:3px;
+    width: 32px;
+    height: 32px;
+    padding: 3px;
 }

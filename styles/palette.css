@@ -1,0 +1,32 @@
+:root {
+ --color1: #14A76C;
+ --color2: #FF652f;
+ --color3: #33363F;
+ --color4: #b2b0bd;
+ --color5: #fafafa;
+ --color6: #AEAEAE;
+ --color7: #000000;
+ --color8: #FFFFFF;
+ --color9: #ebebeb;
+ /* Validation */
+ --color10: #ffaca6;
+ /* Hover */
+ --color11: #45464a;
+}
+
+
+/*
+ Defaults
+ --color1: #14A76C;
+ --color2: #FF652f;
+ --color3: #33363F;
+ --color4: #b2b0bd;
+ --color5: #fafafa;
+ --color6: #AEAEAE;
+ --color7: #000000;
+ --color8: #FFFFFF;
+ --color9: #ebebeb;
+ --color10: #ffaca6;
+ --color11: #45464a;
+
+*/

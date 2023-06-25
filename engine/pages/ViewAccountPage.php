@@ -20,7 +20,7 @@ class PageViewAccount {
         $primaryContactInfo = DatabaseManager::GetContact($_dbInfo, $accountInfo['primarycontactid']);
         $serviceLocations = DatabaseManager::GetLocationsByAccount($_dbInfo, $_accountid);
 
-        $locationsListings = MenuListing::GenerateLocationsList($_dbInfo, $serviceLocations);
+        $locationsListings = ListLocations::AsList($_dbInfo, $serviceLocations);
 
         $returnedCode .= <<<HTML
         <div class ='display_container'>

@@ -25,10 +25,10 @@ class PageEmployeeSettings {
         HTML;
 
         $getRoles = DatabaseManager::GetRoles($_dbInfo, false);
-        $rolesList = MenuListing::GenerateEmployeeRoleList($getRoles);
+        $rolesList = ListEmployeeRoles::AsList($getRoles);
 
         $getShifts = DatabaseManager::GetShifts($_dbInfo, false);
-        $shiftsList = MenuListing::GenerateShiftsList($getShifts);
+        $shiftsList = ListEmployeeShifts::AsList($getShifts);
 
         $returnedCode .= <<<HTML
         <div id='rightpane_viewport' style='top:0px'>

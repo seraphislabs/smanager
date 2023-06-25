@@ -22,4 +22,20 @@
             require_once $pagesDir . '/' . $page;
         }
     }
+
+    $pagesDir = __DIR__ . '/widgets';
+    $pages = scandir($pagesDir);
+    foreach ($pages as $page) {
+        if (pathinfo($page, PATHINFO_EXTENSION) === 'php') {
+            require_once $pagesDir . '/' . $page;
+        }
+    }
+
+    $pagesDir = __DIR__ . '/lists';
+    $pages = scandir($pagesDir);
+    foreach ($pages as $page) {
+        if (pathinfo($page, PATHINFO_EXTENSION) === 'php') {
+            require_once $pagesDir . '/' . $page;
+        }
+    }
 ?>

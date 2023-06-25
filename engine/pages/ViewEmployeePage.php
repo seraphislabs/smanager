@@ -21,7 +21,7 @@ class PageViewEmployee {
         }
     }
     if ($canviewschedule) {
-        $calendarView = MenuListing::GenerateThisMonthSchedule($month, $year, $shiftInfo);
+        $calendarView = Calendar::GenerateThisMonthSchedule($month, $year, $shiftInfo);
         $scheduleTemplate = <<<HTML
             <div class='display_section_header_2'>
                     <span class='button_type_4 btn_month_left' data-curmonth='$month' data-curyear='$year>'><</span>

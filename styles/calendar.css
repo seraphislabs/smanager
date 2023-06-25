@@ -1,74 +1,74 @@
 .calendar_container {
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: left;
-   width:100%;
-   min-width:395px;
- }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  width: 100%;
+  min-width: 395px;
+}
 
- .calendar_header {
-    display: flex;
-    justify-content: space-around;
-    width:100%;
-    font-size:0.8em;
- }
+.calendar_header {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  font-size: 0.8em;
+}
 
- .calendar_loading {
-  position:absolute;
-  top:0;
-  bottom:0;
-  right:0;
-  left:0;
-  background-color: white;
+.calendar_loading {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: var(--color8);
   opacity: 0.6;
- }
+}
 
- .calendar_header span {
-    width: calc(100% / 7);
-    min-width:65px;
-   text-align: center;
-   background:white;
-   padding:5px;
-   font-size:0.7rem;
- }
- 
- .calendar_day {
-   width: calc(100% / 7);
-   min-width:65px;
-   text-align: center;
-   background:white;
-   padding:5px;
-   height:65px;
-   font-size:0.60em;
- }
+.calendar_header span {
+  width: calc(100% / 7);
+  min-width: 65px;
+  text-align: center;
+  background: var(--color8);
+  padding: 5px;
+  font-size: 0.7rem;
+}
 
- .calendar_day_header {
-  display:flex;
+.calendar_day {
+  width: calc(100% / 7);
+  min-width: 65px;
+  text-align: center;
+  background: var(--color8);
+  padding: 5px;
+  height: 65px;
+  font-size: 0.60em;
+}
+
+.calendar_day_header {
+  display: flex;
   justify-content: space-between;
- }
+}
 
- .calendar_day:nth-child(odd){
-   background: #ebebeb;
- }
+.calendar_day:nth-child(odd) {
+  background: var(--color9);
+}
 
- .calendar_week {
-  display:contents;
- }
+.calendar_week {
+  display: contents;
+}
 
- .calendar_month_select {
-  width:200px;
- }
+.calendar_month_select {
+  width: 200px;
+}
 
- .calendar_week:hover > * {
-  cursor:pointer;
-  border-bottom:1px solid rgb(20, 167, 108);
-  border-top:1px solid #14A76C;
- }
+.calendar_week:hover>* {
+  cursor: pointer;
+  border-bottom: 1px solid var(--color1);
+  border-top: 1px solid var(--color1);
+}
 
- .calendar_week:first-child:hover {
-  border-left:1px solid #14A76C;
- }
+.calendar_week:first-child:hover {
+  border-left: 1px solid var(--color1);
+}
 
- .calendar_week:last-child:hover {
-  border-right:1px solid #14A76C;
- }
+.calendar_week:last-child:hover {
+  border-right: 1px solid var(--color1);
+}

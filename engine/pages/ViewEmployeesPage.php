@@ -57,7 +57,7 @@ class PageViewEmployees {
         $roles = DatabaseManager::GetRoles($_dbInfo, true);
         $shifts = DatabaseManager::GetShifts($_dbInfo, true);
 
-        $employeeCode = MenuListing::GenerateEmployeesList($_dbInfo, $employees, $shifts, $roles);
+        $employeeCode = ListEmployees::AsList($_dbInfo, $employees, $shifts, $roles);
         $returnedCode .= $employeeCode;
             
         $returnedCode .= <<<HTML

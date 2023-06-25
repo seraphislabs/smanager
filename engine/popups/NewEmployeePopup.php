@@ -8,8 +8,8 @@ class PopupNewEmployee {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 
-        $roleOptions = MenuListing::GetRolesAsSelect($_dbInfo);
-        $shiftOptions = MenuListing::GetShiftsAsSelect($_dbInfo);
+        $roleOptions = ListEmployeeRoles::AsSelect($_dbInfo);
+        $shiftOptions = ListEmployeeShifts::AsSelect($_dbInfo);
 
         $driversLicenseTemplate = <<<HTML
         <div class='formsection_line'>

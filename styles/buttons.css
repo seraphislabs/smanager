@@ -1,120 +1,121 @@
 .button_type_1 {
-    width:175;
-    padding-top:12px;
-    padding-bottom:12px;
-    padding-left:30px;
-    padding-right:30px;
-    max-height:30px;
-    font-size:17px;
-    background-color:#33363F;
-    color:white;
-    border-radius:9px;
-    border: 2px solid #14A76C;
-    display:inline-flex;
-    align-items: center;
-    text-align:center;
-    justify-content: center;
+  width: 175;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 30px;
+  padding-right: 30px;
+  max-height: 30px;
+  font-size: 17px;
+  background-color: var(--color3);
+  ;
+  color: var(--color8);
+  border-radius: 9px;
+  border: 2px solid var(--color1);
+  display: inline-flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }
 
 .button_type_1:hover {
-    color:#14A76C;
-    cursor:pointer;
+  color: var(--color1);
+  cursor: pointer;
 }
 
 .button_type_2 {
-    width:175;
-    padding-top:12px;
-    padding-bottom:12px;
-    padding-left:30px;
-    padding-right:30px;
-    max-height:30px;
-    font-size:17px;
-    background-color:#14A76C;
-    color:white;
-    border-radius:9px;
-    border: 2px solid #33363F;
-    display:inline-flex;
-    align-items: center;
-    text-align:center;
-    justify-content: center;
+  width: 175;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 30px;
+  padding-right: 30px;
+  max-height: 30px;
+  font-size: 17px;
+  background-color: var(--color1);
+  color: var(--color8);
+  border-radius: 9px;
+  border: 2px solid var(--color3);
+  display: inline-flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }
 
 .button_type_2:focus {
-  border:1px solid yellow;
+  border: 1px solid var(--color2);
 }
 
 .button_type_2:hover {
-    color:black;
-    cursor:pointer;
+  color: var(--color7);
+  cursor: pointer;
 }
 
 .button_type_3 {
-    padding-top:6px;
-    padding-bottom:6px;
-    padding-left:15px;
-    padding-right:15px;
-    max-height:30px;
-    font-size:15px;
-    background-color:#14A76C;
-    color:white;
-    border-radius:9px;
-    border: 2px solid #33363F;
-    display:inline-flex;
-    align-items: center;
-    text-align:center;
-    justify-content: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 15px;
+  padding-right: 15px;
+  max-height: 30px;
+  font-size: 15px;
+  background-color: var(--color1);
+  color: var(--color8);
+  border-radius: 9px;
+  border: 2px solid var(--color3);
+  display: inline-flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }
 
 .button_type_3:hover {
-    color:#33363F;
-    cursor:pointer;
+  color: var(--color3);
+  cursor: pointer;
 }
 
 .button_type_4 {
-  padding:5px;
+  padding: 5px;
 }
 
 .button_type_4:hover {
-  color:#14A76C;
-  cursor:pointer;
+  color: var(--color1);
+  cursor: pointer;
 }
 
 .listheaderbutton {
-  width:auto;
-  padding-top:12px;
-  padding-bottom:12px;
-  padding-left:12px;
-  padding-right:12px;
-  font-size:20px;
-  background-color:#33363F;
-  color:white;
-  border-radius:9px;
-  border: 2px solid #14A76C;
-  display:inline-flex;
+  width: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  font-size: 20px;
+  background-color: var(--color3);
+  color: var(--color8);
+  border-radius: 9px;
+  border: 2px solid var(--color1);
+  display: inline-flex;
   align-items: center;
 }
 
 .listheaderbutton:hover {
-  color:#14A76C;
-  cursor:pointer;
+  color: var(--color1);
+  cursor: pointer;
 }
 
 .listheaderbuttoncontainer {
-  padding-bottom:5px;
-  padding-top:5px;
-  width:100%;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  width: 100%;
 }
 
 .text_button_type_1 {
-    color:white;
-    padding-left:6px;
-    padding-right:6px;
+  color: var(--color8);
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .text_button_type_1:hover {
-    color:#14A76C;
-    text-decoration: underline;
-    cursor: pointer;
+  color: var(--color1);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* Custom Slider */
@@ -138,7 +139,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--color4);
   transition: .4s;
 }
 
@@ -149,15 +150,15 @@
   width: 19.5px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: var(--color8);
   transition: .4s;
 }
 
-input:checked + .slider {
-  background-color: #14A76C;
+input:checked+.slider {
+  background-color: var(--color1);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(19.5px);
 }
 
@@ -178,31 +179,31 @@ input:checked + .slider:before {
 .checkbox_switch_label {
   margin-left: 10px;
   font-size: 14px;
-  color: #b2b0bd;
+  color: var(--color4);
 }
 
 .switch:focus-within .slider {
-  outline: 1px solid black;
+  outline: 1px solid var(--color7);
 }
 
 .checkbox_type_1 {
-  border: 1px solid black;
-  margin-left:10px;
-  margin-right:10px;
+  border: 1px solid var(--color7);
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .edit_role_button:hover {
-  color :#14A76C;
+  color: var(--color1);
   cursor: pointer;
 }
 
 .edit_shift_button:hover {
-  color :#14A76C;
+  color: var(--color1);
   cursor: pointer;
 }
 
 .edit_holiday_schedule_button:hover {
-  color :#14A76C;
+  color: var(--color1);
   cursor: pointer;
 }
 
@@ -215,19 +216,19 @@ input[type="checkbox"] {
   height: 20px;
   min-width: 20px;
   min-height: 20px;
-  border: 1px solid #999;
+  border: 1px solid var(--color4);
   border-radius: 3px;
   outline: none;
   transition: all 0.1s ease-in-out;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 /* Custom styling for the checkbox */
 input[type="checkbox"]:checked {
-  background-color:#14A76C;
-  border-color: #14A76C;
+  background-color: var(--color1);
+  border-color: var(--color1);
 }
 
 input[type="checkbox"]:hover {
-  border-color:#33363F;
+  border-color: var(--color3);
 }

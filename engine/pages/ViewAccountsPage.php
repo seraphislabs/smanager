@@ -58,7 +58,7 @@ class PageViewAccounts {
     HTML;
 
     $accountsList = DatabaseManager::GetAccounts($_dbInfo);
-    $accountCode = MenuListing::GenerateAccountsList($accountsList);
+    $accountCode = ListAccounts::AsList($accountsList);
     $returnedCode .= $accountCode;
         
     $returnedCode .= <<<HTML

@@ -4,7 +4,6 @@
 	require('databaseinterface.php');
 	require_once("/nginx/protectedfiles/config.php");
 	require('utils.php');
-	require('menuitems.php');
 	require('pages.php');
 
 	function PopulateLeftPaneMenu($_dbInfo) {
@@ -12,22 +11,22 @@
 
 		$returnedCode = "";
 
-		$returnedCode .= MenuListing::GenerateButton("Dashboard");
+		$returnedCode .= ListButtons::GenerateLeftPaneButton("Dashboard");
 
 		if (in_array('va', $perms)) {
-			$returnedCode .= MenuListing::GenerateButton("Accounts");
+			$returnedCode .= ListButtons::GenerateLeftPaneButton("Accounts");
 		}
 		if (in_array('vel', $perms)) {
-			$returnedCode .= MenuListing::GenerateButton("Employees");
+			$returnedCode .= ListButtons::GenerateLeftPaneButton("Employees");
 		}
 		if (in_array('vwo', $perms)) {
-			$returnedCode .= MenuListing::GenerateButton("WorkOrders");
+			$returnedCode .= ListButtons::GenerateLeftPaneButton("WorkOrders");
 		}
 		if (in_array('vi', $perms)) {
-			$returnedCode .= MenuListing::GenerateButton("Invoices");
+			$returnedCode .= ListButtons::GenerateLeftPaneButton("Invoices");
 		}
 		if (in_array('vsr', $perms)) {
-			$returnedCode .= MenuListing::GenerateButton("ServiceReports");
+			$returnedCode .= ListButtons::GenerateLeftPaneButton("ServiceReports");
 		}
 
 		return $returnedCode;
@@ -140,7 +139,7 @@
 							return "";
 			}
   }
-		$monthSchedule = MenuListing::GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid);
+		$monthSchedule = Calendar::GetMonthSchedule($_dbInfo, $_month, $_year, $_employeeid);
 		return $monthSchedule;
 	}
 
