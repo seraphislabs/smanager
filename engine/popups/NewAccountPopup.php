@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewAccount {
-    public static function Generate($_dbInfo, $_data) {
+    public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['ca'])) {
@@ -105,7 +105,7 @@ class PopupNewAccount {
                                     $('.popup_wrapper').hide();
                                     // TODO: Add Ajax call to load the account in account view screen
                                     $('.popup_darken').fadeOut(400);
-                                    ClickLeftPaneMenuItem('Accounts', true);
+                                    ClickLeftPaneMenuItem('ViewAccounts', true);
                                 }
                                 else {
                                     $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");

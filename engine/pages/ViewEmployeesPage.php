@@ -1,12 +1,12 @@
 <?php
 class PageViewEmployees {
-    public static function Generate($_dbInfo) {
+    public static function Generate($_dbInfo, $_postData) {
         $canAddEmployee = DatabaseManager::CheckPermissions($_dbInfo, ['ce']);
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['vel'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
-
-        $returnedCode = <<<HTML
+        $returnedCode = "<script>history.pushState(null, null, '/index.php?page=ViewEmployees');</script>";
+        $returnedCode .= <<<HTML
             <script type='text/javascript'>
                 function OpenNewEmployeePage() {
                     $('.popup_darken').fadeIn(500);

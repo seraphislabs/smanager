@@ -25,12 +25,10 @@ class ListAccounts {
                 $('.openaccountbutton').click(function () { 
                     $(this).hide();
                     var aid = $(this).data('accountid');
-                    var data = {};
-                    data['accountid'] = aid;
                     var requestData = [
                     {name: 'action', value: 'LoadPage'},
                     {name: 'buttonid', value: 'ViewAccount'},
-                    {name: 'data', value: JSON.stringify(data)}
+                    {name: 'accountid', value: aid}
                     ];
                     CancelAllAjaxCalls();
                     SetLoadingIcon('#rightpane_container');

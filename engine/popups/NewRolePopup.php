@@ -1,8 +1,8 @@
 <?php
 
 class PopupNewRole {
-    public static function Generate($_dbInfo, $_data) {
-        $_roleid = $_data['roleid'];
+    public static function Generate($_dbInfo, $_postData) {
+        $_roleid = $_postData['roleid'];
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
@@ -45,7 +45,7 @@ class PopupNewRole {
                             if (resVar[0] == 'true') {
                                 $('.popup_wrapper').hide();
                                 $('.popup_darken').fadeOut(400);
-                                ClickLeftPaneMenuItem('EmployeeSettings', false);
+                                ClickLeftPaneMenuItem('ViewEmployeeSettings', false);
                             }
                             else {
                                 $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");

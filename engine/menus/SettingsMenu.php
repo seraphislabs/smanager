@@ -9,7 +9,7 @@ class MenuSettings {
                 $('.open_employee_settings_page').click(function() { 
                     var requestData = [
                     {name: 'action', value: 'LoadPage'},
-                    {name: 'buttonid', value: 'EmployeeSettings'}
+                    {name: 'buttonid', value: 'ViewEmployeeSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
                     CancelAllAjaxCalls();
@@ -22,7 +22,7 @@ class MenuSettings {
                 $('.open_schedule_settings_page').click(function() { 
                     var requestData = [
                     {name: 'action', value: 'LoadPage'},
-                    {name: 'buttonid', value: 'ScheduleSettings'}
+                    {name: 'buttonid', value: 'ViewScheduleSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
                     CancelAllAjaxCalls();

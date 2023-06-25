@@ -1,7 +1,7 @@
 <?php
 
 trait ActionStartSession {
-    public static function StartSession($_dbInfo) {
+    public static function StartSession($_dbInfo, $_postData) {
         session_unset();
 		$_SESSION['email'] = $_POST['email'];
 		$_SESSION['password'] = $_POST['password'];

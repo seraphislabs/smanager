@@ -1,7 +1,8 @@
 <?php
 class PageViewWorkOrders {
-    public static function Generate($_dbInfo) {
+    public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
+        $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewWorkOrders');</script>";
         $canAddWorkOrder = DatabaseManager::CheckPermissions($_dbInfo, ['cwo']);
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['vwo'])) {

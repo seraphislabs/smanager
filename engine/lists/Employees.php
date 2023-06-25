@@ -29,12 +29,10 @@ class ListEmployees {
             $('.openemployeebutton').click(function () { 
                 $(this).hide();
                 var eid = $(this).data('employeeid');
-                var data = {};
-                data['employeeid'] = eid;
                 var requestData = [
                 {name: 'action', value: 'LoadPage'},
                 {name: 'buttonid', value: 'ViewEmployee'},
-                {name: 'data', value: JSON.stringify(data)}
+                {name: 'employeeid', value: eid}
                 ];
                 CancelAllAjaxCalls();
                 SetLoadingIcon('#rightpane_container');

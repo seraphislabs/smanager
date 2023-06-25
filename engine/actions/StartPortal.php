@@ -1,7 +1,9 @@
 <?php
 
 trait ActionStartPortal {
-    public static function StartPortal($_dbInfo, $_pageData) {
+    public static function StartPortal($_dbInfo, $_postData) {
+		$_pageData = json_decode($_postData['pagedata'], true);
+
 		$returnedCode = "";
 
 		$_page = "Dashboard";
@@ -59,8 +61,9 @@ trait ActionStartPortal {
 			$data = [];
 			$data['accountid'] = $_accountid;
 			$data['employeeid'] = $_employeeid;
+			$data['buttonid'] = $_page;
 
-			$returnedCode .= Actions::LoadPage($_dbInfo, $_page, $data);
+			$returnedCode .= Actions::LoadPage($_dbInfo, $data);
 			$returnedCode .= "</div>";
 		}
 		else {

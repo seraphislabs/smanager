@@ -1,7 +1,9 @@
 <?php
 class PageViewEmployee {
-   public static function Generate($_dbInfo, $_employeeid) {
+   public static function Generate($_dbInfo, $_postData) {
+    $_employeeid = $_postData['employeeid'];
     $returnedCode = "";
+    $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewEmployee&employeeid=$_employeeid');</script>";
     // Permission Check
 
     $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);

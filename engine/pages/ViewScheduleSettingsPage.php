@@ -1,10 +1,11 @@
 <?php
-class PageScheduleSettings {
-    public static function Generate($_dbInfo) {
+class PageViewScheduleSettings {
+    public static function Generate($_dbInfo, $_postData) {
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
-        $returnedCode = <<<HTML
+        $returnedCode = "<script>history.pushState(null, null, '/index.php?page=ViewScheduleSettings');</script>";
+        $returnedCode .= <<<HTML
             <script type='text/javascript'>
                 InitTimePickers();
                 $('.btn_open_new_shift').click(function() {

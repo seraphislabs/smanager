@@ -6,7 +6,7 @@ class ListButtons {
         switch ($buttonType) {
             case "Accounts":
                 $returnedCode = <<<HTML
-                <div class='leftpanebutton' data-buttonid='Accounts'><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>
+                <div class='leftpanebutton' data-buttonid='ViewAccounts'><img src='img/customer_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Accounts</span></div>
                 HTML;
                 break;
             case "Dashboard":
@@ -16,22 +16,17 @@ class ListButtons {
                 break;
             case "Employees":
                 $returnedCode = <<<HTML
-                <div class='leftpanebutton' data-buttonid='Employees'><img src='img/tech_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Employees</span></div>
+                <div class='leftpanebutton' data-buttonid='ViewEmployees'><img src='img/tech_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Employees</span></div>
                 HTML;
                 break;
             case "WorkOrders":
                 $returnedCode = <<<HTML
-                <div class='leftpanebutton' data-buttonid='WorkOrders'><img src='img/order_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Work Orders</span></div>
+                <div class='leftpanebutton' data-buttonid='ViewWorkOrders'><img src='img/order_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Work Orders</span></div>
                 HTML;
                 break;
             case "Invoices":
                 $returnedCode = <<<HTML
-                <div class='leftpanebutton' data-buttonid='Invoices'><img src='img/invoice_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Invoices</span></div>
-                HTML;
-                break;
-            case "ServiceReports":
-                $returnedCode = <<<HTML
-                <div class='leftpanebutton' data-buttonid='ServiceReports'><img src='img/report_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Service Reports</span></div>
+                <div class='leftpanebutton' data-buttonid='ViewInvoices'><img src='img/invoice_green.png' class='img_icon leftpanebuttonicon'/><span class='leftpanebuttontext'>Invoices</span></div>
                 HTML;
                 break;
         }

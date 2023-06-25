@@ -1,7 +1,8 @@
 <?php
 class PageViewInvoices {
-    public static function Generate($_dbInfo) {
+    public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
+        $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewInvoices');</script>";
         $canAddInvoice = DatabaseManager::CheckPermissions($_dbInfo, ['ci']);
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['vi'])) {

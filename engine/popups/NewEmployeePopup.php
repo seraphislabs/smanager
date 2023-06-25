@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewEmployee {
-    public static function Generate($_dbInfo, $_data) {
+    public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['ce'])) {
@@ -74,7 +74,7 @@ class PopupNewEmployee {
                                 if (resVar[0] == 'true') {
                                     $('.popup_wrapper').hide();
                                     $('.popup_darken').fadeOut(400);
-                                    ClickLeftPaneMenuItem('Employees', true);
+                                    ClickLeftPaneMenuItem('ViewEmployees', true);
                                 }
                                 else {
                                     $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");

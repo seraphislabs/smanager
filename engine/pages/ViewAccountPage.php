@@ -1,7 +1,9 @@
 <?php
 class PageViewAccount {
-    public static function Generate($_dbInfo, $_accountid) {
+    public static function Generate($_dbInfo, $_postData) {
+        $_accountid = $_postData['accountid'];
         $returnedCode = "";
+        $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccount&accountid=$_accountid');</script>";
         // Permission Check
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");

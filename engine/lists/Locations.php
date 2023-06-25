@@ -45,13 +45,11 @@ class ListLocations {
                 /*TODO*/
                 $('.openlocationbutton').click(function () { 
                     $(this).hide();
-                    var data = {};
                     var aid = $(this).data('accountid');
-                    data['accountid'] = aid;
                     var requestData = [
                     {name: 'action', value: 'LoadPage'},
                     {name: 'buttonid', value: 'ViewAccount'},
-                    {name: 'data', value: JSON.stringify(data)}
+                    {name: 'accountid', value: aid}
                     ];
                     CancelAllAjaxCalls();
                     SetLoadingIcon('#rightpane_container');

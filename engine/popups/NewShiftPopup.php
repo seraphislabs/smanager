@@ -1,7 +1,7 @@
 <?php
 class PopupNewShift {
-    public static function Generate($_dbInfo, $_data) {
-        $_shiftid = $_data['shiftid'];
+    public static function Generate($_dbInfo, $_postData) {
+        $_shiftid = $_postData['shiftid'];
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
@@ -44,7 +44,7 @@ class PopupNewShift {
                             if (resVar[0] == 'true') {
                                 $('.popup_wrapper').hide();
                                 $('.popup_darken').fadeOut(400);
-                                ClickLeftPaneMenuItem('ScheduleSettings', false);
+                                ClickLeftPaneMenuItem('ViewScheduleSettings', false);
                             }
                             else {
                                 $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");

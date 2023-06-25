@@ -1,10 +1,11 @@
 <?php
-class PageEmployeeSettings {
-    public static function Generate($_dbInfo) {
+class PageViewEmployeeSettings {
+    public static function Generate($_dbInfo, $_postData) {
         if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
-        $returnedCode = <<<HTML
+        $returnedCode = "<script>history.pushState(null, null, '/index.php?page=ViewEmployeeSettings');</script>";
+        $returnedCode .= <<<HTML
             <script type='text/javascript'>
                 InitTimePickers();
                 $('.btn_open_new_role').click(function() {
