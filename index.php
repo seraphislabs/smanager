@@ -28,6 +28,15 @@
 
 <body>
 <?php
+// Load Javascript
+$pagesDir = __DIR__ . '/engine/actions';
+$pages = scandir($pagesDir);
+foreach ($pages as $page) {
+    if (pathinfo($page, PATHINFO_EXTENSION) == 'js') {
+        echo '<script src="' . 'engine/actions/' . $page . '"></script>';
+    }
+}
+
 require("engine/engine.php");
 
 echo("<div id='pagewrap_master'>");

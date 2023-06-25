@@ -23,37 +23,11 @@ class PopupNewShift {
                     }
                 });
                 $("#submit_new_shift").click(function() {
-                    var endperms = "";
-                    var first = true;
-
                     if(!$(this).hasClass('disabled')) {
                         $(this).addClass('disabled');
                     }
 
-                    var returnInformation = SerializeNewShiftForm();
-                    var shiftInformation = JSON.stringify(returnInformation['shiftInformation']);
-
-                    var requestData = [
-                        {name: 'action', value: 'AddNewShift'},
-                        {name: 'shiftInformation', value: shiftInformation}            
-                    ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            var resVar = response.split('|');
-                            if (resVar[0] == 'true') {
-                                $('.popup_wrapper').hide();
-                                $('.popup_darken').fadeOut(400);
-                                ClickLeftPaneMenuItem('ViewScheduleSettings', false);
-                            }
-                            else {
-                                $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
-                            }
-                            if($('#submit_new_role').hasClass('disabled')) {
-                                $('#submit_new_role').removeClass('disabled');
-                            }
-                        }
-                    });
+                    Action_AddNewShift(xhrArray);
                 });
                 $("#btn_close_popup").click(function () {
                     ClosePopup();

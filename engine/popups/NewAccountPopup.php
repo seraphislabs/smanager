@@ -88,42 +88,8 @@ class PopupNewAccount {
                     if(!$(this).hasClass('disabled')) {
                         $(this).addClass('disabled');
                     }
-
-                    var formattedString = SerializeNewAccountForm();
-                    var formInfo = JSON.stringify(formattedString['formInformation']);
-
-                    if (formattedString.success) {
-                        var requestData = [
-                        {name: 'action', value: 'AddNewAccount'},
-                        {name: 'formdata', value: formInfo}
-                        ];
-                        CancelAllAjaxCalls();
-                        AjaxCall(xhrArray, requestData, function(status, response) {
-                            if (status) {
-                                var resVar = response.split('|');
-                                if (resVar[0] == 'true') {
-                                    $('.popup_wrapper').hide();
-                                    // TODO: Add Ajax call to load the account in account view screen
-                                    $('.popup_darken').fadeOut(400);
-                                    ClickLeftPaneMenuItem('ViewAccounts', true);
-                                }
-                                else {
-                                    $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
-                                }
-                                if($('#submit_new_account_form').hasClass('disabled')) {
-                                $('#submit_new_account_form').removeClass('disabled');
-                                }
-                            }
-                            else {
-                                location.reload(true);
-                            }
-                        });
-                    }
-                    else {
-                        if($('#submit_new_account_form').hasClass('disabled')) {
-                        $('#submit_new_account_form').removeClass('disabled');
-                        }
-                    }
+                    
+                    Action_AddNewAccount(xhrArray);
                 });
                 $('#copy_billing_address_checkbox').change(function() {
                     var billingTemplate = `$billingTemplate`;

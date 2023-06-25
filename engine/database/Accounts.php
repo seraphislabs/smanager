@@ -12,7 +12,7 @@ trait DatabaseAccounts {
         $retVal = null;
 
         if (self::ValidateLogin($pdo1)) {
-            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id` LIMIT 10");
+            $stmt = $pdo->prepare("SELECT * FROM `accounts` ORDER BY `id`");
             $stmt->execute();
             if ($stmt->rowCount() > 0) {
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -212,7 +212,7 @@ trait DatabaseAccounts {
 
                         $locationName = $location['name'];
 
-                        if (count == 1) {
+                        if ($count == 1) {
                             $locationName = "Primary Location";
                         }
                         // Create Location
@@ -255,7 +255,7 @@ trait DatabaseAccounts {
 
             return $retVar;
         }
-    }
+    } 
 }
 
 ?>

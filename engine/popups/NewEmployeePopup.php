@@ -59,40 +59,7 @@ class PopupNewEmployee {
                         $(this).addClass('disabled');
                     }
 
-                    var formattedString = SerializeNewEmployeeForm();
-                    var formInfo = JSON.stringify(formattedString['formInformation']);
-
-                    if (formattedString.success) {
-                        var requestData = [
-                        {name: 'action', value: 'AddNewEmployee'},
-                        {name: 'formdata', value: formInfo}
-                        ];
-                        CancelAllAjaxCalls();
-                        AjaxCall(xhrArray, requestData, function(status, response) {
-                            if (status) {
-                                var resVar = response.split('|');
-                                if (resVar[0] == 'true') {
-                                    $('.popup_wrapper').hide();
-                                    $('.popup_darken').fadeOut(400);
-                                    ClickLeftPaneMenuItem('ViewEmployees', true);
-                                }
-                                else {
-                                    $('.popup_scrollable').prepend("<div class='formsection_line_centered'><div class='formsection_input_centered_text'>" + resVar[1] + "</div></div>");
-                                }
-                                if($('#submit_new_employee_form').hasClass('disabled')) {
-                                $('#submit_new_employee_form').removeClass('disabled');
-                                }
-                            }
-                            else {
-                                location.reload(true);
-                            }
-                        });
-                    }
-                    else {
-                        if($('#submit_new_employee_form').hasClass('disabled')) {
-                        $('#submit_new_employee_form').removeClass('disabled');
-                        }
-                    }
+                    Action_AddNewEmployee(xhrArray);
                 });
                 $(document).on('change', '.checkbox_drivers_license', function() {
                     var toggleableChildren = $('.formsection_drivers_license');

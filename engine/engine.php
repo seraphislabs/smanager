@@ -5,7 +5,7 @@
 	require('databaseinterface.php');
 	require_once("/nginx/protectedfiles/config.php");
 	require('utils.php');
-	require('pages.php');
+	require_once('pages.php');
 
 	class Actions {
 		use ActionCheckSession;
