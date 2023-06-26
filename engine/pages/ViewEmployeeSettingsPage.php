@@ -9,9 +9,6 @@ class PageViewEmployeeSettings {
             <script type='text/javascript'>
                 InitTimePickers();
                 $('.btn_open_new_role').click(function() {
-                    $('.popup_darken').fadeIn(500);
-                    $('.popup_wrapper').fadeIn(500);
-                    SetLoadingIcon('.popup_content');
                     var data = {};
                     data['roleid'] = 0;
                     var requestData = [
@@ -19,12 +16,8 @@ class PageViewEmployeeSettings {
                         {name: 'buttonid', value: 'NewRole'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('.popup_content').html(response).fadeIn(500);
-                        }
-                    });
+
+                    Action_LoadPopup(xhrArray, requestData);
                 });
             </script>
         HTML;

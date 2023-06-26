@@ -46,35 +46,19 @@ function StartSession(_email, _password) {
     { name: 'email', value: _email },
     { name: 'password', value: _password }
   ];
-  CancelAllAjaxCalls();
-  AjaxCall(xhrArray, requestData, function (status, response) {
-    if (status) {
-      location.reload();
-    }
-  });
+  Action_StartSession(xhrArray, requestData);
 }
 
 function ClickLeftPaneMenuItem(buttonid, pushHistory) {
-  _data = {};
-  if (buttonid == "Accounts") {
-    var searchParams = new URLSearchParams(window.location.search);
-    _data['page'] = searchParams.get('currentPage');
-  }
-
   UpdateSelectedMenuItem(buttonid);
   SetLoadingIcon("#rightpane_container");
 
   var requestData = [
     { name: 'action', value: 'LoadPage' },
-    { name: 'buttonid', value: buttonid },
-    { name: 'data', value: JSON.stringify(_data) }
+    { name: 'buttonid', value: buttonid }
   ];
-  CancelAllAjaxCalls();
-  AjaxCall(xhrArray, requestData, function (status, response) {
-    if (status) {
-      $("#rightpane_container").html(response);
-    }
-  });
+
+  Action_LoadPage(xhrArray, requestData);
 }
 
 function Logout() {
@@ -172,19 +156,7 @@ $(document).ready(function () {
       var requestData = [
         { name: 'action', value: 'OpenSettingsMenu' }
       ];
-      $('.settingsmenu_container').fadeIn(400);
-      SetLoadingIcon(".settingsmenu_container");
-      CancelAllAjaxCalls();
-      AjaxCall(xhrArray, requestData, function (status, response) {
-        if (status) {
-          $('.settingsmenu_container').html(response).show();
-          settingsMenuOpen = true;
-        }
-        else {
-          $('.settingsmenu_container').hide().html("");
-          settingsMenuOpen = false;
-        }
-      });
+      Action_OpenSettingsMenu(xhrArray, requestData);
     }
     else {
       $('.settingsmenu_container').hide().html("");

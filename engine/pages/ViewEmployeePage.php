@@ -81,21 +81,8 @@ class PageViewEmployee {
             $('.btn_month_right').data('curyear', year);
             SetLoadingIcon('.calendar_loading');
             $('.calendar_loading').fadeIn(100);
-            CancelAllAjaxCalls();
             var eid = `$_employeeid`;
-            var requestData = [
-                    {name: 'action', value: 'GetScheduleForMonth'},
-                    {name: 'month', value: month},
-                    {name: 'year', value: year},
-                    {name: 'eid', value: eid}
-                ];
-                CancelAllAjaxCalls();
-                AjaxCall(xhrArray, requestData, function(status, response) {
-                    if (status) {
-                        $('.calendar_container').html(response);
-                        $('.calendar_loading').hide();
-                    }
-                });
+            Action_GetScheduleForMonth(xhrArray, eid, month, year);
         });
         $('.btn_month_right').click(function() {
             var monthx = parseInt($(this).data('curmonth'));
@@ -116,21 +103,8 @@ class PageViewEmployee {
             $('.btn_month_left').data('curyear', year);
             SetLoadingIcon('.calendar_loading');
             $('.calendar_loading').fadeIn(100);
-            CancelAllAjaxCalls();
             var eid = `$_employeeid`;
-            var requestData = [
-                    {name: 'action', value: 'GetScheduleForMonth'},
-                    {name: 'month', value: month},
-                    {name: 'year', value: year},
-                    {name: 'eid', value: eid}
-                ];
-                CancelAllAjaxCalls();
-                AjaxCall(xhrArray, requestData, function(status, response) {
-                    if (status) {
-                        $('.calendar_container').html(response);
-                        $('.calendar_loading').hide();
-                    }
-                });
+            Action_GetScheduleForMonth(xhrArray, eid, month, year);
         });
     </script>
 

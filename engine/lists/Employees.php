@@ -34,15 +34,7 @@ class ListEmployees {
                 {name: 'buttonid', value: 'ViewEmployee'},
                 {name: 'employeeid', value: eid}
                 ];
-                CancelAllAjaxCalls();
-                SetLoadingIcon('#rightpane_container');
-                AjaxCall(xhrArray, requestData, function(status, response) {
-                    if (status) {
-                        $('#rightpane_container').html(response);
-                    }
-                });
-
-                console.log('clicked');
+                Action_LoadPage(xhrArray, requestData);
             });
         </script>
         HTML;

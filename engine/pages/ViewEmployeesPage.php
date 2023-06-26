@@ -9,23 +9,13 @@ class PageViewEmployees {
         $returnedCode .= <<<HTML
             <script type='text/javascript'>
                 function OpenNewEmployeePage() {
-                    $('.popup_darken').fadeIn(500);
-                    $('.popup_wrapper').fadeIn(500);
-                    SetLoadingIcon('.popup_scrollable');
-
                     var data = {};
-
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
                         {name: 'buttonid', value : 'NewEmployee'},
                         {name: 'data', value : JSON.stringify(data)}
                     ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('.popup_content').html(response).show();
-                        }
-                    });
+                    Action_LoadPopup(xhrArray, requestData);
                 }
                 $('.btn_newemployeedialogue').click(function() {
                     OpenNewEmployeePage();

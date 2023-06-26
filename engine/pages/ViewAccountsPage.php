@@ -14,23 +14,13 @@ class PageViewAccounts {
         $returnedCode .= <<<HTML
         <script type='text/javascript'>           
         function OpenNewAccountPage() {
-            $('.popup_darken').fadeIn(500);
-            $('.popup_wrapper').fadeIn(500);
-            SetLoadingIcon('.popup_scrollable');
-
             var data = {};
-            
             var requestData = [
                 {name: 'action', value: 'LoadPopup'},
                 {name: 'buttonid', value : 'NewAccount'},
                 {name: 'data', value : JSON.stringify(data)}
             ];
-            CancelAllAjaxCalls();
-            AjaxCall(xhrArray, requestData, function(status, response) {
-                if (status) {
-                $('.popup_content').html(response).show();
-                }
-            });
+            Action_LoadPopup(xhrArray, requestData);
         }
         $('.btn_newaccountdialogue').click(function() {
             OpenNewAccountPage();

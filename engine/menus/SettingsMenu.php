@@ -12,12 +12,7 @@ class MenuSettings {
                     {name: 'buttonid', value: 'ViewEmployeeSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $("#rightpane_container").html(response);
-                        }
-                    });
+                    Action_LoadPage(xhrArray, requestData);
                 });
                 $('.open_schedule_settings_page').click(function() { 
                     var requestData = [
@@ -25,12 +20,7 @@ class MenuSettings {
                     {name: 'buttonid', value: 'ViewScheduleSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $("#rightpane_container").html(response);
-                        }
-                    });
+                    Action_LoadPage(xhrArray, requestData);
                 });
             </script>
         HTML;

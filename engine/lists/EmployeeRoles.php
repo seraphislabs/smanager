@@ -45,10 +45,6 @@ class ListEmployeeRoles {
         <script>
             $(".edit_role_button").click(function() {
                     var roleid = $(this).data('roleid');
-                    $('.popup_darken').fadeIn(500);
-                    $('.popup_wrapper').fadeIn(500); 
-                    $('.popup_scrollable').fadeIn(300);
-                    SetLoadingIcon('.popup_scrollable');
                     var data = {};
                     data['roleid'] = roleid;
                     var requestData = [
@@ -56,12 +52,7 @@ class ListEmployeeRoles {
                         {name: 'buttonid', value: 'NewRole'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('.popup_content').html(response).fadeIn(300);
-                        }
-                    });
+                    Action_LoadPopup(xhrArray, requestData);
                 });
         </script>
     HTML;

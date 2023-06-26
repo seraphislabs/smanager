@@ -51,13 +51,7 @@ class ListLocations {
                     {name: 'buttonid', value: 'ViewAccount'},
                     {name: 'accountid', value: aid}
                     ];
-                    CancelAllAjaxCalls();
-                    SetLoadingIcon('#rightpane_container');
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('#rightpane_container').html(response);
-                        }
-                    });
+                    Action_LoadPage(xhrArray, requestData);
                 });
             </script>
         HTML;

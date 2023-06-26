@@ -9,9 +9,6 @@ class PageViewScheduleSettings {
             <script type='text/javascript'>
                 InitTimePickers();
                 $('.btn_open_new_shift').click(function() {
-                    $('.popup_darken').fadeIn(500);
-                    $('.popup_wrapper').fadeIn(500);
-                    SetLoadingIcon('.popup_content');
                     var data = {};
                     data['shiftid'] = 0;
                     var requestData = [
@@ -19,29 +16,16 @@ class PageViewScheduleSettings {
                         {name: 'buttonid', value: 'NewShift'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('.popup_content').html(response).fadeIn(500);
-                        }
-                    });
+                    Action_LoadPopup(xhrArray, requestData);
                 });
                 $('.btn_open_new_holiday_schedule').click(function() {
-                    $('.popup_darken').fadeIn(500);
-                    $('.popup_wrapper').fadeIn(500);
-                    SetLoadingIcon('.popup_content');
                     var data = {};
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
                         {name: 'buttonid', value: 'NewHolidaySchedule'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    CancelAllAjaxCalls();
-                    AjaxCall(xhrArray, requestData, function(status, response) {
-                        if (status) {
-                            $('.popup_content').html(response).fadeIn(500);
-                        }
-                    });
+                    Action_LoadPopup(xhrArray, requestData);
                 });
             </script>
         HTML;

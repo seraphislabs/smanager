@@ -54,10 +54,6 @@ class ListEmployeeShifts {
             <script>
                 $(".edit_shift_button").click(function() {
                         var shiftid = $(this).data('shiftid');
-                        $('.popup_darken').fadeIn(500);
-                        $('.popup_wrapper').fadeIn(500);
-                        $('.popup_content').fadeIn(300);
-                        SetLoadingIcon('.popup_content');
                         var data = {};
                         data['shiftid'] = shiftid;
                         var requestData = [
@@ -65,12 +61,7 @@ class ListEmployeeShifts {
                             {name: 'buttonid', value: 'NewShift'},
                             {name: 'data', value: JSON.stringify(data)}
                         ];
-                        CancelAllAjaxCalls();
-                        AjaxCall(xhrArray, requestData, function(status, response) {
-                            if (status) {
-                                $('.popup_content').html(response).show();
-                            }
-                        });
+                        Action_LoadPopup(xhrArray, requestData);
                     });
             </script>
         HTML;
