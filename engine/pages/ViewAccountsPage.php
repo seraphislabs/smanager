@@ -20,7 +20,7 @@ class PageViewAccounts {
                 {name: 'buttonid', value : 'NewAccount'},
                 {name: 'data', value : JSON.stringify(data)}
             ];
-            Action_LoadPopup(xhrArray, requestData);
+            Action_LoadPopup(requestData);
         }
         $('.btn_newaccountdialogue').click(function() {
             OpenNewAccountPage();

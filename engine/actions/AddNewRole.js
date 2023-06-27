@@ -1,4 +1,4 @@
-function Action_AddNewRole(_xhrArray, _roleid) {
+function Action_AddNewRole(_roleid) {
     var endperms = "";
     var first = true;
     $("#permissions_listings").find('.formsection_permissions_checkbox').each(function () {
@@ -20,7 +20,7 @@ function Action_AddNewRole(_xhrArray, _roleid) {
         { name: 'isDispatchable', value: isDispatchable },
         { name: 'roleid', value: _roleid }
     ];
-    AjaxCall(_xhrArray, requestData, Action_AddNewRoleResponse);
+    AjaxCall(requestData, Action_AddNewRoleResponse);
 }
 
 function Action_AddNewRoleResponse(status, response) {

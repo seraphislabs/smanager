@@ -28,7 +28,7 @@
 
 <body>
 <?php
-// Load Javascript
+// Load Javascript Actions System
 $pagesDir = __DIR__ . '/engine/actions';
 $pages = scandir($pagesDir);
 foreach ($pages as $page) {

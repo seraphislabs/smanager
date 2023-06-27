@@ -46,7 +46,7 @@ function StartSession(_email, _password) {
     { name: 'email', value: _email },
     { name: 'password', value: _password }
   ];
-  Action_StartSession(xhrArray, requestData);
+  Action_StartSession(requestData);
 }
 
 function ClickLeftPaneMenuItem(buttonid, pushHistory) {
@@ -58,7 +58,7 @@ function ClickLeftPaneMenuItem(buttonid, pushHistory) {
     { name: 'buttonid', value: buttonid }
   ];
 
-  Action_LoadPage(xhrArray, requestData);
+  Action_LoadPage(requestData);
 }
 
 function Logout() {
@@ -66,7 +66,7 @@ function Logout() {
     { name: 'action', value: 'Logout' }
   ];
   CancelAllAjaxCalls();
-  AjaxCall(xhrArray, requestData, function (status, response) {
+  AjaxCall(requestData, function (status, response) {
     if (status) {
       $('#pagewrap_master').html(response);
       location.reload();
@@ -88,7 +88,7 @@ function StartPortal() {
     pagedata: urlParams
   };
   CancelAllAjaxCalls();
-  AjaxCall(xhrArray, requestData, function (status, response) {
+  AjaxCall(requestData, function (status, response) {
     if (status) {
       $('#pagewrap').html(response);
     }
@@ -156,7 +156,7 @@ $(document).ready(function () {
       var requestData = [
         { name: 'action', value: 'OpenSettingsMenu' }
       ];
-      Action_OpenSettingsMenu(xhrArray, requestData);
+      Action_OpenSettingsMenu(requestData);
     }
     else {
       $('.settingsmenu_container').hide().html("");

@@ -103,7 +103,7 @@ function SerializeNewShiftForm() {
     return returnInformation;
 }
 
-function Action_AddNewShift(_xhrArray) {
+function Action_AddNewShift() {
     var returnInformation = SerializeNewShiftForm();
     var shiftInformation = JSON.stringify(returnInformation['shiftInformation']);
 
@@ -111,7 +111,7 @@ function Action_AddNewShift(_xhrArray) {
         { name: 'action', value: 'AddNewShift' },
         { name: 'shiftInformation', value: shiftInformation }
     ];
-    AjaxCall(_xhrArray, requestData, Action_AddNewShiftResponse);
+    AjaxCall(requestData, Action_AddNewShiftResponse);
 }
 
 function Action_AddNewShiftResponse(status, response) {

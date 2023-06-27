@@ -15,7 +15,7 @@
 		use ActionAddNewShift;
 		use ActionAddNewAccount;
 		use ActionAddNewEmployee;
-		use ActionGetScheduleForMonth;
+		use ActionGenerateCalendar;
 		use ActionOpenSettingsMenu;
 		use ActionStartSession;
 		use ActionStartPortal;

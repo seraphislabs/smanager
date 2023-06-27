@@ -59,7 +59,7 @@ class PopupNewEmployee {
                         $(this).addClass('disabled');
                     }
 
-                    Action_AddNewEmployee(xhrArray);
+                    Action_AddNewEmployee();
                 });
                 $(document).on('change', '.checkbox_drivers_license', function() {
                     var toggleableChildren = $('.formsection_drivers_license');

@@ -127,7 +127,7 @@ function Action_AddNewAccountResponse(status, response) {
     }
 }
 
-function Action_AddNewAccount(_xhrArray) {
+function Action_AddNewAccount() {
     var formattedString = SerializeNewAccountForm();
     var formInfo = JSON.stringify(formattedString['formInformation']);
 
@@ -136,7 +136,7 @@ function Action_AddNewAccount(_xhrArray) {
             { name: 'action', value: 'AddNewAccount' },
             { name: 'formdata', value: formInfo }
         ];
-        AjaxCall(_xhrArray, requestData, Action_AddNewAccountResponse);
+        AjaxCall(requestData, Action_AddNewAccountResponse);
     }
     else {
         if ($('#submit_new_account_form').hasClass('disabled')) {

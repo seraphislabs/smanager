@@ -27,7 +27,7 @@ class PopupNewShift {
                         $(this).addClass('disabled');
                     }
 
-                    Action_AddNewShift(xhrArray);
+                    Action_AddNewShift();
                 });
                 $("#btn_close_popup").click(function () {
                     ClosePopup();

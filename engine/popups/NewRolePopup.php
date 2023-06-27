@@ -17,7 +17,7 @@ class PopupNewRole {
                         $(this).addClass('disabled');
                     }
 
-                    Action_AddNewRole(xhrArray, phpRoleId)
+                    Action_AddNewRole(phpRoleId)
                 });
                 $("#btn_close_popup").click(function () {
                     ClosePopup();

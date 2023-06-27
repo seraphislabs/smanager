@@ -51,7 +51,7 @@ class ListLocations {
                     {name: 'buttonid', value: 'ViewAccount'},
                     {name: 'accountid', value: aid}
                     ];
-                    Action_LoadPage(xhrArray, requestData);
+                    Action_LoadPage(requestData);
                 });
             </script>
         HTML;

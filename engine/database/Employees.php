@@ -28,6 +28,10 @@ trait DatabaseEmployees {
             $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `id` = :employeeid");
             $stmt->bindParam(":employeeid", $_employeeid);
             $stmt->execute();
+
+            if ($stmt->rowCount() <= 0) {
+                return null;
+            }
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             $pdo1 = null;
             $pdo = null;

@@ -38,7 +38,7 @@ function SerializeNewEmployeeForm() {
 }
 
 
-function Action_AddNewEmployee(_xhrArray) {
+function Action_AddNewEmployee() {
 
     var formattedString = SerializeNewEmployeeForm();
     var formInfo = JSON.stringify(formattedString['formInformation']);
@@ -48,7 +48,7 @@ function Action_AddNewEmployee(_xhrArray) {
             { name: 'action', value: 'AddNewEmployee' },
             { name: 'formdata', value: formInfo }
         ];
-        AjaxCall(_xhrArray, requestData, Action_AddNewEmployeeResponse)
+        AjaxCall(requestData, Action_AddNewEmployeeResponse)
     }
     else {
         if ($('#submit_new_employee_form').hasClass('disabled')) {

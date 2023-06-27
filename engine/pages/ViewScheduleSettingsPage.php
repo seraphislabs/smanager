@@ -16,7 +16,7 @@ class PageViewScheduleSettings {
                         {name: 'buttonid', value: 'NewShift'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    Action_LoadPopup(xhrArray, requestData);
+                    Action_LoadPopup(requestData);
                 });
                 $('.btn_open_new_holiday_schedule').click(function() {
                     var data = {};
@@ -25,7 +25,7 @@ class PageViewScheduleSettings {
                         {name: 'buttonid', value: 'NewHolidaySchedule'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
-                    Action_LoadPopup(xhrArray, requestData);
+                    Action_LoadPopup(requestData);
                 });
             </script>
         HTML;

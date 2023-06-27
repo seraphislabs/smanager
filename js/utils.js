@@ -1,4 +1,4 @@
-function AjaxCall(_xhrArray, data, callback) {
+function AjaxCall(data, callback) {
   CancelAllAjaxCalls();
   var xhr = $.ajax({
     url: 'engine/engine.php',
@@ -13,7 +13,7 @@ function AjaxCall(_xhrArray, data, callback) {
     }
   });
 
-  _xhrArray.push(xhr);
+  xhrArray.push(xhr);
 }
 
 function GetURLParameters() {

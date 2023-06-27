@@ -34,7 +34,7 @@ class ListEmployees {
                 {name: 'buttonid', value: 'ViewEmployee'},
                 {name: 'employeeid', value: eid}
                 ];
-                Action_LoadPage(xhrArray, requestData);
+                Action_LoadPage(requestData);
             });
         </script>
         HTML;

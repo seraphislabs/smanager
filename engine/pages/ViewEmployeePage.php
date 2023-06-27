@@ -1,18 +1,22 @@
 <?php
 class PageViewEmployee {
    public static function Generate($_dbInfo, $_postData) {
+
     $_employeeid = $_postData['employeeid'];
     $returnedCode = "";
     $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewEmployee&employeeid=$_employeeid');</script>";
     // Permission Check
 
     $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
+    if ($employeeInfo == null) {
+        $returnedCode = "<script>ClickLeftPaneMenuItem('ViewEmployees', true);</script>";
+        return $returnedCode;
+    }
     $shiftInfo = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
     $roleInfo = DatabaseManager::GetEmployeeRole($_dbInfo, $employeeInfo['role']);
 
     $year = date('Y');
     $month = date('m');
-    $monthName = date('F', mktime(0, 0, 0, $month, 1));
 
     $calendarView = "";
     $scheduleTemplate = "<center>You do not have permission to view this employee's schedule.</center>";
@@ -22,25 +26,13 @@ class PageViewEmployee {
             $canviewschedule = false;
         }
     }
+
     if ($canviewschedule) {
-        $calendarView = Calendar::GenerateThisMonthSchedule($month, $year, $shiftInfo);
-        $scheduleTemplate = <<<HTML
-            <div class='display_section_header_2'>
-                    <span class='button_type_4 btn_month_left' data-curmonth='$month' data-curyear='$year>'><</span>
-                    <span class='monthyeardisplay' style='width:150px;text-align:center;'>$monthName
-                    <span class='textcolor_green'>$year</span></span>
-                    <span class='button_type_4 btn_month_right' data-curmonth='$month' data-curyear='$year'>></span>
-                </div>
-                <div class='calendar_header'>
-                    <span>Monday</span><span>Tuesday</span><span>Wednesday</span><span>Thursday</span><span>Friday</span>
-                    <span>Saturday</span><span>Sunday</span>
-                </div>
-                <div class='display_section_content'>
-                    <div class='calendar_container'>
-                        $calendarView
-                    </div>
-                </div>
-        HTML;
+        $postData = [];
+        $postData['month'] = $month;
+        $postData['year'] = $year;
+        $postData['eid'] = $_employeeid;
+        $scheduleTemplate = Calendar::Init($_dbInfo, $postData);
     }
 
     if (!is_array($employeeInfo)) {
@@ -61,53 +53,6 @@ class PageViewEmployee {
     }*/
 
     $returnedCode .= <<<HTML
-    <script>
-        $('.btn_month_left').click(function() {
-            var monthx = parseInt($(this).data('curmonth'));
-            var yearx = parseInt($(this).data('curyear'));
-            var month = monthx;
-            var year = yearx;
-            if (month == 1) {
-                month = 12;
-                year -= 1;
-            } else {
-                month -= 1;
-            }
-            const monthName = new Date(Date.UTC(year, month, 1)).toLocaleString('default', { month: 'long' });
-            $('.monthyeardisplay').html(monthName + "<span class='textcolor_green'> " + year + "</span>");
-            $(this).data('curmonth', month);
-            $(this).data('curyear', year);
-            $('.btn_month_right').data('curmonth', month);
-            $('.btn_month_right').data('curyear', year);
-            SetLoadingIcon('.calendar_loading');
-            $('.calendar_loading').fadeIn(100);
-            var eid = `$_employeeid`;
-            Action_GetScheduleForMonth(xhrArray, eid, month, year);
-        });
-        $('.btn_month_right').click(function() {
-            var monthx = parseInt($(this).data('curmonth'));
-            var yearx = parseInt($(this).data('curyear'));
-            var month = monthx;
-            var year = yearx;          
-            if (month == 12) {
-                month = 1;
-                year += 1;
-            } else {
-                month += 1;
-            }
-            const monthName = new Date(Date.UTC(year, month, 1)).toLocaleString('default', { month: 'long' });
-            $('.monthyeardisplay').html(monthName + "<span class='textcolor_green'> " + year + "</span>");
-            $(this).data('curmonth', month);
-            $(this).data('curyear', year);
-            $('.btn_month_left').data('curmonth', month);
-            $('.btn_month_left').data('curyear', year);
-            SetLoadingIcon('.calendar_loading');
-            $('.calendar_loading').fadeIn(100);
-            var eid = `$_employeeid`;
-            Action_GetScheduleForMonth(xhrArray, eid, month, year);
-        });
-    </script>
-
     <div class ='display_container'>
         <div class='display_header'>
             <span class='textcolor_green'>Employee:</span> &nbsp; $employeeInfo[firstname] $employeeInfo[lastname]
@@ -216,6 +161,17 @@ class PageViewEmployee {
             </div>
         </div>
     </div>
+    HTML;
+
+    $returnedCode .= <<<HTML
+    <script>
+        var xdata = [
+            {name: 'month', value: $month},
+            {name: 'year', value: $year},
+            {name: 'eid', value: $_employeeid},
+        ];
+        Action_GenerateCalendar(xdata);
+    </script>
     HTML;
 
     return $returnedCode;

@@ -1,8 +1,8 @@
-function Action_OpenSettingsMenu(_xhrArray, _requestData) {
+function Action_OpenSettingsMenu(_requestData) {
     $('.settingsmenu_container').fadeIn(400);
     SetLoadingIcon(".settingsmenu_container");
 
-    AjaxCall(_xhrArray, _requestData, Action_OpenSettingsMenuResponse);
+    AjaxCall(_requestData, Action_OpenSettingsMenuResponse);
 }
 
 function Action_OpenSettingsMenuResponse(status, response) {

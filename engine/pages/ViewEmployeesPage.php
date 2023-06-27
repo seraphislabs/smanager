@@ -15,7 +15,7 @@ class PageViewEmployees {
                         {name: 'buttonid', value : 'NewEmployee'},
                         {name: 'data', value : JSON.stringify(data)}
                     ];
-                    Action_LoadPopup(xhrArray, requestData);
+                    Action_LoadPopup( requestData);
                 }
                 $('.btn_newemployeedialogue').click(function() {
                     OpenNewEmployeePage();

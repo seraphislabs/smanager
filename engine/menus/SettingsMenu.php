@@ -12,7 +12,7 @@ class MenuSettings {
                     {name: 'buttonid', value: 'ViewEmployeeSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
-                    Action_LoadPage(xhrArray, requestData);
+                    Action_LoadPage(requestData);
                 });
                 $('.open_schedule_settings_page').click(function() { 
                     var requestData = [
@@ -20,7 +20,7 @@ class MenuSettings {
                     {name: 'buttonid', value: 'ViewScheduleSettings'}
                     ];
                     SetLoadingIcon('#rightpane_container');
-                    Action_LoadPage(xhrArray, requestData);
+                    Action_LoadPage(requestData);
                 });
             </script>
         HTML;

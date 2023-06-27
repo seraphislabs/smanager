@@ -17,7 +17,7 @@ class PageViewEmployeeSettings {
                         {name: 'data', value: JSON.stringify(data)}
                     ];
 
-                    Action_LoadPopup(xhrArray, requestData);
+                    Action_LoadPopup(requestData);
                 });
             </script>
         HTML;

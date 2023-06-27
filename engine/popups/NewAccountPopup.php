@@ -89,7 +89,7 @@ class PopupNewAccount {
                         $(this).addClass('disabled');
                     }
                     
-                    Action_AddNewAccount(xhrArray);
+                    Action_AddNewAccount();
                 });
                 $('#copy_billing_address_checkbox').change(function() {
                     var billingTemplate = `$billingTemplate`;
