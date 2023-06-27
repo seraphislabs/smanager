@@ -6,5 +6,6 @@ function Action_LoadPage(_pageData) {
 function Action_LoadPageResponse(status, response) {
     if (status) {
         $('#rightpane_container').html(response);
+        //Dingleberries
     }
 }
