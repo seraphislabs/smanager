@@ -111,7 +111,7 @@ function Action_AddNewShift() {
         { name: 'action', value: 'AddNewShift' },
         { name: 'shiftInformation', value: shiftInformation }
     ];
-    AjaxCall(requestData, Action_AddNewShiftResponse);
+    AjaxCall(requestData, Action_AddNewShiftResponse, true);
 }
 
 function Action_AddNewShiftResponse(status, response) {

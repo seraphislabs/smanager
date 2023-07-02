@@ -17,6 +17,8 @@ trait DatabaseLocations {
 
             return $results;
         }
+        $pdo1 = null;
+        $pdo = null;
         return false;
     }
 }

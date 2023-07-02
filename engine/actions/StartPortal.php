@@ -29,7 +29,13 @@ trait ActionStartPortal {
 				</script>
 			HTML;
 
+			$getClockinUpdate = Actions::UpdatePunchDisplay($_dbInfo, []);
+
 			$returnedCode .= <<<HTML
+			<script>
+				var clockinUpdate = `$getClockinUpdate`;
+				Action_UpdatePunchDisplayResponse(true, clockinUpdate);
+			</script>
 			<div id='topbar_container'>
 				<div class='sitelogo'>
 					<img src='img/logo1.png' width='400px'/>
@@ -44,7 +50,7 @@ trait ActionStartPortal {
 						<input type='text' placeholder='Search'/><img src='img/search_gray.png'/>
 					</div>
 					<div class='topbarloginnote'>
-						Welcome back, $_SESSION[firstname] <span class='text_button_type_1' id='logoutbutton'></span>
+						<span class='clockin_time'></span><span class='clockin_display'></span>
 					</div>
 				</div>
 			</div>	

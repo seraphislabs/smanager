@@ -1,6 +1,6 @@
 function Action_LoadPage(_pageData) {
     SetLoadingIcon('#rightpane_container');
-    AjaxCall(_pageData, Action_LoadPageResponse);
+    AjaxCall(_pageData, Action_LoadPageResponse, true);
 }
 
 function Action_LoadPageResponse(status, response) {

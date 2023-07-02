@@ -30,9 +30,13 @@ trait DatabaseHolidaySchedules {
                     array_push($retVal, $rAr);
                 }
 
+                $pdo1 = null;
+                $pdo = null;
                 return $retVal;
             }
         }  
+        $pdo1 = null;
+        $pdo = null;
         return null;
     }
 }

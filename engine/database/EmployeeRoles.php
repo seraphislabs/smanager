@@ -45,8 +45,12 @@ trait DatabaseEmployeeRoles {
             $pdo1 = null;
             $pdo = null;
 
+            $pdo1 = null;
+            $pdo = null;
             return $results;
         }
+        $pdo1 = null;
+        $pdo = null;
         return false;
     }
 
@@ -90,6 +94,8 @@ trait DatabaseEmployeeRoles {
             else {
                 $retVar['success'] = false;
                 $retVar['response'] = "Validation Error";
+                $pdo1 = null;
+                $pdo = null;
                 return $retVar;
             }
         }
@@ -97,6 +103,8 @@ trait DatabaseEmployeeRoles {
             $retVar['success'] = false;
             $retVar['response'] = "Database Error";
         }
+        $pdo1 = null;
+        $pdo = null;
         return $retVar;
     }
 }

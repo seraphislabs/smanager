@@ -5,6 +5,18 @@ function ValidateForm(form_input, validation_type) {
     };
 
     switch (validation_type) {
+        case 'time':
+            var timeRegex = /^(1[0-2]|0?[1-9]):[0-5][0-9]\s?(AM|PM)$/i;
+            if (form_input.length == 0) {
+                retVal.success = true;
+                retVal.response = "null";
+                return retVal;
+            }
+            else if (!timeRegex.test(form_input)) {
+                retVal.response = 'Invalid time';
+                return retVal;
+            }
+            break;
         case 'year':
             var yearRegex = /^\d{4}$/;
             if (!yearRegex.test(form_input)) {

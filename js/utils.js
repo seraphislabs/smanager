@@ -1,4 +1,4 @@
-function AjaxCall(data, callback) {
+function AjaxCall(data, callback, addToCancelList) {
   CancelAllAjaxCalls();
   var xhr = $.ajax({
     url: 'engine/engine.php',
@@ -13,7 +13,9 @@ function AjaxCall(data, callback) {
     }
   });
 
-  xhrArray.push(xhr);
+  if (addToCancelList) {
+    xhrArray.push(xhr);
+  }
 }
 
 function GetURLParameters() {

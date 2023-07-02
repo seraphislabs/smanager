@@ -5,6 +5,15 @@
             $retVal = false;
 
             switch ($validation_type) {
+                case 'time':
+                    $timeRegex = '/^(1[0-2]|0?[1-9]):[0-5][0-9]\s?(AM|PM)$/i';
+                    if (strlen($form_input) == 0) {
+                        return true;
+                    }
+                    else if (!preg_match($timeRegex, $form_input)) {
+                        return $retVal;
+                    }
+                    break;
                 case 'year':
                     $yearRegex = '/^\d{4}$/';
                     if (!preg_match($yearRegex, $form_input)) {

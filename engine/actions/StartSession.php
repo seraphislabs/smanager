@@ -10,7 +10,7 @@ trait ActionStartSession {
 		if (is_array($accountInfo)) {
 			$_SESSION['companyid'] = $accountInfo['companyid'];
 			$_SESSION['firstname'] = $accountInfo['firstname'];
-			$_SESSION['eid'] = $accountInfo['id'];
+			$_SESSION['employeeid'] = $accountInfo['id'];
 		}
     }
 }

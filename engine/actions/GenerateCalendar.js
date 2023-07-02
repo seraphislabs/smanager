@@ -1,16 +1,14 @@
 function Action_GenerateCalendar(_postData) {
 
+    var requestData = _postData;
+
     SetLoadingIcon('.calendar_loading');
     $('.calendar_loading').fadeIn(100);
 
-    var requestData = [
-        { name: 'action', value: 'GenerateCalendar' }
-    ];
-
-    requestData = requestData.concat(_postData);
+    requestData['action'] = 'GenerateCalendar';
 
     CancelAllAjaxCalls();
-    AjaxCall(requestData, Action_GenerateCalendarResponse);
+    AjaxCall(requestData, Action_GenerateCalendarResponse, true);
 }
 
 function Action_GenerateCalendarResponse(status, response) {

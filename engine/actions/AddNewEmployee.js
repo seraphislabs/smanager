@@ -48,7 +48,7 @@ function Action_AddNewEmployee() {
             { name: 'action', value: 'AddNewEmployee' },
             { name: 'formdata', value: formInfo }
         ];
-        AjaxCall(requestData, Action_AddNewEmployeeResponse)
+        AjaxCall(requestData, Action_AddNewEmployeeResponse, true)
     }
     else {
         if ($('#submit_new_employee_form').hasClass('disabled')) {

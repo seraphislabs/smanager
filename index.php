@@ -48,11 +48,9 @@ echo("<div class='popup_darken'></div><div class='popup_wrapper'><div class='pop
 </div>
 
 <div class='settingsmenu_container' style='display:none;'>
-    
 </div>
 
 <div class='tooltip' style='display:none;'>
-Test
 </div>
 ");
 

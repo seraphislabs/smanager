@@ -21,6 +21,9 @@
 		use ActionStartPortal;
 		use ActionGetMainMenuButtons;
 		use ActionLogout;
+		use ActionAddSetSchedule;
+		use ActionPunchIn;
+		use ActionUpdatePunchDisplay;
 	}
 
 	if (isset($_POST['action'])) {

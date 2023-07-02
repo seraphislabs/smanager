@@ -88,6 +88,7 @@ class PopupNewRole {
                         <div class='formsection_control_options'>
                             <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ves'/>View Employee Schedule</div>
                             <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='vel'/>View Employee List</div>
+                            <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ees'/>Edit Employee Schedule</div>
                             <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ce'/>Add Employees</div>
                             <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ee'>Edit Employee Details</div>
                             <div class='formsection_control_option'><input type='checkbox' class='formsection_permissions_checkbox checkbox_type_1' data-flag='ses'/>See Schedule</div>

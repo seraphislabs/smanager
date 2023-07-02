@@ -29,6 +29,10 @@ function SetLoadingIcon(selectedClass) {
   $(selectedClass).html("<div class='loadingicon1'><img src='img/loader2.gif'/></div>");
 }
 
+function SetLoadingIconSmall(selectedClass) {
+  $(selectedClass).html("<img src='img/loader2.gif' width='30px' height='30px'/>");
+}
+
 function UpdateSelectedMenuItem(menuItem) {
   $('.leftpanebutton').each(function () {
     if ($(this).data('buttonid') == menuItem) {
@@ -162,5 +166,9 @@ $(document).ready(function () {
       $('.settingsmenu_container').hide().html("");
       settingsMenuOpen = false;
     }
+  });
+
+  $(document).on('click', '.btn_punch_in', function () {
+    Action_PunchIn();
   });
 });

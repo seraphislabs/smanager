@@ -44,9 +44,10 @@ trait DatabaseEmployeeShifts {
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             $pdo1 = null;
             $pdo = null;
-
             return $results;
         }
+        $pdo1 = null;
+        $pdo = null;
         return false;
     }
 
@@ -144,6 +145,8 @@ trait DatabaseEmployeeShifts {
             $retVar['success'] = false;
             $retVar['response'] = "Database Error";
         }
+        $pdo1 = null;
+        $pdo = null;
         return $retVar;
     }
 }

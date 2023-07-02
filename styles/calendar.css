@@ -13,6 +13,11 @@
   font-size: 0.8em;
 }
 
+.calendar_header_helpicon {
+  position: absolute;
+  right: 20px;
+}
+
 .calendar_loading {
   position: absolute;
   top: 0;
@@ -38,7 +43,7 @@
   text-align: center;
   background: var(--color8);
   padding: 5px;
-  height: 65px;
+  min-height: 65px;
   font-size: 0.60em;
 }
 
@@ -47,8 +52,8 @@
   justify-content: space-between;
 }
 
-.calendar_day:nth-child(odd) {
-  background: var(--color9);
+.calendar_day:hover {
+  cursor: pointer;
 }
 
 .calendar_week {
@@ -60,9 +65,9 @@
 }
 
 .calendar_week:hover>* {
-  cursor: pointer;
+  /*cursor: pointer;
   border-bottom: 1px solid var(--color1);
-  border-top: 1px solid var(--color1);
+  border-top: 1px solid var(--color1);*/
 }
 
 .calendar_week:first-child:hover {
@@ -71,4 +76,11 @@
 
 .calendar_week:last-child:hover {
   border-right: 1px solid var(--color1);
+}
+
+.calendar_edit_input {
+  flex-shrink: 1;
+  font-size: 1em;
+  width: 100%;
+  max-width: 60px;
 }

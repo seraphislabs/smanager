@@ -2,7 +2,7 @@ function Action_OpenSettingsMenu(_requestData) {
     $('.settingsmenu_container').fadeIn(400);
     SetLoadingIcon(".settingsmenu_container");
 
-    AjaxCall(_requestData, Action_OpenSettingsMenuResponse);
+    AjaxCall(_requestData, Action_OpenSettingsMenuResponse, true);
 }
 
 function Action_OpenSettingsMenuResponse(status, response) {

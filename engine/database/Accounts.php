@@ -41,6 +41,8 @@ trait DatabaseAccounts {
 
             return $results;
         }
+        $pdo1 = null;
+        $pdo = null;
         return false;
     }
 
@@ -58,12 +60,16 @@ trait DatabaseAccounts {
         if (self::ValidateLogin($pdo1)) {
             $accountInformation = $_formInformation['accountInformation'];
             if (!is_array($accountInformation)) {
+                $pdo1 = null;
+                $pdo = null;
                 return false;
             }
 
             if (!self::CheckPermissions($_dbInfo, ['ca'])) {
                 $retVar['success'] = false;
                 $retVar['response'] = "You do not have permission to view this page. Speak to your account manager to gain access.";
+                $pdo1 = null;
+                $pdo = null;
                 return $retVar;
             }
 
@@ -87,6 +93,8 @@ trait DatabaseAccounts {
             ) {
                 $retVar['success'] = false;
                 $retVar['response'] = "Validation Failed";
+                $pdo1 = null;
+                $pdo = null;
                 return $retVar;
             }
 
@@ -120,6 +128,8 @@ trait DatabaseAccounts {
 
                 $retVar['success'] = false;
                 $retVar['response'] = "Database Error";
+                $pdo1 = null;
+                $pdo = null;
                 return $retVar;
             }
             //Account ID
@@ -164,6 +174,8 @@ trait DatabaseAccounts {
 
                             $retVar['success'] = false;
                             $retVar['response'] = "Validation Error";
+                            $pdo1 = null;
+                            $pdo = null;
                             return $retVar;
                         }
 
@@ -184,6 +196,8 @@ trait DatabaseAccounts {
 
                                 $retVar['success'] = false;
                                 $retVar['response'] = "Validation Error";
+                                $pdo1 = null;
+                                $pdo = null;
                                 return $retVar;
                             }
 
@@ -204,6 +218,8 @@ trait DatabaseAccounts {
 
                                 $retVar['success'] = false;
                                 $retVar['response'] = "Database Error";
+                                $pdo1 = null;
+                                $pdo = null;
                                 return $retVar;
                             }
                             //Contact ID
@@ -241,6 +257,8 @@ trait DatabaseAccounts {
 
                             $retVar['success'] = false;
                             $retVar['response'] = "Database Error";
+                            $pdo1 = null;
+                            $pdo = null;
                             return $retVar;
                         }
                         //Location ID
@@ -253,9 +271,24 @@ trait DatabaseAccounts {
                 $retVar['response'] = "Database Error";
             }
 
+            $pdo1 = null;
+            $pdo = null;
             return $retVar;
         }
-    } 
+    }
+
+    public static function CheckPermissions($_dbInfo, $_perms)
+    {
+        $perms = self::GetUserPermissions($_dbInfo);
+
+        $diff = array_diff($_perms, $perms);
+
+        if (empty($diff)) {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 ?>

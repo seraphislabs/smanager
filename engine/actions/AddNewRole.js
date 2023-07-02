@@ -20,7 +20,7 @@ function Action_AddNewRole(_roleid) {
         { name: 'isDispatchable', value: isDispatchable },
         { name: 'roleid', value: _roleid }
     ];
-    AjaxCall(requestData, Action_AddNewRoleResponse);
+    AjaxCall(requestData, Action_AddNewRoleResponse, true);
 }
 
 function Action_AddNewRoleResponse(status, response) {

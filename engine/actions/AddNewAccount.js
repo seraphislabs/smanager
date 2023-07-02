@@ -136,7 +136,7 @@ function Action_AddNewAccount() {
             { name: 'action', value: 'AddNewAccount' },
             { name: 'formdata', value: formInfo }
         ];
-        AjaxCall(requestData, Action_AddNewAccountResponse);
+        AjaxCall(requestData, Action_AddNewAccountResponse, true);
     }
     else {
         if ($('#submit_new_account_form').hasClass('disabled')) {

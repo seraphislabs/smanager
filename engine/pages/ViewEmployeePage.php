@@ -22,7 +22,7 @@ class PageViewEmployee {
     $scheduleTemplate = "<center>You do not have permission to view this employee's schedule.</center>";
     $canviewschedule = true;
     if (!DatabaseManager::CheckPermissions($_dbInfo, ['ves'])) {
-        if ($_SESSION['eid'] != $_employeeid) {
+        if ($_SESSION['employeeid'] != $_employeeid) {
             $canviewschedule = false;
         }
     }
@@ -32,6 +32,8 @@ class PageViewEmployee {
         $postData['month'] = $month;
         $postData['year'] = $year;
         $postData['eid'] = $_employeeid;
+        $postData['selectionType'] = "day";
+        $postData['selectionAction'] = "EditSchedule";
         $scheduleTemplate = Calendar::Init($_dbInfo, $postData);
     }
 
@@ -55,7 +57,7 @@ class PageViewEmployee {
     $returnedCode .= <<<HTML
     <div class ='display_container'>
         <div class='display_header'>
-            <span class='textcolor_green'>Employee:</span> &nbsp; $employeeInfo[firstname] $employeeInfo[lastname]
+            <span class='textcolor_green'>Employee</span> &nbsp; $employeeInfo[firstname] $employeeInfo[lastname]
         </div>
         <div class='display_row'>
             <div class='display_section'>
@@ -161,17 +163,6 @@ class PageViewEmployee {
             </div>
         </div>
     </div>
-    HTML;
-
-    $returnedCode .= <<<HTML
-    <script>
-        var xdata = [
-            {name: 'month', value: $month},
-            {name: 'year', value: $year},
-            {name: 'eid', value: $_employeeid},
-        ];
-        Action_GenerateCalendar(xdata);
-    </script>
     HTML;
 
     return $returnedCode;
