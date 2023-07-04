@@ -15,122 +15,62 @@ trait DatabaseMaster
         }
     }
 
-    public static function ManuallyValidateLogin($_dbInfo)
-    {
-        $_password = $_SESSION['password'];
+    public static function FirstLoginValidate($email, $password) {
+        $db = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
-        $pdo = self::connect($_dbInfo, 'servicemanager');
-        $retVal = self::GetLoginPasswordHash($pdo);
-        if (!empty($retVal)) {
-            if (PasswordEncrypt::Check($_password, $retVal)) {
-                $pdo = null;
-                return true;
-            }
-        }
-        $pdo = null;
-        return false;
-    }
+        $results = $db->fetch("SELECT * FROM `users` WHERE `workemail`=:email", array(
+            "email" => $email
+        ));
 
-    private static function ValidateLogin($_pdo)
-    {
-        $_password = $_SESSION['password'];
-
-        // Retreive password hash from database
-        $retVal = self::GetLoginPasswordHash($_pdo);
-        if (!empty($retVal)) {
-            if (PasswordEncrypt::Check($_password, $retVal)) {
-                return true;
+        if ($results != false) {
+            $hashed = $results['password'];
+            if (PasswordEncrypt::Check($password, $hashed)) {
+                return $results;
             }
         }
 
         return false;
     }
 
-    private static function GetLoginPasswordHash($_pdo)
-    {
-        $_email = $_SESSION['email'];
-        $stmt = $_pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
-        $stmt->bindParam(":email", $_email);
-        $stmt->execute();
-        if ($stmt->rowCount() == 1) {
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function GetUserJoinedInformation($userid) {
+        $db = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
-            $passHash = $results[0]['password'];
+        $results = $db->fetch("SELECT `users`.*, `roles`.`permissions` FROM `users` INNER JOIN `roles` ON `roles`.`id` = `users`.`role` WHERE `users`.`id`=:userid", array(
+            "userid" => $userid
+        ));
 
-            return $passHash;
-        }
+        return $results;
     }
 
-    public static function GetLoginInformation($_dbInfo)
-    {
-        $_email = $_SESSION['email'];
-        $pdo = self::connect($_dbInfo, 'servicemanager');
 
-        if (self::ValidateLogin($pdo)) {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
-            $stmt->bindParam(":email", $_email);
-            $stmt->execute();
-            if ($stmt->rowCount() == 1) {
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $pdo = null;
-                return $results[0];
-            }
-        }
+    public static function CheckPermission($permission) {
+        $ai = self::GetActiveSession();
+        $permissions  = $ai['permissions'];
+        $perms = explode("|", $permissions);
 
-        $pdo = null;
-        return null;
-    }
-
-    public static function GetUserPermissions($_dbInfo)
-    {
-        $_companyid = $_SESSION['companyid'];
-
-        $ccid = $_companyid + 1000;
-        $_email = $_SESSION['email'];
-        $pdo = self::connect($_dbInfo, 'servicemanager');
-        $pdo2 = self::connect($_dbInfo, "company_" . $ccid);
-
-        if (self::ValidateLogin($pdo)) {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `workemail`=:email");
-            $stmt->bindParam(":email", $_email);
-            $stmt->execute();
-            if ($stmt->rowCount() == 1) {
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                $roleid = $results[0]['role'];
-
-                $stmt2 = $pdo2->prepare("SELECT * FROM `roles` WHERE `id`=:roleid");
-                $stmt2->bindParam(":roleid", $roleid);
-                $stmt2->execute();
-
-                $permString = "";
-
-                if ($stmt2->rowCount() == 1) {
-                    $results2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-                    $permString = $results2[0]['permissions'];
-                }
-
-                $pdo = null;
-                $pdo2 = null;
-                $retArray = explode("|", $permString);
-                return $retArray;
-            }
-        }
-
-        $pdo = null;
-        $pdo2 = null;
-
-        return null;
-    }
-
-    public static function ManuallyCheckPermissions($_userPerms, $_perms) {
-        $diff = array_diff($_perms, $_userPerms);
-
-        if (empty($diff)) {
+        if (in_array($permission, $perms)) {
+            OpLog::Log("Database: CheckPermission");
+            OpLog::Log("--Returned: true");
             return true;
         }
 
         return false;
+    }
+
+    public static function GetActiveSession() {
+        $myToken = $_SESSION['token'];
+
+        $rdb = RDB::getInstance();
+        $ai = $rdb->get($myToken);
+
+        if ($ai === false) {
+            Actions::Logout();
+            die();
+        }
+        else {
+            $rdb->extendExpiry($myToken, 30000);
+            return $ai;
+        }
     }
 }
 ?>

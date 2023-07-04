@@ -1,9 +1,9 @@
 <?php
 	date_default_timezone_set('America/New_York');
 	session_start();
+	require_once("/nginx/protectedfiles/config.php");
 	require("validation/validate.php");
 	require('databaseinterface.php');
-	require_once("/nginx/protectedfiles/config.php");
 	require('utils.php');
 	require_once('pages.php');
 
@@ -41,4 +41,7 @@
 			echo $method->invoke(null, $dbInfo, $postData);
 		}
 	}
+
+	DBI::closeAll();
+	RDB::closeInstance();
 ?>

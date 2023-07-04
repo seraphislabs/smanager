@@ -2,60 +2,43 @@
 
 trait DatabaseEmployeeShifts {
     public static function GetAllEmployeeShifts($_dbInfo, $asAssoc) {
-        $_companyid = $_SESSION['companyid'];
-
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
         $retVal = [];
 
-        if (self::ValidateLogin($pdo1)) {
-            $stmt = $pdo->prepare("SELECT * FROM `shifts` ORDER BY `id`");
-            $stmt->execute();
-            if ($stmt->rowCount() > 0) {
-                if ($asAssoc) {
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    foreach($results as $result) {
-                        $retVal[$result['id']] = $result;
-                    }
-                }
-                else {
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    $retVal = $results;
+        $results = $db2->fetchAll("SELECT * FROM `shifts`");
+
+        if (count($results) > 0) {
+            if ($asAssoc) {
+                foreach($results as $result) {
+                    $retVal[$result['id']] = $result;
                 }
             }
+            else {
+                $retVal = $results;
+            }
         }
-        $pdo1 = null;
-        $pdo = null;
+
+        OpLog::Log("Database: GetAllEmployeeShifts");
+        OpLog::Log("--Returned: " . count($retVal) . " shifts");
         return $retVal;
     }
 
     public static function GetEmployeeShift($_dbInfo, $_shiftid) {
-        $_companyid = $_SESSION['companyid'];
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
-        if (self::ValidateLogin($pdo1)) {
-            $stmt = $pdo->prepare("SELECT * FROM `shifts` WHERE `id` = :shiftid");
-            $stmt->bindParam(":shiftid", $_shiftid);
-            $stmt->execute();
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
-            $pdo1 = null;
-            $pdo = null;
-            return $results;
-        }
-        $pdo1 = null;
-        $pdo = null;
-        return false;
+        $result = $db2->fetch("SELECT * FROM `shifts` WHERE `id` = :shiftid", ["shiftid" => $_shiftid]);
+
+        OpLog::Log("Database: GetEmployeeShift");
+        OpLog::Log("--Returned: Array");
+        return $result;
     }
 
     public static function AddNewEmployeeShift($_dbInfo, $_shiftInformation) {
-        $_companyid = $_SESSION['companyid'];
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
         $shiftid = 0;
         if (array_key_exists('id', $_shiftInformation)) {
@@ -97,56 +80,50 @@ trait DatabaseEmployeeShifts {
         $retVar['success'] = true;
         $retVar['response'] = "Success";
 
-        if (self::ValidateLogin($pdo1)) {
-            if ($shiftid > 0) {
-                $stmt = $pdo->prepare("SELECT * FROM `shifts` WHERE `id` = :shiftid");
-                $stmt->bindParam(":shiftid", $shiftid);
-                $stmt->execute();
-                $rowCount = $stmt->rowCount();
-                if ($rowCount == 1) {
-                    $results = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $shiftid = $results['id'];
-                    $stmt = $pdo->prepare("UPDATE `shifts` SET 
-                        `name` = :name ,
-                        `monday` = :mondayString ,
-                        `tuesday` = :tuesdayString ,
-                        `wednesday` = :wednesdayString ,
-                        `thursday` = :thursdayString ,
-                        `friday` = :fridayString ,
-                        `saturday` = :saturdayString ,
-                        `sunday` = :sundayString  
-                        WHERE `id` = :shiftid");
-                    $stmt->bindParam(":name", $name);
-                    $stmt->bindParam(":mondayString", $mondayString);
-                    $stmt->bindParam(":tuesdayString", $tuesdayString);
-                    $stmt->bindParam(":wednesdayString", $wednesdayString);
-                    $stmt->bindParam(":thursdayString", $thursdayString);
-                    $stmt->bindParam(":fridayString", $fridayString);
-                    $stmt->bindParam(":saturdayString", $saturdayString);
-                    $stmt->bindParam(":sundayString", $sundayString);
-                    $stmt->bindParam(":shiftid", $shiftid);
-                    $stmt->execute();
-                }
-            }
-            else {
-                $stmt = $pdo->prepare("INSERT INTO `shifts` (`name`,`monday`,`tuesday`,`wednesday`,`thursday`,`friday`,`saturday`,`sunday`) VALUES (:name,:mondayString,:tuesdayString,:wednesdayString,:thursdayString,:fridayString,:saturdayString,:sundayString)");
-                $stmt->bindParam(":name", $name);
-                $stmt->bindParam(":mondayString", $mondayString);
-                $stmt->bindParam(":tuesdayString", $tuesdayString);
-                $stmt->bindParam(":wednesdayString", $wednesdayString);
-                $stmt->bindParam(":thursdayString", $thursdayString);
-                $stmt->bindParam(":fridayString", $fridayString);
-                $stmt->bindParam(":saturdayString", $saturdayString);
-                $stmt->bindParam(":sundayString", $sundayString);
-                $stmt->execute();
+        
+        if ($shiftid > 0) {
+
+            $results = $db2->fetch("SELECT * FROM `shifts` WHERE `id` = :shiftid", ["shiftid" => $shiftid]);
+
+            if (count($results) > 0) {
+                $shiftid = $results['id'];
+
+                $sqlData = [
+                    "name" => $name,
+                    "mondayString" => $mondayString,
+                    "tuesdayString" => $tuesdayString,
+                    "wednesdayString" => $wednesdayString,
+                    "thursdayString" => $thursdayString,
+                    "fridayString" => $fridayString,
+                    "saturdayString" => $saturdayString,
+                    "sundayString" => $sundayString
+                ];
+
+                $cond = [
+                    ["id", "=", $shiftid],
+                ];
+
+                $db2->update("shifts", $sqlData, $cond);
             }
         }
         else {
-            $retVar['success'] = false;
-            $retVar['response'] = "Database Error";
+
+            $sqlData = [
+                "name" => $name,
+                "mondayString" => $mondayString,
+                "tuesdayString" => $tuesdayString,
+                "wednesdayString" => $wednesdayString,
+                "thursdayString" => $thursdayString,
+                "fridayString" => $fridayString,
+                "saturdayString" => $saturdayString,
+                "sundayString" => $sundayString
+            ];
+
+            $db2->insert("shifts", $sqlData);
         }
-        $pdo1 = null;
-        $pdo = null;
+
+        OpLog::Log("Database: AddNewEmployeeShift");
+        OpLog::Log("--Returned: Succesfully added shift");
         return $retVar;
     }
 }

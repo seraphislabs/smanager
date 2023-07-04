@@ -1,6 +1,7 @@
 <?php
 class PageViewEmployee {
    public static function Generate($_dbInfo, $_postData) {
+    $ai = DatabaseManager::GetActiveSession();
 
     $_employeeid = $_postData['employeeid'];
     $returnedCode = "";
@@ -21,8 +22,8 @@ class PageViewEmployee {
     $calendarView = "";
     $scheduleTemplate = "<center>You do not have permission to view this employee's schedule.</center>";
     $canviewschedule = true;
-    if (!DatabaseManager::CheckPermissions($_dbInfo, ['ves'])) {
-        if ($_SESSION['employeeid'] != $_employeeid) {
+    if (!DatabaseManager::CheckPermission('ves')) {
+        if ($ai['id'] != $_employeeid) {
             $canviewschedule = false;
         }
     }
@@ -37,11 +38,7 @@ class PageViewEmployee {
         $scheduleTemplate = Calendar::Init($_dbInfo, $postData);
     }
 
-    if (!is_array($employeeInfo)) {
-        die();
-    }
-
-    if (count($employeeInfo) <= 0) {
+    if (empty($employeeInfo)) {
         die();
     }
 

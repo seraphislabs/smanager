@@ -58,7 +58,7 @@ class ListEmployeeShifts {
                         data['shiftid'] = shiftid;
                         var requestData = [
                             {name: 'action', value: 'LoadPopup'},
-                            {name: 'buttonid', value: 'NewShift'},
+                            {name: 'pageid', value: 'NewShift'},
                             {name: 'data', value: JSON.stringify(data)}
                         ];
                         Action_LoadPopup(requestData);

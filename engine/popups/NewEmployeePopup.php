@@ -4,7 +4,7 @@ class PopupNewEmployee {
     public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         // Permission Check
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['ce'])) {
+        if (!DatabaseManager::CheckPermission('ce')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 

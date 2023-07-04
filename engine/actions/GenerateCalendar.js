@@ -7,7 +7,6 @@ function Action_GenerateCalendar(_postData) {
 
     requestData['action'] = 'GenerateCalendar';
 
-    CancelAllAjaxCalls();
     AjaxCall(requestData, Action_GenerateCalendarResponse, true);
 }
 

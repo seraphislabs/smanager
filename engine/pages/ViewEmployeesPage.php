@@ -1,8 +1,8 @@
 <?php
 class PageViewEmployees {
     public static function Generate($_dbInfo, $_postData) {
-        $canAddEmployee = DatabaseManager::CheckPermissions($_dbInfo, ['ce']);
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['vel'])) {
+        $canAddEmployee = DatabaseManager::CheckPermission('ce');
+        if (!DatabaseManager::CheckPermission('vel')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
         $returnedCode = "<script>history.pushState(null, null, '/index.php?page=ViewEmployees');</script>";
@@ -12,7 +12,7 @@ class PageViewEmployees {
                     var data = {};
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
-                        {name: 'buttonid', value : 'NewEmployee'},
+                        {name: 'pageid', value : 'NewEmployee'},
                         {name: 'data', value : JSON.stringify(data)}
                     ];
                     Action_LoadPopup( requestData);

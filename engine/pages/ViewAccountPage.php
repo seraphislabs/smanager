@@ -5,7 +5,7 @@ class PageViewAccount {
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccount&accountid=$_accountid');</script>";
         // Permission Check
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
+        if (!DatabaseManager::CheckPermission('va')) {
             $returnedCode = "You do not have permission to view this page. Speak to your account manager to gain access.";
             return $returnedCode;
         }

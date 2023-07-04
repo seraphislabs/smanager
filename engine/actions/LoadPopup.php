@@ -2,15 +2,18 @@
 
 trait ActionLoadPopup {
     public static function LoadPopup($_dbInfo, $_postData) {
-        if (isset($_postData['buttonid'])) {
-			$buttonid = $_postData['buttonid'];
+        OpLog::Log("Action: LoadPopup");
+        OpLog::Log(print_r($_postData, true) . "\n");
+
+        if (isset($_postData['pageid'])) {
+			$pageid = $_postData['pageid'];
 			$data = [];
 			if (isset($_POST['data'])) {
 				$data = json_decode($_POST['data'], true);
 			}
 
             $returnedCode = "";
-            $className = "Popup" . $buttonid;
+            $className = "Popup" . $pageid;
             if (class_exists($className)) {
                 $class = new ReflectionClass($className);
                 if ($class->hasMethod('Generate')) {

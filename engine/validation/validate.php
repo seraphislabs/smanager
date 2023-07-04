@@ -6,11 +6,12 @@
 
             switch ($validation_type) {
                 case 'time':
-                    $timeRegex = '/^(1[0-2]|0?[1-9]):[0-5][0-9]\s?(AM|PM)$/i';
+                    $timeRegex = '/^(1[0-2]|0?[0-9]):[0-5][0-9] (AM|PM)$/';
                     if (strlen($form_input) == 0) {
                         return true;
                     }
                     else if (!preg_match($timeRegex, $form_input)) {
+                        error_Log($form_input . " has failed");
                         return $retVal;
                     }
                     break;

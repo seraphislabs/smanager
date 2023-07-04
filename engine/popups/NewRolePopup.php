@@ -3,7 +3,7 @@
 class PopupNewRole {
     public static function Generate($_dbInfo, $_postData) {
         $_roleid = $_postData['roleid'];
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
+        if (!DatabaseManager::CheckPermission('emes')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
         $returnedCode = <<<HTML

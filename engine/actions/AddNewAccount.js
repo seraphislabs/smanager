@@ -108,7 +108,9 @@ function SerializeNewAccountForm() {
 
 function Action_AddNewAccountResponse(status, response) {
     if (status) {
-        var resVar = response.split('|');
+        var resVar = response.split('|').map(function (item) {
+            return item.trim();
+        });
         var successString = resVar[0];
         if (successString == 'true') {
             $('.popup_wrapper').hide();

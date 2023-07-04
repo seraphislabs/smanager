@@ -2,15 +2,23 @@
 
 trait ActionStartSession {
     public static function StartSession($_dbInfo, $_postData) {
-        session_unset();
-		$_SESSION['email'] = $_POST['email'];
-		$_SESSION['password'] = $_POST['password'];
-		$accountInfo = DatabaseManager::GetLoginInformation($_dbInfo);
+		OpLog::Log("Action: StartSession");
 
-		if (is_array($accountInfo)) {
-			$_SESSION['companyid'] = $accountInfo['companyid'];
-			$_SESSION['firstname'] = $accountInfo['firstname'];
-			$_SESSION['employeeid'] = $accountInfo['id'];
+		
+		$postEmail = $_POST['email'];
+		$postPassword = $_POST['password'];
+        session_unset();
+
+		$results = DatabaseManager::FirstLoginValidate($postEmail, $postPassword);
+		if ($results !== false) {
+			$newToken = UUID::Create();
+
+			$usrJoin = DatabaseManager::GetUserJoinedInformation($results['id']);
+
+			$_SESSION['token'] = $newToken;
+			$rdb = RDB::getInstance();
+			$jResults = json_encode($usrJoin);
+			$rdb->set($newToken, $jResults, 30000);
 		}
     }
 }

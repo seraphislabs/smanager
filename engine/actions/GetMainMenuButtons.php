@@ -2,25 +2,26 @@
 
 trait ActionGetMainMenuButtons {
     public static function GetMainMenuButtons($_dbInfo) {
-		$perms = DatabaseManager::GetUserPermissions($_dbInfo);
+		$ai = DatabaseManager::GetActiveSession();
+		OpLog::Log("Action: GetMainMenuButtons");
 
 		$returnedCode = "";
 
 		$returnedCode .= ListButtons::GenerateLeftPaneButton("Dashboard");
 
-		if (in_array('va', $perms)) {
+		if (DatabaseManager::CheckPermission('va')) {
 			$returnedCode .= ListButtons::GenerateLeftPaneButton("Accounts");
 		}
-		if (in_array('vel', $perms)) {
+		if (DatabaseManager::CheckPermission('vel')) {
 			$returnedCode .= ListButtons::GenerateLeftPaneButton("Employees");
 		}
-		if (in_array('vwo', $perms)) {
+		if (DatabaseManager::CheckPermission('vwo')) {
 			$returnedCode .= ListButtons::GenerateLeftPaneButton("WorkOrders");
 		}
-		if (in_array('vi', $perms)) {
+		if (DatabaseManager::CheckPermission('vi')) {
 			$returnedCode .= ListButtons::GenerateLeftPaneButton("Invoices");
 		}
-		if (in_array('vsr', $perms)) {
+		if (DatabaseManager::CheckPermission('vsr')) {
 			$returnedCode .= ListButtons::GenerateLeftPaneButton("ServiceReports");
 		}
 

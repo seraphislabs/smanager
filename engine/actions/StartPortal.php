@@ -2,6 +2,8 @@
 
 trait ActionStartPortal {
     public static function StartPortal($_dbInfo, $_postData) {
+		OpLog::Log("Action: StartPortal");
+
 		$_pageData = json_decode($_postData['pagedata'], true);
 
 		$returnedCode = "";
@@ -67,7 +69,7 @@ trait ActionStartPortal {
 			$data = [];
 			$data['accountid'] = $_accountid;
 			$data['employeeid'] = $_employeeid;
-			$data['buttonid'] = $_page;
+			$data['pageid'] = $_page;
 
 			$returnedCode .= Actions::LoadPage($_dbInfo, $data);
 			$returnedCode .= "</div>";
@@ -101,6 +103,9 @@ trait ActionStartPortal {
 
 			$returnedCode .= <<<HTML
 			<div class='login_wrapper_bg'>
+				<video autoplay muted loop id="backgroudvideo">
+					<source src="img/bgvideo1.mp4" type="video/mp4">
+				</video>
 				<div class='login_page_backer'>
 					<img src='img/logo2.png' width='340px' style='margin-left:8px;'/>
 					<div class='login_page_content'>

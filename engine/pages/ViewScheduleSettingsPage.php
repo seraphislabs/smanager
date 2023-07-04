@@ -1,7 +1,7 @@
 <?php
 class PageViewScheduleSettings {
     public static function Generate($_dbInfo, $_postData) {
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['emes'])) {
+        if (!DatabaseManager::CheckPermission('emes')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
         $returnedCode = "<script>history.pushState(null, null, '/index.php?page=ViewScheduleSettings');</script>";
@@ -13,7 +13,7 @@ class PageViewScheduleSettings {
                     data['shiftid'] = 0;
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
-                        {name: 'buttonid', value: 'NewShift'},
+                        {name: 'pageid', value: 'NewShift'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
                     Action_LoadPopup(requestData);
@@ -22,7 +22,7 @@ class PageViewScheduleSettings {
                     var data = {};
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
-                        {name: 'buttonid', value: 'NewHolidaySchedule'},
+                        {name: 'pageid', value: 'NewHolidaySchedule'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
                     Action_LoadPopup(requestData);
@@ -54,7 +54,7 @@ class PageViewScheduleSettings {
                 
         $getHolidaySchedule = DatabaseManager::GetAllHolidaySchedules($_dbInfo);
 
-        foreach ($getHolidaySchedule as $schedule) {
+        /*foreach ($getHolidaySchedule as $schedule) {
             $scheduleDaysoff = $schedule['offdays'];
             $scheduleName = $schedule['scheduleinfo']['name'];
             $returnedCode .= <<<HTML
@@ -62,7 +62,7 @@ class PageViewScheduleSettings {
                 <img src='img/edit_green.png' style='width:20px;'/>$scheduleName
             </div>
             HTML;
-        }
+        }*/
 
         $returnedCode .= <<<HTML
                     </div>

@@ -3,9 +3,9 @@ class PageViewWorkOrders {
     public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewWorkOrders');</script>";
-        $canAddWorkOrder = DatabaseManager::CheckPermissions($_dbInfo, ['cwo']);
+        $canAddWorkOrder = DatabaseManager::CheckPermission('cwo');
         // Permission Check
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['vwo'])) {
+        if (!DatabaseManager::CheckPermission('vwo')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 

@@ -3,6 +3,9 @@
 trait ActionAddNewRole {
 
     public static function AddNewRole($_dbInfo, $_postData) {
+		OpLog::Log("Action: AddNewRole");
+        OpLog::Log(print_r($_postData, true) . "\n");
+
         $perms = $_postData['perms'];
 		$rolename = $_postData['name'];
 		$isDispatchable = $_postData['isDispatchable'];

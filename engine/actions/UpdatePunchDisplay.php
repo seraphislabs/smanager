@@ -2,13 +2,18 @@
 
 trait ActionUpdatePunchDisplay {
     public static function UpdatePunchDisplay($_dbInfo, $_postData) {
-        $missingPunch = DatabaseManager::CheckForEmptyPunch($_dbInfo, $_SESSION['employeeid']);
+        $ai = DatabaseManager::GetActiveSession();
+        OpLog::Log("Action: UpdatePunchDisplay");
+        $rdb = RDB::getInstance();
+        $ai = $rdb->get($_SESSION['token']);
+        $_employeeid = $ai['id'];
+        $missingPunch = DatabaseManager::CheckForEmptyPunch($_dbInfo, $_employeeid);
 
         if ($missingPunch != null) {
             $retString = "true|" . $missingPunch['timein'];
             return $retString;
         } else {
-            $retString = "false|" . $_SESSION['firstname'];
+            $retString = "false|" . $ai['firstname'];
             return $retString;
         }
     }

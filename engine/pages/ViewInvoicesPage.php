@@ -3,9 +3,9 @@ class PageViewInvoices {
     public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewInvoices');</script>";
-        $canAddInvoice = DatabaseManager::CheckPermissions($_dbInfo, ['ci']);
+        $canAddInvoice = DatabaseManager::CheckPermission('ci');
         // Permission Check
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['vi'])) {
+        if (!DatabaseManager::CheckPermission('vi')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 

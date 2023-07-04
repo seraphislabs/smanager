@@ -9,7 +9,7 @@ class Calendar {
         $_selectionAction = $_postData['selectionAction'];
 
         $helpTooltip = "";
-        if (DatabaseManager::CheckPermissions($_dbInfo, ['ees'])) {
+        if (DatabaseManager::CheckPermission('ees')) {
             $helpTooltip .= "<span class='textcolor_green'>To edit the schedule</span><br/>
             1. Click on the day you wish to edit.<br/>
             2. Hit <span class='textcolor_orange'>ENTER</span> to save the changes.<br/><br/>
@@ -153,7 +153,7 @@ class Calendar {
         }
 
         if($_selectionAction == "EditSchedule") {
-            if (DatabaseManager::CheckPermissions($_dbInfo, ['ees'])) {
+            if (DatabaseManager::CheckPermission('ees')) {
                 $canEditSchedule = true;
             }
         }
@@ -406,7 +406,7 @@ class Calendar {
         return $returnedCode;
     }
 
-    private function GetMonthDaysToArray($_month, $_year) {
+    private static function GetMonthDaysToArray($_month, $_year) {
         $_calendarDays = array();
         $_month = ltrim($_month, "0");
         $_year = ltrim($_year, "0");

@@ -31,7 +31,7 @@ class ListEmployees {
                 var eid = $(this).data('employeeid');
                 var requestData = [
                 {name: 'action', value: 'LoadPage'},
-                {name: 'buttonid', value: 'ViewEmployee'},
+                {name: 'pageid', value: 'ViewEmployee'},
                 {name: 'employeeid', value: eid}
                 ];
                 Action_LoadPage(requestData);

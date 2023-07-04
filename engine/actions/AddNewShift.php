@@ -2,6 +2,9 @@
 
 trait ActionAddNewShift {
     public static function AddNewShift($_dbInfo, $_postData) {
+        OpLog::Log("Action: AddNewShift");
+        OpLog::Log(print_r($_postData, true) . "\n");
+
         $postInfo = $_postData['shiftInformation'];
 		$shiftInformation = json_decode($postInfo, true);
 

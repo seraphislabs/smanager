@@ -3,9 +3,9 @@ class PageViewAccounts {
     public static function Generate($_dbInfo, $_postData) {
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccounts');</script>";
-        $canAddAccount = DatabaseManager::CheckPermissions($_dbInfo, ['ca']);
+        $canAddAccount = DatabaseManager::CheckPermission('ca');
         // Permission Check
-        if (!DatabaseManager::CheckPermissions($_dbInfo, ['va'])) {
+        if (!DatabaseManager::CheckPermission('va')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 
@@ -17,7 +17,7 @@ class PageViewAccounts {
             var data = {};
             var requestData = [
                 {name: 'action', value: 'LoadPopup'},
-                {name: 'buttonid', value : 'NewAccount'},
+                {name: 'pageid', value : 'NewAccount'},
                 {name: 'data', value : JSON.stringify(data)}
             ];
             Action_LoadPopup(requestData);

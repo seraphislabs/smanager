@@ -48,7 +48,7 @@ class ListLocations {
                     var aid = $(this).data('accountid');
                     var requestData = [
                     {name: 'action', value: 'LoadPage'},
-                    {name: 'buttonid', value: 'ViewAccount'},
+                    {name: 'pageid', value: 'ViewAccount'},
                     {name: 'accountid', value: aid}
                     ];
                     Action_LoadPage(requestData);

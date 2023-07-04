@@ -2,11 +2,14 @@
 
 trait ActionLoadPage {
 	public static function LoadPage($_dbInfo, $_postData) {
-		if (isset($_postData['buttonid'])) {
-			$buttonid = $_postData['buttonid'];
+		OpLog::Log("Action: LoadPage");
+        OpLog::Log(print_r($_postData, true) . "\n");
+
+		if (isset($_postData['pageid'])) {
+			$pageid = $_postData['pageid'];
 
 			$returnedCode = "";
-			$className = "Page" . $buttonid;
+			$className = "Page" . $pageid;
 			if (class_exists($className)) {
 				$class = new ReflectionClass($className);
 				if ($class->hasMethod('Generate')) {

@@ -15,6 +15,7 @@
   align-items: center;
   text-align: center;
   justify-content: center;
+  user-select: none;
 }
 
 .button_type_1:hover {
@@ -38,6 +39,7 @@
   align-items: center;
   text-align: center;
   justify-content: center;
+  user-select: none;
 }
 
 .button_type_2:focus {
@@ -64,6 +66,7 @@
   align-items: center;
   text-align: center;
   justify-content: center;
+  user-select: none;
 }
 
 .button_type_3:hover {
@@ -73,6 +76,7 @@
 
 .button_type_4 {
   padding: 5px;
+  user-select: none;
 }
 
 .button_type_4:hover {
@@ -93,6 +97,7 @@
   border: 2px solid var(--color1);
   display: inline-flex;
   align-items: center;
+  user-select: none;
 }
 
 .listheaderbutton:hover {
@@ -110,6 +115,7 @@
   color: var(--color8);
   margin-left: 6px;
   margin-right: 6px;
+  user-select: none;
 }
 
 .text_button_type_1:hover {

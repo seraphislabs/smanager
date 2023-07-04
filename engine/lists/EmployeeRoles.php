@@ -49,7 +49,7 @@ class ListEmployeeRoles {
                     data['roleid'] = roleid;
                     var requestData = [
                         {name: 'action', value: 'LoadPopup'},
-                        {name: 'buttonid', value: 'NewRole'},
+                        {name: 'pageid', value: 'NewRole'},
                         {name: 'data', value: JSON.stringify(data)}
                     ];
                     Action_LoadPopup(requestData);

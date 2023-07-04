@@ -25,7 +25,9 @@ function Action_AddNewRole(_roleid) {
 
 function Action_AddNewRoleResponse(status, response) {
     if (status) {
-        var resVar = response.split('|');
+        var resVar = response.split('|').map(function (item) {
+            return item.trim();
+        });
         if (resVar[0] == 'true') {
             $('.popup_wrapper').hide();
             $('.popup_darken').fadeOut(400);

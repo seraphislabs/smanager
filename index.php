@@ -28,6 +28,7 @@
 
 <body>
 <?php
+require("engine/engine.php");
 // Load Javascript Actions System
 $pagesDir = __DIR__ . '/engine/actions';
 $pages = scandir($pagesDir);
@@ -36,8 +37,6 @@ foreach ($pages as $page) {
         echo '<script src="' . 'engine/actions/' . $page . '"></script>';
     }
 }
-
-require("engine/engine.php");
 
 echo("<div id='pagewrap_master'>");
     echo("<div id='pagewrap'>");

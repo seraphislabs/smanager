@@ -2,109 +2,87 @@
 
 trait DatabaseEmployeeRoles {
     public static function GetAllEmployeeRoles($_dbInfo, $asAssoc) {
-        $_companyid = $_SESSION['companyid'];
-
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
         $retVal = [];
 
-        if (self::ValidateLogin($pdo1)) {
-            $stmt = $pdo->prepare("SELECT * FROM `roles` ORDER BY `id`");
-            $stmt->execute();
-            if ($stmt->rowCount() > 0) {
-                if ($asAssoc) {
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    foreach($results as $result) {
-                        $retVal[$result['id']] = $result;
-                    }
-                }
-                else {
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    $retVal = $results;
+        $results = $db2->fetchAll("SELECT * FROM `roles` ORDER BY `id`");
+
+        if (count($results) > 0) {
+            if ($asAssoc) {
+                foreach($results as $result) {
+                    $retVal[$result['id']] = $result;
                 }
             }
+            else {
+                $retVal = $results;
+            }
         }
-        $pdo1 = null;
-        $pdo = null;
+
+        OpLog::Log("Database: GetAllEmployeeRoles");
+        OpLog::Log("--Returned: " . count($retVal) . " roles");
         return $retVal;
     }
 
-    public static function GetEmployeeRole($_dbInfo, $_roleid) {
-        $_companyid = $_SESSION['companyid'];
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+    public static function GetEmployeeRole($_dbInfo, $_roleid) { 
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
-        if (self::ValidateLogin($pdo1)) {
-            $stmt = $pdo->prepare("SELECT * FROM `roles` WHERE `id` = :roleid");
-            $stmt->bindParam(":roleid", $_roleid);
-            $stmt->execute();
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
-            $pdo1 = null;
-            $pdo = null;
+        $result = $db2->fetch("SELECT * FROM `roles` WHERE `id` = :id", ["id" => $_roleid]);
 
-            $pdo1 = null;
-            $pdo = null;
-            return $results;
-        }
-        $pdo1 = null;
-        $pdo = null;
-        return false;
+        OpLog::Log("Database: GetEmployeeRole");
+        OpLog::Log("--Returned: Array");
+        return $result;
     }
 
     public static function AddNewEmployeeRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid) {
-        $_companyid = $_SESSION['companyid'];
-        $ccid = $_companyid + 1000;
-        $pdo1 = self::connect($_dbInfo, 'servicemanager');
-        $pdo = self::connect($_dbInfo, "company_" . $ccid);
+
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
         $retVar = [];
         $retVar['success'] = true;
         $retVar['response'] = "Success";
 
-        if (self::ValidateLogin($pdo1)) {
-            if (ValidateField::Validate($_name, 'name')) {
 
-                if ($_roleid > 0) {
-                    $stmt = $pdo->prepare("SELECT * FROM `roles` WHERE `id` = :roleid");
-                    $stmt->bindParam(":roleid", $_roleid);
-                    $stmt->execute();
-                    $rowCount = $stmt->rowCount();
-                    if ($rowCount == 1) {
-                        $results = $stmt->fetch(PDO::FETCH_ASSOC);
-                        $rowid = $results['id'];
-                        $stmt = $pdo->prepare("UPDATE `roles` SET `name` = :name , `permissions` = :permissions , `dispatchable` = :dispatchable WHERE `id` = :roleid");
-                        $stmt->bindParam(":name", $_name);
-                        $stmt->bindParam(":permissions", $_perms);
-                        $stmt->bindParam(":dispatchable", $_dispatchable);
-                        $stmt->bindParam(":roleid", $_roleid);
-                        $stmt->execute();
-                    }
-                }
-                else {
-                    $stmt = $pdo->prepare("INSERT INTO `roles` (`name`,`permissions`,`dispatchable`) VALUES (:name,:permissions,:dispatchable)");
-                    $stmt->bindParam(":name", $_name);
-                    $stmt->bindParam(":permissions", $_perms);
-                    $stmt->bindParam(":dispatchable", $_dispatchable);
-                    $stmt->execute();
+        if (ValidateField::Validate($_name, 'name')) {
+
+            if ($_roleid > 0) {
+                $results = $db2->fetch("SELECT * FROM `roles` WHERE `id` = :roleid", ["roleid" => $_roleid]);
+                if (count($results) > 0) {
+                    $rowid = $results['id'];
+
+                    $sqlData = [
+                        "name" => $_name,
+                        "permissions" => $_perms,
+                        "dispatchable" => $_dispatchable
+                    ];
+                    $cond = [
+                        ["id", "=", $rowid],
+                    ];
+                    $db2->update("roles", $sqlData, $cond);
                 }
             }
             else {
-                $retVar['success'] = false;
-                $retVar['response'] = "Validation Error";
-                $pdo1 = null;
-                $pdo = null;
-                return $retVar;
+                $sqlData = [
+                    "name" => $_name,
+                    "permissions" => $_perms,
+                    "dispatchable" => $_dispatchable
+                ];
+
+                $db2->insert("roles", $sqlData);
             }
         }
         else {
             $retVar['success'] = false;
-            $retVar['response'] = "Database Error";
+            $retVar['response'] = "Validation Error";
+            OpLog::Log("Database: AddNewEmployeeRole");
+            OpLog::Log("--Returned: false: Validation Error");
+            return $retVar;
         }
-        $pdo1 = null;
-        $pdo = null;
+        OpLog::Log("Database: AddNewEmployeeRole");
+        OpLog::Log("--Returned: Successfully added new employee role");
         return $retVar;
     }
 }

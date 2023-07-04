@@ -1,11 +1,20 @@
 <?php
     trait ActionCheckSession {
         public static function CheckSession($_dbInfo) {
+            OpLog::Log("Action: CheckSession");
 
-            if (isset($_SESSION['email']) && isset($_SESSION['password'])) {
-                $retVal = DatabaseManager::ManuallyValidateLogin($_dbInfo);
-                return $retVal;
+            if (isset($_SESSION['token'])) {
+
+                $rdb = RDB::getInstance();
+                $accountInfo = $rdb->get($_SESSION['token']);
+
+                if ($accountInfo != false) {
+                    return true;
+                }
+
+                return false;
             }
+
             return false;
         }
     }
