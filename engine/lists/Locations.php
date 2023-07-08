@@ -1,7 +1,7 @@
 <?php
 
 class ListLocations {
-    public static function AsList($_dbInfo, $_retArray) {
+    public static function AsList($_retArray) {
         $returnedCode = "";
         $count = 0;
         $_locations = $_retArray;
@@ -13,7 +13,7 @@ class ListLocations {
                 $lid = $location['id'];
                 $lcs = $location['contacts'];
                 $lcsf = explode("|", $lcs);
-                $lcdata = DatabaseManager::GetContact($_dbInfo, $lcsf[0]);
+                $lcdata = DatabaseManager::GetContact($lcsf[0]);
 
                 $locationContactName = $lcdata['firstname'] . " " . $lcdata['lastname'];
                 $locationContactPhone = $lcdata['primaryphone'];

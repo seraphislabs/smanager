@@ -1,15 +1,15 @@
 <?php
 
 class PopupNewEmployee {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermission('ce')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 
-        $roleOptions = ListEmployeeRoles::AsSelect($_dbInfo);
-        $shiftOptions = ListEmployeeShifts::AsSelect($_dbInfo);
+        $roleOptions = ListEmployeeRoles::AsSelect();
+        $shiftOptions = ListEmployeeShifts::AsSelect();
 
         $driversLicenseTemplate = <<<HTML
         <div class='formsection_line'>

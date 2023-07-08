@@ -1,6 +1,6 @@
 <?php
 class PageViewAccounts {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccounts');</script>";
         $canAddAccount = DatabaseManager::CheckPermission('ca');
@@ -9,7 +9,7 @@ class PageViewAccounts {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
 
-        $retArray = DatabaseManager::GetAllAccounts($_dbInfo);
+        $retArray = DatabaseManager::GetAllAccounts();
 
         $returnedCode .= <<<HTML
         <script type='text/javascript'>           
@@ -53,7 +53,7 @@ class PageViewAccounts {
             <tbody>
         HTML;
 
-        $accountsList = DatabaseManager::GetAllAccounts($_dbInfo);
+        $accountsList = DatabaseManager::GetAllAccounts();
         $accountCode = ListAccounts::AsList($accountsList);
         $returnedCode .= $accountCode;
             

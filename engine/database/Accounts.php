@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseAccounts {
-    public static function GetAllAccounts($_dbInfo)
+    public static function GetAllAccounts()
     {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
@@ -17,7 +17,7 @@ trait DatabaseAccounts {
         return [];
     }
 
-    public static function GetAccount($_dbInfo, $_accountid)
+    public static function GetAccount($_accountid)
     {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
@@ -30,7 +30,7 @@ trait DatabaseAccounts {
         return $result;
     }
 
-    public static function AddNewAccount($_dbInfo, $_formInformation)
+    public static function AddNewAccount($_formInformation)
     {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);

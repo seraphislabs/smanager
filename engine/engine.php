@@ -38,10 +38,11 @@
 		$className = $action;
 		if (method_exists('Actions', $className)) {
 			$method = new ReflectionMethod('Actions', $className);
-			echo $method->invoke(null, $dbInfo, $postData);
+			echo $method->invoke(null, $postData);
 		}
 	}
 
 	DBI::closeAll();
 	RDB::closeInstance();
+
 ?>

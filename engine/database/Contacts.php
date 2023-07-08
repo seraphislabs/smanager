@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseContacts {
-    public static function GetContact($_dbInfo, $_contactid)
+    public static function GetContact($_contactid)
     {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);

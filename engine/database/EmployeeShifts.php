@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseEmployeeShifts {
-    public static function GetAllEmployeeShifts($_dbInfo, $asAssoc) {
+    public static function GetAllEmployeeShifts($asAssoc) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -25,7 +25,7 @@ trait DatabaseEmployeeShifts {
         return $retVal;
     }
 
-    public static function GetEmployeeShift($_dbInfo, $_shiftid) {
+    public static function GetEmployeeShift($_shiftid) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -36,7 +36,7 @@ trait DatabaseEmployeeShifts {
         return $result;
     }
 
-    public static function AddNewEmployeeShift($_dbInfo, $_shiftInformation) {
+    public static function AddNewEmployeeShift($_shiftInformation) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 

@@ -1,7 +1,7 @@
 <?php
 
 trait ActionGetMainMenuButtons {
-    public static function GetMainMenuButtons($_dbInfo) {
+    public static function GetMainMenuButtons() {
 		$ai = DatabaseManager::GetActiveSession();
 		OpLog::Log("Action: GetMainMenuButtons");
 

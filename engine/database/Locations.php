@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseLocations {
-    public static function GetAllLocationsByAccount($_dbInfo, $_accountid) {
+    public static function GetAllLocationsByAccount($_accountid) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 

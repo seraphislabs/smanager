@@ -1,6 +1,6 @@
 <?php
 class PageViewAccount {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $_accountid = $_postData['accountid'];
         $returnedCode = "";
         $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewAccount&accountid=$_accountid');</script>";
@@ -10,7 +10,7 @@ class PageViewAccount {
             return $returnedCode;
         }
 
-        $accountInfo = DatabaseManager::GetAccount($_dbInfo, $_accountid);
+        $accountInfo = DatabaseManager::GetAccount($_accountid);
 
         if ($accountInfo == null) {
             $returnedCode = "<script>ClickLeftPaneMenuItem('ViewAccounts', true);</script>";
@@ -25,10 +25,10 @@ class PageViewAccount {
             die();
         }
 
-        $primaryContactInfo = DatabaseManager::GetContact($_dbInfo, $accountInfo['primarycontactid']);
-        $serviceLocations = DatabaseManager::GetAllLocationsByAccount($_dbInfo, $_accountid);
+        $primaryContactInfo = DatabaseManager::GetContact($accountInfo['primarycontactid']);
+        $serviceLocations = DatabaseManager::GetAllLocationsByAccount($_accountid);
 
-        $locationsListings = ListLocations::AsList($_dbInfo, $serviceLocations);
+        $locationsListings = ListLocations::AsList($serviceLocations);
 
         $returnedCode .= <<<HTML
         <div class ='display_container'>

@@ -1,7 +1,7 @@
 <?php
 
 trait ActionStartSession {
-    public static function StartSession($_dbInfo, $_postData) {
+    public static function StartSession($_postData) {
 		OpLog::Log("Action: StartSession");
 
 		

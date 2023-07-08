@@ -1,7 +1,7 @@
 <?php
 
 class MenuSettings {
-    public static function Generate($_dbInfo) {
+    public static function Generate() {
         $returnedCode = <<<HTML
             <script type='text/javascript'>
                 $('.open_employee_settings_page').click(function() { 

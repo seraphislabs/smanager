@@ -1,276 +1,276 @@
 .formsection_row {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_center_content {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    flex-direction: column;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-direction: column;
 }
 
 .formsection_mass_control_group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    width: 700px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  width: 700px;
 }
 
 .formsection_control_group {
-    padding: 10px;
-    color: var(--color4);
+  padding: 10px;
+  color: var(--color4);
 }
 
 .formsection_control_header {
-    margin-bottom: 10px;
-    margin-left: 10px;
-    text-decoration: underline;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  text-decoration: underline;
 }
 
 .formsection_control_option {
-    font-size: 0.75em;
-    display: inline-flex;
-    align-items: center;
-    justify-content: left;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: left;
 }
 
 .formsection_row_even {
-    width: 100%;
-    display: flex;
-    justify-content: space-evenly;
-    gap: 15px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 15px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection {
-    box-sizing: border-box;
-    margin-top: 10px;
-    width: 400px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  width: 400px;
 }
 
 .formsectionfull {
-    box-sizing: border-box;
-    margin-top: 10px;
-    width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  width: 100%;
 }
 
 .formsectionhalf {
-    box-sizing: border-box;
-    margin-top: 10px;
-    width: 50%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  width: 50%;
 }
 
 .formsectionthird {
-    box-sizing: border-box;
-    margin-top: 10px;
-    width: 33.33%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  width: 33.33%;
 }
 
 .formsection_header {
-    width: 100%;
-    background-color: var(--color1);
-    color: var(--color8);
-    box-sizing: border-box;
-    padding: 10px;
-    font-size: 16px;
+  width: 100%;
+  background-color: var(--color1);
+  color: var(--color8);
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
 }
 
 .formsection_content {
-    width: 100%;
-    box-sizing: border-box;
-    padding-top: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 6px;
 }
 
 .formsection_line {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_line_width_unset {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_line_centered {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_line_centered_between {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_input_centered_text_button {
-    justify-content: center;
-    display: flex;
-    color: var(--color1);
-    padding-top: 4px;
-    padding-bottom: 4px;
+  justify-content: center;
+  display: flex;
+  color: var(--color1);
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .formsection_input_centered_text {
-    text-align: left;
-    display: flex;
-    color: var(--color4);
-    padding-top: 4px;
-    padding-bottom: 4px;
-    font-size: 0.8em;
+  text-align: left;
+  display: flex;
+  color: var(--color4);
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-size: 0.8rem;
 }
 
 .formsection_line_rightjustify {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    flex-wrap: nowrap;
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  flex-wrap: nowrap;
 }
 
 .formsection_line_leftjustify {
-    width: 100%;
-    display: flex;
-    justify-content: left;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    align-items: center;
-    color: var(--color4);
-    flex-wrap: nowrap;
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  align-items: center;
+  color: var(--color4);
+  flex-wrap: nowrap;
 }
 
 .formsection_line_leftjustify_width_unset {
-    display: flex;
-    justify-content: left;
-    gap: 8px;
-    box-sizing: border-box;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    align-items: center;
-    color: var(--color4);
-    flex-wrap: nowrap;
+  display: flex;
+  justify-content: left;
+  gap: 8px;
+  box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  align-items: center;
+  color: var(--color4);
+  flex-wrap: nowrap;
 }
 
 .formsection_input {
-    box-sizing: border-box;
-    border: 1px solid var(--color4);
-    border-radius: 9px;
-    flex: 1;
-    padding: 8px;
-    width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--color4);
+  border-radius: 9px;
+  flex: 1;
+  padding: 8px;
+  width: 100%;
 }
 
 .formsection_input_2 {
-    box-sizing: border-box;
-    border: 1px solid var(--color4);
-    border-radius: 9px;
-    flex: 1;
-    padding: 8px;
-    width: 100%;
-    height: 50px;
-    font-size: 1em;
+  box-sizing: border-box;
+  border: 1px solid var(--color4);
+  border-radius: 9px;
+  flex: 1;
+  padding: 8px;
+  width: 100%;
+  height: 50px;
+  font-size: 1rem;
 }
 
 .formsection_input_fixed {
-    box-sizing: border-box;
-    border: 1px solid var(--color4);
-    border-radius: 9px;
-    padding: 8px;
-    width: 40px;
+  box-sizing: border-box;
+  border: 1px solid var(--color4);
+  border-radius: 9px;
+  padding: 8px;
+  width: 40px;
 }
 
 .formsection_input_fixed_2 {
-    box-sizing: border-box;
-    border: 1px solid var(--color4);
-    border-radius: 9px;
-    padding: 8px;
-    width: 120px;
+  box-sizing: border-box;
+  border: 1px solid var(--color4);
+  border-radius: 9px;
+  padding: 8px;
+  width: 120px;
 }
 
 .formsection_label_1 {
-    width: 130px;
-    text-align: right;
+  width: 130px;
+  text-align: right;
 }
 
 input:focus {
-    border: 1px solid var(--color7);
+  border: 1px solid var(--color7);
 }
 
 select:focus {
-    border: 1px solid var(--color7);
+  border: 1px solid var(--color7);
 }
 
 .formsection_input_option {
-    color: var(--color7);
+  color: var(--color7);
 }
 
 .formsection_input::placeholder {
-    color: var(--color4);
+  color: var(--color4);
 }
 
 .formsection_input_2::placeholder {
-    color: var(--color4);
+  color: var(--color4);
 }
 
 .formsection_input_fixed::placeholder {
-    color: var(--color4);
+  color: var(--color4);
 }
 
 .formsection_input_fixed:focus {
-    outline: none;
+  outline: none;
 }
 
 .formsection_input:focus {
-    outline: none;
+  outline: none;
 }
 
 .formsection_subheader {
-    padding: 10px;
-    border: 1px solid var(--color1);
+  padding: 10px;
+  border: 1px solid var(--color1);
 }
 
 .formsection_subheader_title {
-    color: var(--color4);
-    font-size: 15px;
-    display: inline-block;
-    width: 100%;
-    margin-bottom: 6px;
+  color: var(--color4);
+  font-size: 15px;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 6px;
 }
 
 .formsection_validation_error {
-    border-color: var(--color10);
-    border-width: 2px;
+  border-color: var(--color10);
+  border-width: 2px;
 }

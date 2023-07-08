@@ -1,20 +1,6 @@
 <?php
 trait DatabaseMaster
 {
-    public static function connect($_dbInfo, $_dbname)
-    {
-        $dsn = "mysql:host=localhost;dbname={$_dbname}";
-
-        try {
-            $pdo = new PDO($dsn, $_dbInfo['dusername'], $_dbInfo['dpassword']);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->exec("SET time_zone = '-05:00'");
-            return $pdo;
-        } catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
-        }
-    }
-
     public static function FirstLoginValidate($email, $password) {
         $db = DBI::getInstance($GLOBALS['dbinfo']['db']);
 

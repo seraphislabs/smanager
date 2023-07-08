@@ -1,7 +1,7 @@
 <?php
 
 trait ActionStartPortal {
-    public static function StartPortal($_dbInfo, $_postData) {
+    public static function StartPortal($_postData) {
 		OpLog::Log("Action: StartPortal");
 
 		$_pageData = json_decode($_postData['pagedata'], true);
@@ -24,14 +24,14 @@ trait ActionStartPortal {
 			$_employeeid = $_pageData['employeeid'];
 		}
 
-		if (Actions::CheckSession($_dbInfo)) {
+		if (Actions::CheckSession()) {
 			$returnedCode .= <<<HTML
 				<script>
 					
 				</script>
 			HTML;
 
-			$getClockinUpdate = Actions::UpdatePunchDisplay($_dbInfo, []);
+			$getClockinUpdate = Actions::UpdatePunchDisplay([]);
 
 			$returnedCode .= <<<HTML
 			<script>
@@ -59,7 +59,7 @@ trait ActionStartPortal {
 			<div id='leftpane_container'>
 			HTML;
 	
-			$returnedCode .= Actions::GetMainMenuButtons($_dbInfo);
+			$returnedCode .= Actions::GetMainMenuButtons();
 	
 			$returnedCode .= <<<HTML
 			</div>
@@ -71,7 +71,7 @@ trait ActionStartPortal {
 			$data['employeeid'] = $_employeeid;
 			$data['pageid'] = $_page;
 
-			$returnedCode .= Actions::LoadPage($_dbInfo, $data);
+			$returnedCode .= Actions::LoadPage($data);
 			$returnedCode .= "</div>";
 		}
 		else {
@@ -107,7 +107,7 @@ trait ActionStartPortal {
 					<source src="img/bgvideo1.mp4" type="video/mp4">
 				</video>
 				<div class='login_page_backer'>
-					<img src='img/logo2.png' width='340px' style='margin-left:8px;'/>
+					<img src='img/logo6.png' width='450px' style='margin-left:8px;'/>
 					<div class='login_page_content'>
 					<div class='formsection_line' style='margin-bottom:10px;'>
 						<input type='text' placeholder='Email' class='input_login_email formsection_input_2'/>
@@ -122,7 +122,7 @@ trait ActionStartPortal {
 						<div class='formsection_input_centered_text_button'>Trouble Logging In?</div>
 					</div>
 					<div class='formsection_line_centered'>
-						<div class='formsection_input_centered_text'>This page is for current account holders. To set up a new account, reach out to your account manager.</div>
+						<div class='formsection_input_centered_text'>This page is for current account holders. To set up a new account, reach out to your service manager.</div>
 					</div>
 				</div>
 			</div>

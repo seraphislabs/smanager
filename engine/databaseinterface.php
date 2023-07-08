@@ -107,20 +107,31 @@ class DBI {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function delete($tableName, $whereCondition) {
-        if (empty($whereCondition)) {
+    public function delete($tableName, $whereConditions) {
+        if (empty($whereConditions)) {
             return false;
         }
-
+    
+        // Prepare the WHERE clause for the delete query
+        $whereClause = implode(' AND ', array_map(function ($condition, $index) {
+            return $condition[0] . ' ' . $condition[1] . ' :where_' . $index;
+        }, $whereConditions, array_keys($whereConditions)));
+    
         $query = sprintf(
             'DELETE FROM %s WHERE %s',
             $tableName,
-            $whereCondition
+            $whereClause
         );
-
+    
         $stmt = $this->conn->prepare($query);
-
-        $stmt->execute();
+    
+        // Prepare WHERE parameters
+        $whereParams = array_combine(
+            array_map(function ($index) { return ':where_' . $index; }, array_keys($whereConditions)),
+            array_column($whereConditions, 2)
+        );
+    
+        $stmt->execute($whereParams);
         return $stmt->rowCount() > 0;
     }
 

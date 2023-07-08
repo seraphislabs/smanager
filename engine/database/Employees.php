@@ -1,11 +1,11 @@
 <?php
 
 trait DatabaseEmployees {
-    public static function CheckForEmptyPunch($_dbInfo, $_employeeid) {
+    public static function CheckForEmptyPunch($_employeeid) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
-        $results = $db2->fetchAll("SELECT * FROM `punches` WHERE `employeeid` = :employeeid AND `timeout` IS NULL", ["employeeid" => $_employeeid]);
+        $results = $db2->fetchAll("SELECT * FROM `punches` WHERE `employeeid` = :employeeid AND `timeout` IS NULL ORDER BY `date` ASC", ["employeeid" => $_employeeid]);
 
         if (count($results) > 0) {
             $formattedResult = [];
@@ -36,7 +36,69 @@ trait DatabaseEmployees {
         return null;
     }
 
-    public static function GetPunches($_dbInfo, $_employeeid, $_date) {
+    public static function GetSetSchedulesBetweenDates($_employeeid, $_startDate, $_endDate) {
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
+
+        $retVar = [];
+
+        if ($_startDate == null || $_endDate == null) {
+            OpLog::Log("Database: GetSetSchedulesBetweenDates");
+            OpLog::Log("--Returned: null: Start date or end date is null");
+            return null;
+        }
+
+        $results = $db2->fetchAll("SELECT * FROM `set_schedule` WHERE `employeeid` = :employeeid AND `date` BETWEEN :startDate AND :endDate", 
+        ["employeeid" => $_employeeid,
+        "startDate" => $_startDate,
+        "endDate" => $_endDate]);
+
+        foreach ($results as $result) {
+            $timeInFormatted = DateTime::createFromFormat('H:i:s', $result['timein']);
+            $timeOutFormatted = DateTime::createFromFormat('H:i:s', $result['timeout']);
+
+            $result['timein'] = $timeInFormatted->format('g:i A');
+            $result['timeout'] = $timeOutFormatted->format('g:i A');
+
+            $retVar[$result['date']] = $result;
+        }
+
+        return $retVar;
+    }
+
+    public static function GetPunchesBetweenDates($_employeeid, $_startDate, $_endDate) {
+        $ai = self::GetActiveSession();
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
+
+        $retVar = [];
+
+        if ($_startDate == null || $_endDate == null) {
+            OpLog::Log("Database: GetSetSchedulesBetweenDates");
+            OpLog::Log("--Returned: null: Start date or end date is null");
+            return null;
+        }
+
+        $results = $db2->fetchAll("SELECT * FROM `punches` WHERE `employeeid` = :employeeid AND `date` BETWEEN :startDate AND :endDate", 
+        ["employeeid" => $_employeeid,
+        "startDate" => $_startDate,
+        "endDate" => $_endDate]);
+
+        $punchArray = [];
+        $lastDate = "0000-00-00";
+
+        foreach ($results as $result) {
+            if ($lastDate != $result['date']) {
+                $punchArray = [];
+                $lastDate = $result['date'];
+            }
+            array_push($punchArray, $result);
+            $retVar[$result['date']] = $punchArray;
+        }
+
+        return $retVar;
+    }
+
+    public static function GetPunches($_employeeid, $_date) {
 
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
@@ -63,8 +125,8 @@ trait DatabaseEmployees {
                     $timeOut = DateTime::createFromFormat('H:i:s', $result['timeout']);
                 }
 
-                $formattedResult['timein'] = $timeIn ? $timeIn->format('h:i A') : "";
-                $formattedResult['timeout'] = $timeOut ? $timeOut->format('h:i A') : "";
+                $formattedResult['timein'] = $timeIn ? $timeIn->format('g:i A') : "";
+                $formattedResult['timeout'] = $timeOut ? $timeOut->format('g:i A') : "";
                 $formattedResult['date'] = $result['date'];
                 $formattedResult['id'] = $result['id'];
 
@@ -92,31 +154,135 @@ trait DatabaseEmployees {
         }
     }
 
-    public static function AddPunch($_dbInfo) { 
+    public static function CleanPunches() {
+        $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
+    
+        $results = $db2->fetchAll("SELECT * FROM `punches` ORDER BY `employeeid` ASC, `date` ASC");
+        $resultCount = count($results);
+
+        $todaysDate = new DateTime();
+
+        if ($resultCount > 0) {
+            foreach ($results as $key=>$result) {
+                $dx = new DateTime($result['date']);
+
+                $diff = $dx->diff($todaysDate);
+
+                if ($diff->y > 3) {
+                    $db2->delete("punches", ["id" => $result['id']]);
+                }
+                /*else {
+                    if ($result['timeout'] == null) {
+                        
+                        if ($dx < $todaysDate) {
+                            $sqlData = [
+                                "timeout" => "23:59:59"
+                            ];
+                            $cond = [
+                                ["id", "=", $result['id']],
+                            ];
+                            $db2->update("punches", $sqlData, $cond);
+
+                            $dx->modify("+1 day");
+                            $sqlData = [
+                                "employeeid" => $result['employeeid'],
+                                "date" => $dx->format('Y-m-d'),
+                                "timein" => "00:00:00"
+                            ];
+                            $db2->insert("punches", $sqlData);
+                        }
+                    }
+                }*/
+            }
+        }
+    }
+
+    public static function AddPunch() { 
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
         $retVar = [];
 
-        $retVar['success'] = false;
+        $retVar['success'] = true;
         $retVar['response'] = "Database Error";
 
         $date = date('Y-m-d');
         $currentTime = date('H:i:s');
 
-        $missingPunch = self::CheckForEmptyPunch($_dbInfo, $ai['id']);
+        $missingPunch = self::CheckForEmptyPunch($ai['id']);
 
         if ($missingPunch != null) {
             if (count($missingPunch) > 0) {
-                $sqlData = [
-                    "timeout" => $currentTime
-                ];
 
-                $cond = [
-                    ["id", "=", $missingPunch['id']],
-                ];
+                $cdt = new DateTime();
 
-                $db2->update("punches", $sqlData, $cond);
+                $timeInF = DateTime::createFromFormat('g:i A', $missingPunch['timein']);
+
+                $tdif = TimeManagement::getTimeDifference($timeInF->format('H:i:s'), $cdt->format('H:i:s'));
+                $tdifx = DateTime::createFromFormat('H:i:s', $tdif);
+                $tdifxm = intval($tdifx->format('i'));
+
+                if ($tdifxm <= 0) {
+
+                    $cond = [
+                        ["id", "=", $missingPunch['id']],
+                    ];
+                    $db2->delete("punches", $cond);
+
+                }
+                else {
+
+                    if ($missingPunch['date'] != $date) {
+                        $daysBetween = TimeManagement::getDatesBetween($missingPunch['date'], $cdt->format('Y-m-d'));
+
+                        foreach($daysBetween as $dayBetween) {
+                            error_log($dayBetween);
+                            if ($dayBetween != $cdt->format(('Y-m-d'))) {
+
+                                if ($dayBetween == $missingPunch['date']) {
+                                    $sqlData = [
+                                        "timeout" => "23:59:59"
+                                    ];
+                    
+                                    $cond = [
+                                        ["id", "=", $missingPunch['id']],
+                                    ];
+                    
+                                    $db2->update("punches", $sqlData, $cond);
+                                }
+                                else {
+                                    $sqlData = [
+                                        "employeeid" => $ai['id'],
+                                        "date" => $dayBetween,
+                                        "timein" => "00:00:00",
+                                        "timeout" => "23:59:59"
+                                    ];
+                                    $db2->insert("punches", $sqlData);
+                                }
+                            }
+                            else {
+                                $sqlData = [
+                                    "employeeid" => $ai['id'],
+                                    "date" => $dayBetween,
+                                    "timein" => "00:00:00",
+                                    "timeout" => $currentTime
+                                ];
+                                $db2->insert("punches", $sqlData);
+                            }
+                        }
+                    }    
+                    else {
+                        $sqlData = [
+                            "timeout" => $currentTime
+                        ];
+        
+                        $cond = [
+                            ["id", "=", $missingPunch['id']],
+                        ];
+        
+                        $db2->update("punches", $sqlData, $cond);
+                    }
+                }
             }
         }
         else {
@@ -134,7 +300,7 @@ trait DatabaseEmployees {
         return $retVar;
     }
 
-    public static function GetSetSchedule($_dbInfo, $_employeeid) {
+    public static function GetSetSchedule($_employeeid) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -163,7 +329,7 @@ trait DatabaseEmployees {
         return [];
     }
 
-    public static function AddSetSchedule($_dbInfo, $_formInformation) {
+    public static function AddSetSchedule($_formInformation) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -180,8 +346,8 @@ trait DatabaseEmployees {
 
         }
 
-        $employeeInfo = self::GetEmployee($_dbInfo, $_formInformation['employeeid']);
-        $regularSchedule = self::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
+        $employeeInfo = self::GetEmployee($_formInformation['employeeid']);
+        $regularSchedule = self::GetEmployeeShift($employeeInfo['shift']);
 
         $retVar = [];
 
@@ -219,7 +385,12 @@ trait DatabaseEmployees {
         if (!empty($result)) {
             if (($splitTime[0] == $timeIn && $splitTime[1] == $timeOut) || (strlen($regularSchedule[$dayOfWeek]) == 0)) {
 
-                $db2->delete("set_schedule", ["id" => $result['id']]);
+                $cond = [
+                    ['id', '=', $result['id']],
+
+                ];
+
+                $db2->delete("set_schedule", $cond);
 
                 $retVar['success'] = true;
                 $retVar['response'] = $_formInformation['date'];
@@ -302,7 +473,15 @@ trait DatabaseEmployees {
                     OpLog::Log("--Returned: Successfully added new schedule");
                     return $retVar;
                 }
-                else {
+                else { 
+                    $sqlData = [
+                        "employeeid" => $_formInformation['employeeid'],
+                        "date" => $_formInformation['date'],
+                        "timein" => $timeInFixed,
+                        "timeout" => $timeOutFixed
+                    ];
+                    $db2->insert("set_schedule", $sqlData);
+
                     $retVar['success'] = true;
                     $retVar['response'] = $_formInformation['date'];
                     if ($timeInFixed == "00:00:00" && $timeOutFixed == "00:00:00")
@@ -321,7 +500,7 @@ trait DatabaseEmployees {
         }
     }
 
-    public static function GetAllEmployees($_dbInfo) {
+    public static function GetAllEmployees() {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -339,7 +518,7 @@ trait DatabaseEmployees {
         return null;
     }
 
-    public static function GetEmployee($_dbInfo, $_employeeid) {
+    public static function GetEmployee($_employeeid) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -356,7 +535,7 @@ trait DatabaseEmployees {
         return $result;
     }
 
-    public static function AddNewEmployee($_dbInfo, $_formInformation)
+    public static function AddNewEmployee($_formInformation)
     {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);

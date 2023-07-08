@@ -1,19 +1,19 @@
 :root {
- --color1: #14A76C;
- --color2: #FF652f;
- --color3: #33363F;
- --color4: #b2b0bd;
- --color5: #fafafa;
- --color6: #AEAEAE;
- --color7: #000000;
- --color8: #FFFFFF;
- --color9: #ebebeb;
- /* Validation */
- --color10: #ffaca6;
- /* Hover */
- --color11: #45464a;
+  --color1: #14a76c;
+  --color2: #ff652f;
+  --color3: #33363f;
+  --color4: #888692;
+  --color5: #fafafa;
+  --color6: #aeaeae;
+  --color7: #000000;
+  --color8: #ffffff;
+  --color9: #ebebeb;
+  /* Validation */
+  --color10: #ffaca6;
+  /* Hover */
+  --color11: #45464a;
+  --color12: red;
 }
-
 
 /*
  Defaults

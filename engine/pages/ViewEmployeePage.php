@@ -1,6 +1,6 @@
 <?php
 class PageViewEmployee {
-   public static function Generate($_dbInfo, $_postData) {
+   public static function Generate($_postData) {
     $ai = DatabaseManager::GetActiveSession();
 
     $_employeeid = $_postData['employeeid'];
@@ -8,13 +8,13 @@ class PageViewEmployee {
     $returnedCode .= "<script>history.pushState(null, null, '/index.php?page=ViewEmployee&employeeid=$_employeeid');</script>";
     // Permission Check
 
-    $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
+    $employeeInfo = DatabaseManager::GetEmployee($_employeeid);
     if ($employeeInfo == null) {
         $returnedCode = "<script>ClickLeftPaneMenuItem('ViewEmployees', true);</script>";
         return $returnedCode;
     }
-    $shiftInfo = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
-    $roleInfo = DatabaseManager::GetEmployeeRole($_dbInfo, $employeeInfo['role']);
+    $shiftInfo = DatabaseManager::GetEmployeeShift($employeeInfo['shift']);
+    $roleInfo = DatabaseManager::GetEmployeeRole($employeeInfo['role']);
 
     $year = date('Y');
     $month = date('m');
@@ -32,10 +32,10 @@ class PageViewEmployee {
         $postData = [];
         $postData['month'] = $month;
         $postData['year'] = $year;
-        $postData['eid'] = $_employeeid;
-        $postData['selectionType'] = "day";
-        $postData['selectionAction'] = "EditSchedule";
-        $scheduleTemplate = Calendar::Init($_dbInfo, $postData);
+        $postData['employeeid'] = $_employeeid;
+        $postData['viewType'] = "schedule";
+        $postData['listType'] = "month";
+        $scheduleTemplate = Calendar::Init($postData);
     }
 
     if (empty($employeeInfo)) {
@@ -54,7 +54,7 @@ class PageViewEmployee {
     $returnedCode .= <<<HTML
     <div class ='display_container'>
         <div class='display_header'>
-            <span class='textcolor_green'>Employee</span> &nbsp; $employeeInfo[firstname] $employeeInfo[lastname]
+            <span class='textcolor_green'>Employee</span> &nbsp; <span>$employeeInfo[firstname] $employeeInfo[lastname]</span>
         </div>
         <div class='display_row'>
             <div class='display_section'>

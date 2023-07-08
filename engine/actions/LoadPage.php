@@ -1,7 +1,7 @@
 <?php
 
 trait ActionLoadPage {
-	public static function LoadPage($_dbInfo, $_postData) {
+	public static function LoadPage($_postData) {
 		OpLog::Log("Action: LoadPage");
         OpLog::Log(print_r($_postData, true) . "\n");
 
@@ -14,7 +14,7 @@ trait ActionLoadPage {
 				$class = new ReflectionClass($className);
 				if ($class->hasMethod('Generate')) {
 					$method = $class->getMethod('Generate');
-					$returnedCode .= $method->invoke(null, $_dbInfo, $_postData);
+					$returnedCode .= $method->invoke(null, $_postData);
 				}
 			}
 			return $returnedCode;

@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewRole {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $_roleid = $_postData['roleid'];
         if (!DatabaseManager::CheckPermission('emes')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
@@ -110,7 +110,7 @@ class PopupNewRole {
         HTML;
 
         if ($_roleid > 0) {
-            $roleInformation = json_encode(DatabaseManager::GetEmployeeRole($_dbInfo, $_roleid));
+            $roleInformation = json_encode(DatabaseManager::GetEmployeeRole($_roleid));
 
             $returnedCode .= <<<HTML
             <script tyle='text/javascript'>

@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseHolidaySchedules {
-    public static function GetAllHolidaySchedules($_dbInfo) {
+    public static function GetAllHolidaySchedules() {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 

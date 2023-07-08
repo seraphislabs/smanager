@@ -2,11 +2,8 @@
 
 class Calendar {
 
-    public static function Init($_dbInfo, $_postData) {
+    public static function Init($_postData) {
         $_employeeid = 0;
-        $_schedule = [];
-        $_selectionType = $_postData['selectionType'];
-        $_selectionAction = $_postData['selectionAction'];
 
         $helpTooltip = "";
         if (DatabaseManager::CheckPermission('ees')) {
@@ -17,21 +14,12 @@ class Calendar {
             1. Click on the day you wish to erase<br/>
             2. Hit <span class='textcolor_orange'>ENTER</span> with <span class='textcolor_orange'>BOTH TIMES EMPTY</span>.";
         }
-        
-
-        if(array_key_exists('eid', $_postData)) {
-            $_employeeid = $_postData['eid'];
-            $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
-            $_schedule = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
-        }
 
         $_month = $_postData['month'];
         $_year = $_postData['year'];
 
         $returnedCode = "";
 
-        $_month = ltrim($_month, "0");
-        $_year = ltrim($_year, "0");
         $monthName = date('F', mktime(0, 0, 0, $_month, 1));
 
         $pData = json_encode($_postData);
@@ -114,7 +102,7 @@ class Calendar {
         $returnedCode .= <<<HTML
             <div class='display_section_header_2'>
                 <span class='button_type_4 btn_month_left' data-curmonth='$_month' data-curyear='$_year>'><</span>
-                <span class='monthyeardisplay' style='width:150px;text-align:center;'>$monthName
+                <span class='monthyeardisplay' style='width:150px;text-align:center;font-size:20px;'>$monthName
                 <span class='textcolor_green'>$_year</span></span>
                 <span class='button_type_4 btn_month_right' data-curmonth='$_month' data-curyear='$_year'>></span>
                 $helpIconTemplate
@@ -125,7 +113,7 @@ class Calendar {
             </div>
             <div class='display_section_content'>
                 <div class='calendar_loading' style='display:none;'></div>
-                <div class='calendar_container'>
+                <div class='calendar_container' style='min-height:480px;'>
                 </div>
             </div>
         HTML;
@@ -133,47 +121,21 @@ class Calendar {
         return $returnedCode;
     }
 
-    public static function Generate($_dbInfo, $_postData) {
-        $_employeeid = 0;
-        $_schedule = [];
-        $_setSchedule = [];
-        
-        $scheduleString = "";
-
-        $canEditSchedule = false;
-
-        $_selectionType = $_postData['selectionType'];
-        $_selectionAction = $_postData['selectionAction'];
-
-        if(array_key_exists('eid', $_postData)) {
-            $_employeeid = $_postData['eid'];
-            $employeeInfo = DatabaseManager::GetEmployee($_dbInfo, $_employeeid);
-            $_schedule = DatabaseManager::GetEmployeeShift($_dbInfo, $employeeInfo['shift']);
-            $_setSchedule = DatabaseManager::GetSetSchedule($_dbInfo, $_employeeid);
-        }
-
-        if($_selectionAction == "EditSchedule") {
-            if (DatabaseManager::CheckPermission('ees')) {
-                $canEditSchedule = true;
-            }
-        }
-
-        $_monthx = $_postData['month'];
-        $_monthx = ltrim($_monthx, "0");
-        $_yearx = $_postData['year'];
-
+    public static function Generate($_month, $_year, $_eid = 0, $_viewType = "schedule", $_listType = "month") {
+        $employeeid = $_eid;
+        $selectedMonth = $_month;
+        $selectedYear = $_year;
         $returnedCode = "";
 
-        // Populate Calendar Days
-        $_calendarDays = self::GetMonthDaysToArray($_monthx, $_yearx);
-        $count = 0;
+        $calendarDays = self::GetMonthDaysToArray($selectedMonth, $selectedYear);
 
+        // Create UI Interactions
         $returnedCode .= <<<HTML
             <script>
                 InitTimePickers();
                 $('.calendar_edit_input').keydown(function (event) {
                     if (event.keyCode === 13) {
-                        var eid = $_employeeid;
+                        var eid = $employeeid;
                         var idate = $(this).parent().data('date');
                         var itimein = $(this).parent().find('.calendar_edit_input').eq(0).val();
                         var itimeout = $(this).parent().find('.calendar_edit_input').eq(1).val();
@@ -189,214 +151,289 @@ class Calendar {
             </script>
         HTML;
 
-        foreach($_calendarDays as $calendarDay) {
-            $count++;
-            $_day = $calendarDay['day'];
-            $_month = $calendarDay['month'];
-            $_year = $calendarDay['year'];
-            $_dayOfWeek = $calendarDay['dayOfWeek'];
+        if ($_viewType == "schedule") {
+            $returnedCode .= self::GenerateScheduleView($selectedMonth, $selectedYear, $employeeid, $_listType, $calendarDays);
+        }
 
-            $date = "$_month/$_day/$_year";
+        return $returnedCode;
+    }
 
-            if ($_dayOfWeek == 'monday') {
-                $returnedCode .= '<span class="calendar_week">';
-                $count = 0;
+    private static function GenerateScheduleView($_selectedMonth, $_selectedYear, $_employeeid, $_listType, $_calendarDays) {
+        $returnedCode = "";
+
+        $canEditSchedule = false;
+
+        if (DatabaseManager::CheckPermission('ees')) {
+            $canEditSchedule = true;
+        }
+
+        $calendarStart = $_calendarDays[0];
+        $calendarEnd = $_calendarDays[count($_calendarDays) - 1];
+
+        $calendarStartDate = $calendarStart['year'] . "-" . $calendarStart['month'] . "-" . $calendarStart['day'];
+        $calendarEndDate = $calendarEnd['year'] . "-" . $calendarEnd['month'] . "-" . $calendarEnd['day'];
+
+        $setSchedules = DatabaseManager::GetSetSchedulesBetweenDates($_employeeid, $calendarStartDate, $calendarEndDate);
+        $punches = DatabaseManager::GetPunchesBetweenDates($_employeeid, $calendarStartDate, $calendarEndDate);
+        $employeeInfo = DatabaseManager::GetEmployee($_employeeid);
+        $regularShift = DatabaseManager::GetEmployeeShift($employeeInfo['shift']);
+
+        $xPunches = [];
+        $xSetSchedules = [];
+
+        if ($_listType == "month") {
+            foreach($_calendarDays as $calendarDay) {
+                $day = $calendarDay['day'];
+                $month = $calendarDay['month'];
+                $year = $calendarDay['year'];
+                $date = "$year-$month-$day";
+
+                if (isset($setSchedules[$date])) {
+                    $xSetSchedules = $setSchedules[$date];
+                }
+                else {
+                    $xSetSchedules = [];
+                }
+
+                if (isset($punches[$date])) {
+                    $xPunches = $punches[$date];
+                }
+                else {
+                    $xPunches = [];
+                }
+
+                $returnedCode .= self::GenerateDaySchedule($_selectedYear, $_selectedMonth, $calendarDay, $xSetSchedules, $xPunches, $regularShift, $canEditSchedule);
             }
+        }
 
-            $dateTime = DateTime::createFromFormat('m/d/Y', $date);
+        return $returnedCode;
+    }
 
-            $dateDisplay = $dateTime->format('Y/m/d');
-            $dateDisplayFormatted = $dateTime->format('Y-m-d');
+    private static function GenerateDaySchedule($_selectedYear, $_selectedMonth, $_calendarDay, $_setSchedule, $_punches, $_regularShift, $_caneEditSchedule = false) {
+        $returnedCode = "";
+        $day = $_calendarDay['day'];
+        $month = $_calendarDay['month'];
+        $year = $_calendarDay['year'];
+        $dayOfWeek = $_calendarDay['dayOfWeek'];
+        $dayOfWeekLwr = strtolower($dayOfWeek);
+        $date = "$month/$day/$year";
 
-            $currentDateTime = new DateTime('today');
-            $currentMonth = $currentDateTime->format('m');
-            $currentMonth = ltrim($currentMonth, "0");
+        $dateTime = DateTime::createFromFormat('m/d/Y', $date)->setTime(0, 0);
+        $dateDisplay = $dateTime->format('Y/m/d');
+        $dateDisplayFormatted = $dateTime->format('Y-m-d');
 
-            // Package date info for javascript
+        $currentDateTime = new DateTime('today');
+        $currentMonth = $currentDateTime->format('m');
 
-            $_isToday = false;
-            if ($dateTime->format('m/d/Y') == $currentDateTime->format('m/d/Y')) {
-                $_isToday = true;
+        // Conditional Pre-Checks
+        $isToday = $dateTime->format('m/d/Y') == $currentDateTime->format('m/d/Y');
+        $isInPast = $dateTime < $currentDateTime;
+        $isInFuture = $dateTime > $currentDateTime;
+
+        // Color Formatting
+        // TODO: HARD CODED COLOR
+        $dayBackgroundColor = "#fff;";
+        $dayHeaderColorClass = "textcolor_grey";
+
+        // Handle Punch totals
+        $totalPunchedHours = "00:00:00";
+        $punchedHoursString = "";
+        $hasOpenPunch = false;
+        $hasPunches = false;
+        $openPunchDate = null;
+        $openPunchDateFormatted = null;
+
+        foreach($_punches as $punch) {
+            $hasPunches = true;
+            if ($punch['timein'] != null) {
+                if ($punch['timeout'] != null && $punch['timeout'] != "") {
+                    $timeString = TimeManagement::getTimeDifference($punch['timein'], $punch['timeout']);
+                    $totalPunchedHours = TimeManagement::addTimes($totalPunchedHours, $timeString);
+                }
+                else {
+                    $hasOpenPunch = true;
+                    $totalPunchedHours = $punch['timein'];
+                    $openPunchDate = $punch['date'];
+                    $openPunchDateFormatted = DateTime::createFromFormat('Y-m-d', $openPunchDate)->format('m/d/Y');
+                }
             }
+        }
 
-            $returnedCode .= <<<HTML
-                <script>
-                    $('.schedule_edit_pane').hide();
-                </script>
-            HTML;
+        $totalPunchedHoursFormatted = DateTime::createFromFormat('H:i:s', $totalPunchedHours);
+        $totalPunchedHoursHours = ltrim($totalPunchedHoursFormatted->format('H'), '0');
+        $totalPunchedHoursMinutes =  ltrim($totalPunchedHoursFormatted->format('i'), '0');
 
-            if (!$_isToday ) {
-                if ($count % 2 == 0) {
-                    $backgroundColor = "#f2f2f2;";
-                    $returnedCode .= <<<HTML
-                    <div class='calendar_day' style='background-color:$backgroundColor'>
-                        <div class='calendar_day_header'>
-                    HTML;
-                } else {
-                    $backgroundColor = "#fff;";
-                    $returnedCode .= <<<HTML
-                    <div class='calendar_day' style='background-color:$backgroundColor'>
-                        <div class='calendar_day_header'>
-                    HTML;
+        if (!$hasOpenPunch && $hasPunches) {
+            if ($totalPunchedHoursHours <= 0) {
+                if ($totalPunchedHoursMinutes <= 0 || $totalPunchedHoursMinutes == "") {
+                    $punchedHoursString = "";
+                    $hasPunches = false;
+                }
+                else {
+                    $punchedHoursString = "Hours<br/>0:" . $totalPunchedHoursMinutes . "";
                 }
             }
             else {
-                $backgroundColor = "rgba(20,167,108,0.24);";
-                    $returnedCode .= <<<HTML
-                    <div class='calendar_day' style='background-color:$backgroundColor'>
-                        <div class='calendar_day_header'>
-                    HTML;
+                $punchedHoursString = "Hours<br/>" . $totalPunchedHoursHours . ":" . $totalPunchedHoursMinutes . "";
             }
+        }
+        else if ($hasOpenPunch && $hasPunches) {
+            $dx = DateTime::createFromFormat("H:i:s", $totalPunchedHours)->format("g:i A");
+            $punchedHoursString = "Clocked in at<br/>$dx";
+        }
 
-            // CALENDAR HEADER
-            if ($dateTime >= $currentDateTime) {
-                $returnedCode .= <<<HTML
-                    <span class='textcolor_green'>$_month/$_day</span>
-                HTML;
+        // Alternate colors on calendar
+        if ($dayOfWeekLwr == 'monday' || $dayOfWeekLwr == 'wednesday' || $dayOfWeekLwr == 'friday' || $dayOfWeekLwr == 'sunday') {
+            $dayBackgroundColor = "#f2f2f2;";
+        }
+
+        if ($isToday) {
+            $dayHeaderColorClass = "textcolor_green";
+            $dayBackgroundColor = "rgba(20,167,108,0.24);";
+        }
+        else if ($isInFuture) {
+            $dayHeaderColorClass = "textcolor_green";
+        }
+        else {
+            $dayHeaderColorClass = "textcolor_grey";
+        }
+
+        if ($dayOfWeekLwr == 'monday') {
+            $returnedCode .= '<span class="calendar_week">';
+        }
+
+        // Day HTML
+        $returnedCode .= <<<HTML
+            <div class='calendar_day' style='background-color:$dayBackgroundColor'>
+                <div class='calendar_day_header'>
+                    <span class='$dayHeaderColorClass'>$month/$day</span>
+                </div>
+            <div class='calendar_day_content'>
+        HTML;
+
+        $returnedCode .= <<<HTML
+            <script>
+                $('.schedule_edit_pane').hide();
+                $('.calendar_day').click(function () {
+                    var setFocus = true;
+                    if ($(this).find('.schedule_edit_pane').is(':visible')) {
+                        setFocus = false;
+                    }
+                    $('.schedule_view_pane').show();
+                    $('.schedule_edit_pane').hide();
+                    $(this).find('.schedule_view_pane').hide();
+                    $(this).find('.schedule_edit_pane').show();
+
+                    if (setFocus) {
+                        $(this).find('.calendar_edit_input').eq(0).focus();
+                    }
+                });
+            </script>
+        HTML;
+
+        $postBody = "";
+
+        if ($isInFuture) {
+            // TODO: Check holiday schedule
+            // Check if there is a schedule that overrides the default one
+            if (!empty($_setSchedule)) {
+                if ($_setSchedule['timein'] == "12:00 AM" && $_setSchedule['timeout'] == "12:00 AM") {
+                    $adjTime = "";
+                }
+                else {
+                    $adjTime = $_setSchedule['timein'] . "<br/>" . $_setSchedule['timeout'];
+                }
+                $postBody = "<span class='textcolor_grey'>" . $adjTime . "</span>";
             }
-            else {
-                $returnedCode .= <<<HTML
-                    <span class='textcolor_grey'>$_month/$_day</span>
-                HTML;   
+            else if ($_regularShift[$dayOfWeekLwr] != "") {
+                $adjTime = str_replace("|", "<br/>", $_regularShift[$dayOfWeekLwr]);
+                $postBody = "<span class='textcolor_grey'>" . $adjTime . "</span>";
             }
 
             $returnedCode .= <<<HTML
+                <div class='schedule_edit_pane' data-date='$dateDisplay' style='display:inline-flex;flex-direction:column;overflow:hidden;justify-content:center;'>
+                    <input class='calendar_edit_input formsection_input_timepicker'/>
+                    <input class='calendar_edit_input formsection_input_timepicker'/>
                 </div>
-                <div class='calendar_day_content'>
             HTML;
+        }
+        else if ($isInPast) {
+            if ($hasOpenPunch && ($openPunchDate == $dateDisplayFormatted)) {
+                $postBody = "<span class='textcolor_green'>Clocked in at<br/>" . DateTime::createFromFormat("H:i:s", $totalPunchedHours)->format("g:i A") . "</span>";
+            }
+            else {
+                $postBody = "<span class='textcolor_grey'>$punchedHoursString</span>";
+            }
+        }
+        else {
+            if (!$hasPunches) {
+                if ($hasOpenPunch && ($openPunchDate != $dateDisplayFormatted)) {
+                    if (!empty($_setSchedule)) {
+                        if ($_setSchedule['timein'] == "12:00 AM" && $_setSchedule['timeout'] == "12:00 AM") {
+                            $adjTime = "test";
+                        }
+                        else {
+                            $scheduledTimeInDateTime = DateTime::createFromFormat('g:i A', $_setSchedule['timein']);
 
-            //CALENDAR CONTENT
-
-            if ($_selectionAction == "EditSchedule") {
-                $scheduleString = str_replace("|", "<br/>", $_schedule[$_dayOfWeek]);
-
-                // IF CAN EDIT EMPLOYEE SCHEDULES (ees)
-                if ($canEditSchedule) {
-                    $returnedCode .= <<<HTML
-                        <script>
-                            $('.calendar_day').click(function () {
-                                var setFocus = true;
-                                if ($(this).find('.schedule_edit_pane').is(':visible')) {
-                                    setFocus = false;
-                                }
-                                $('.schedule_view_pane').show();
-                                $('.schedule_edit_pane').hide();
-                                $(this).find('.schedule_view_pane').hide();
-                                $(this).find('.schedule_edit_pane').show();
-
-                                if (setFocus) {
-                                    $(this).find('.calendar_edit_input').eq(0).focus();
-                                }
-                            });
-                        </script>
-                    HTML;
-
-                    if ($dateTime->format('m/d/Y') > $currentDateTime->format('m/d/Y')) {
-                        if (isset($_setSchedule[$dateDisplayFormatted])) {
-                            if ($_setSchedule[$dateDisplayFormatted]['timein'] == "12:00 AM" && $_setSchedule[$dateDisplayFormatted]['timeout'] == "12:00 AM") {
-                                $scheduleString = "";
+                            // Late punch
+                            $cdt = new DateTime();
+                            if ($scheduledTimeInDateTime < $cdt) {
+                                $adjTime = "<span class='textcolor_red'>" . $_setSchedule['timein'] . "</span><br/>" . $_setSchedule['timeout'];
                             }
                             else {
-                                $scheduleString = $_setSchedule[$dateDisplayFormatted]['timein'] . "<br/>" . $_setSchedule[$dateDisplayFormatted]['timeout'];
+                                $adjTime = $_setSchedule['timein'] . "<br/>" . $_setSchedule['timeout'];
                             }
                         }
-
-                        $returnedCode .= <<<HTML
-                            <div class='schedule_edit_pane' data-date='$dateDisplay' style='display:inline-flex;flex-direction:column;overflow:hidden;justify-content:center;'>
-                                <input class='calendar_edit_input formsection_input_timepicker'/>
-                                <input class='calendar_edit_input formsection_input_timepicker'/>
-                            </div>
-                            <div class='schedule_view_pane' data-date='$dateDisplay'>
-                                <span class='textcolor_grey'>$scheduleString</span>
-                            </div>
-                        HTML;
                     }
-                    else if ($dateTime->format('m/d/Y') < $currentDateTime->format('m/d/Y')) {
+                    else if ($_regularShift[$dayOfWeekLwr] != "") {
+                        $exShift = explode("|", $_regularShift[$dayOfWeekLwr]);
+                        $scheduledTimeInDateTime = DateTime::createFromFormat('g:i A', $exShift[0]);
+                        $scheduledTimeOutDateTime = DateTime::createFromFormat('g:i A', $exShift[1]);
 
-                        $getPunches = DatabaseManager::GetPunches($_dbInfo, $_employeeid, $dateDisplayFormatted);
-
-                        $hourString = "";
-
-                        if ($getPunches != null) {
-                            $totalHours = ltrim($getPunches['totalhours'], "0");
-                            $hourString = $totalHours . " hours";
-                            
-                        }
-
-                        $returnedCode .= <<<HTML
-                            <div class='schedule_edit_pane' data-date='$dateDisplay' style='display:inline-flex;flex-direction:column;overflow:hidden;justify-content:center;'>
-                                <span class='textcolor_grey'>$hourString
-                                    </span>
-                                </div>
-                                <div class='schedule_view_pane' data-date='$dateDisplay'>
-                                    <span class='textcolor_grey'>$hourString
-                                    </span>
-                            </div>
-                        HTML;
-                    }
-                    else {
-                        $missingPunches = DatabaseManager::CheckForEmptyPunch($_dbInfo, $_employeeid);
-
-                        $todaysMissingPunch = "";
-                        if ($missingPunches != null) {
-                            if ($missingPunches['date'] == $dateDisplayFormatted) {
-                                $todaysMissingPunch = "<span class='textcolor_orange'>Clocked in at<br/>" . $missingPunches['timein'] . "</span>";
+                            // Late punch
+                        $cdt = new DateTime();
+                        if ($scheduledTimeInDateTime < $cdt) {
+                            if ($scheduledTimeOutDateTime < $cdt) {
+                                $adjTime = "<span class='textcolor_orange'>" . $exShift[0] . "</span><br/><span class='textcolor_orange'>" . $exShift[1] . "</span>";
                             }
-                        }
-
-                        if (strlen($todaysMissingPunch) == 0) {
-                            if (isset($_setSchedule[$dateDisplayFormatted])) {
-                                if ($_setSchedule[$dateDisplayFormatted]['timein'] == "12:00 AM" && $_setSchedule[$dateDisplayFormatted]['timeout'] == "12:00 AM") {
-                                    $scheduleString = "";
-                                }
-                                else {
-                                    $scheduleString = $_setSchedule[$dateDisplayFormatted]['timein'] . "<br/>" . $_setSchedule[$dateDisplayFormatted]['timeout'];
-                                }
+                            else {
+                                $adjTime = "<span class='textcolor_orange'>" . $exShift[0] . "</span><br/>" . $exShift[1];
                             }
                         }
                         else {
-                            $scheduleString = $todaysMissingPunch;
+                            $adjTime = str_replace("|", "<br/>", $_regularShift[$dayOfWeekLwr]);
                         }
-
-                        $returnedCode .= <<<HTML
-                            <div class='schedule_edit_pane' data-date='$dateDisplay' style='display:inline-flex;flex-direction:column;overflow:hidden;justify-content:center;'>
-                                <span class='textcolor_grey'>$scheduleString</span>
-                            </div>
-                            <div class='schedule_view_pane' data-date='$dateDisplay'>
-                                <span class='textcolor_grey'>$scheduleString</span>
-                            </div>
-                        HTML;
                     }
-
-                    
                 }
-                else { // View Schedule Default
-                    if ($dateTime->format('m/d/Y') < $currentDateTime->format('m/d/Y'))
-                    {
-                        $scheduleString = "";
-                    }
-                    $returnedCode .= <<<HTML
-                            <span class='textcolor_grey'>$scheduleString</span>
-                    HTML;
-                }         
+                else {
+                    $adjTime = "";
+                }
+
+                $postBody = "<span class='textcolor_green'>" . $adjTime . "</span>";
+            }
+            else if ($hasPunches && !$hasOpenPunch) {
+                $postBody = "<span class='textcolor_green'>$punchedHoursString</span>";
             }
             else {
-                $returnedCode .= <<<HTML
-                    <span class='textcolor_orange'></span>
-                HTML;
+                $tph= DateTime::createFromFormat('H:i:s', $totalPunchedHours)->format("g:i A");
+                $postBody = "<span class='textcolor_green'>Clocked in at<br/>$tph</span>";
             }
-            
-            $returnedCode .= <<<HTML
-                </div>
-            HTML;
+        }
 
-            $returnedCode .= <<<HTML
-                </div>
-            HTML;
 
-            if ($_dayOfWeek == 'sunday') {
-                $returnedCode .= '</span>';
-            }
+        $returnedCode .= <<<HTML
+                <div class='schedule_view_pane' data-date='$dateDisplay'>
+                    $postBody
+                </div>
+            </div>
+        HTML;
+
+        $returnedCode .= <<<HTML
+            </div>
+        HTML;
+
+        if ($dayOfWeekLwr == 'sunday') {
+            $returnedCode .= '</span>';
         }
 
         $returnedCode .= <<<HTML
@@ -408,8 +445,6 @@ class Calendar {
 
     private static function GetMonthDaysToArray($_month, $_year) {
         $_calendarDays = array();
-        $_month = ltrim($_month, "0");
-        $_year = ltrim($_year, "0");
         $monthName = date('F', mktime(0, 0, 0, $_month, 1));
 
         // Calculate previous month and number of days in previous month
@@ -429,8 +464,8 @@ class Calendar {
             $dayOfWeekLwr = strtolower($date->format('l'));
 
             $calendarDay = [];
-            $calendarDay['day'] = $day;
-            $calendarDay['month'] = $prevMonth;
+            $calendarDay['day'] = str_pad($day, 2, "0", STR_PAD_LEFT);
+            $calendarDay['month'] = str_pad($prevMonth, 2, "0", STR_PAD_LEFT);
             $calendarDay['year'] = $prevYear;
             $calendarDay['dayOfWeek'] = $dayOfWeekLwr;
 
@@ -445,8 +480,8 @@ class Calendar {
             $dayOfWeekLwr = strtolower($date->format('l'));
 
             $calendarDay = [];
-            $calendarDay['day'] = $day;
-            $calendarDay['month'] = $_month;
+            $calendarDay['day'] = str_pad($day, 2, "0", STR_PAD_LEFT);
+            $calendarDay['month'] = str_pad($_month, 2, "0", STR_PAD_LEFT);
             $calendarDay['year'] = $_year;
             $calendarDay['dayOfWeek'] = $dayOfWeekLwr;
 
@@ -464,9 +499,8 @@ class Calendar {
             $dayOfWeekLwr = strtolower($date->format('l'));
 
             $calendarDay = [];
-            $calendarDay['day'] = $day;
-
-            $calendarDay['month'] = $nextMonth;
+            $calendarDay['day'] = str_pad($day, 2, "0", STR_PAD_LEFT);
+            $calendarDay['month'] = str_pad($nextMonth, 2, "0", STR_PAD_LEFT);  
             $calendarDay['year'] = $nextYear;
             $calendarDay['dayOfWeek'] = $dayOfWeekLwr;
 

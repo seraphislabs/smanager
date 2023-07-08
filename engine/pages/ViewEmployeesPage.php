@@ -1,6 +1,6 @@
 <?php
 class PageViewEmployees {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $canAddEmployee = DatabaseManager::CheckPermission('ce');
         if (!DatabaseManager::CheckPermission('vel')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
@@ -48,11 +48,11 @@ class PageViewEmployees {
             <tbody>
         HTML;
 
-        $employees = DatabaseManager::GetAllEmployees($_dbInfo);
-        $roles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, true);
-        $shifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, true);
+        $employees = DatabaseManager::GetAllEmployees();
+        $roles = DatabaseManager::GetAllEmployeeRoles(true);
+        $shifts = DatabaseManager::GetAllEmployeeShifts(true);
 
-        $employeeCode = ListEmployees::AsList($_dbInfo, $employees, $shifts, $roles);
+        $employeeCode = ListEmployees::AsList($employees, $shifts, $roles);
         $returnedCode .= $employeeCode;
             
         $returnedCode .= <<<HTML

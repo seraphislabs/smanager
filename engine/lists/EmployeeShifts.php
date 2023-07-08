@@ -1,10 +1,10 @@
 <?php
 
 class ListEmployeeShifts {
-    public static function AsSelect($_dbInfo) {
+    public static function AsSelect() {
         $returnedCode = "";
 
-        $retVar = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
+        $retVar = DatabaseManager::GetAllEmployeeShifts(false);
 
         foreach($retVar as $shift) {
             $shiftName = $shift['name'];

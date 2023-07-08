@@ -1,7 +1,7 @@
 <?php
 
 trait DatabaseEmployeeRoles {
-    public static function GetAllEmployeeRoles($_dbInfo, $asAssoc) {
+    public static function GetAllEmployeeRoles($asAssoc) {
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -25,7 +25,7 @@ trait DatabaseEmployeeRoles {
         return $retVal;
     }
 
-    public static function GetEmployeeRole($_dbInfo, $_roleid) { 
+    public static function GetEmployeeRole($_roleid) { 
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);
 
@@ -36,7 +36,7 @@ trait DatabaseEmployeeRoles {
         return $result;
     }
 
-    public static function AddNewEmployeeRole($_dbInfo, $_name, $_perms, $_dispatchable, $_roleid) {
+    public static function AddNewEmployeeRole($_name, $_perms, $_dispatchable, $_roleid) {
 
         $ai = self::GetActiveSession();
         $db2 = DBI::getInstance($GLOBALS['dbinfo']['db']);

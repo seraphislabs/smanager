@@ -1,7 +1,7 @@
 <?php
 
 class PopupNewAccount {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         $returnedCode = "";
         // Permission Check
         if (!DatabaseManager::CheckPermission('ca')) {

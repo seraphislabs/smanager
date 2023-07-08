@@ -1,6 +1,6 @@
 <?php
     trait ActionCheckSession {
-        public static function CheckSession($_dbInfo) {
+        public static function CheckSession() {
             OpLog::Log("Action: CheckSession");
 
             if (isset($_SESSION['token'])) {

@@ -1,7 +1,7 @@
 <?php
 
 trait ActionLoadPopup {
-    public static function LoadPopup($_dbInfo, $_postData) {
+    public static function LoadPopup($_postData) {
         OpLog::Log("Action: LoadPopup");
         OpLog::Log(print_r($_postData, true) . "\n");
 
@@ -18,7 +18,7 @@ trait ActionLoadPopup {
                 $class = new ReflectionClass($className);
                 if ($class->hasMethod('Generate')) {
                     $method = $class->getMethod('Generate');
-                    $returnedCode .= $method->invoke(null, $_dbInfo, $data);
+                    $returnedCode .= $method->invoke(null, $data);
                 }
             }
             return $returnedCode;

@@ -1,6 +1,6 @@
 <?php
 class PageViewScheduleSettings {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         if (!DatabaseManager::CheckPermission('emes')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
@@ -30,10 +30,10 @@ class PageViewScheduleSettings {
             </script>
         HTML;
 
-        $getRoles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, false);
+        $getRoles = DatabaseManager::GetAllEmployeeRoles(false);
         $rolesList = ListEmployeeRoles::AsList($getRoles);
 
-        $getShifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
+        $getShifts = DatabaseManager::GetAllEmployeeShifts(false);
         $shiftsList = ListEmployeeShifts::AsList($getShifts);
 
         $returnedCode .= <<<HTML
@@ -52,7 +52,7 @@ class PageViewScheduleSettings {
                     <div style='padding-left:40px;' id='display_holiday_hours'>
         HTML;       
                 
-        $getHolidaySchedule = DatabaseManager::GetAllHolidaySchedules($_dbInfo);
+        $getHolidaySchedule = DatabaseManager::GetAllHolidaySchedules();
 
         /*foreach ($getHolidaySchedule as $schedule) {
             $scheduleDaysoff = $schedule['offdays'];

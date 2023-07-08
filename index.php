@@ -3,6 +3,8 @@
 <title>Service Manager 360</title>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
+
 <link rel="icon" href="data:,">
 <link rel="stylesheet" type="text/css" href="styles/palette.css" />
 <link rel="stylesheet" type="text/css" href="styles/style.css" />

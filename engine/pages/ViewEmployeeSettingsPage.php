@@ -1,6 +1,6 @@
 <?php
 class PageViewEmployeeSettings {
-    public static function Generate($_dbInfo, $_postData) {
+    public static function Generate($_postData) {
         if (!DatabaseManager::CheckPermission('emes')) {
             die("You do not have permission to view this page. Speak to your account manager to gain access.");
         }
@@ -22,10 +22,10 @@ class PageViewEmployeeSettings {
             </script>
         HTML;
 
-        $getRoles = DatabaseManager::GetAllEmployeeRoles($_dbInfo, false);
+        $getRoles = DatabaseManager::GetAllEmployeeRoles(false);
         $rolesList = ListEmployeeRoles::AsList($getRoles);
 
-        $getShifts = DatabaseManager::GetAllEmployeeShifts($_dbInfo, false);
+        $getShifts = DatabaseManager::GetAllEmployeeShifts(false);
         $shiftsList = ListEmployeeShifts::AsList($getShifts);
 
         $returnedCode .= <<<HTML

@@ -1,7 +1,7 @@
 <?php
 
 class ListEmployees {
-    public static function AsList($_dbInfo, $_retArray, $_shifts, $_roles) {
+    public static function AsList($_retArray, $_shifts, $_roles) {
         $returnedCode = "";
         $employees = $_retArray;
         if (is_array($employees)) {

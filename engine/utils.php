@@ -41,6 +41,50 @@ class PasswordEncrypt {
     }
 }
 
+class TimeManagement {
+    public static function getTimeDifference($time1, $time2) {
+        // Create DateTime objects from the time strings
+        $dateTime1 = DateTime::createFromFormat('H:i:s', $time1);
+        $dateTime2 = DateTime::createFromFormat('H:i:s', $time2);
+    
+        // Get the difference between the two DateTime objects
+        $interval = $dateTime1->diff($dateTime2);
+    
+        // Format the difference as a time string
+        $timeDifference = $interval->format('%H:%I:%S');
+    
+        return $timeDifference;
+    }
+
+    public static function getDatesBetween($startDate, $endDate) {
+        $dates = array();
+        $currentDate = new DateTime($startDate);
+        $endDate = new DateTime($endDate);
+    
+        while ($currentDate <= $endDate) {
+            $dates[] = $currentDate->format('Y-m-d');
+            $currentDate->modify('+1 day');
+        }
+    
+        return $dates;
+    }
+
+    public static function addTimes($time1, $time2) {
+        // Convert time strings to DateTime objects
+        $dateTime1 = DateTime::createFromFormat('H:i:s', $time1);
+        $dateTime2 = DateTime::createFromFormat('H:i:s', $time2);
+    
+        // Get hours, minutes and seconds
+        list($hours2, $minutes2, $seconds2) = explode(':', $dateTime2->format('H:i:s'));
+    
+        // Add time
+        $dateTime1->add(new DateInterval("PT{$hours2}H{$minutes2}M{$seconds2}S"));
+    
+        // Return time string
+        return $dateTime1->format('H:i:s');
+    }
+}
+
 class UUID {
     public static function Create()
     {
